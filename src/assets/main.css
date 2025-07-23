@@ -42,13 +42,6 @@ html, body {
   animation: fade-in 0.8s ease-out forwards;
 }
 
-.fade-in-start [data-fade="1"] { animation-delay: 0.1s; }
-.fade-in-start [data-fade="2"] { animation-delay: 0.2s; }
-.fade-in-start [data-fade="3"] { animation-delay: 0.3s; }
-.fade-in-start [data-fade="4"] { animation-delay: 0.4s; }
-.fade-in-start [data-fade="5"] { animation-delay: 0.5s; }
-.fade-in-start [data-fade="6"] { animation-delay: 0.6s; }
-
 @keyframes fade-in {
   to {
     opacity: 1;

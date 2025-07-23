@@ -7,6 +7,8 @@ import './assets/main.css'
 import Home from './views/Home.vue'
 import About from './views/About.vue'
 
+import fadeIn from './directives/fadeIn.js'
+
 const routes = [
   { path: '/', component: Home },
   { path: '/about.html', component: About },
@@ -17,4 +19,8 @@ const router = createRouter({
   routes,
 })
 
-createApp(App).use(router).mount('#app')
+const app = createApp(App)
+
+app.directive('fade-in', fadeIn)
+
+app.use(router).mount('#app')
