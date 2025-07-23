@@ -1,7 +1,7 @@
 <template>
-  <div class="relative min-h-screen flex flex-col text-white bg-#0e1111">
-    <Background />
-    <div class="flex flex-1">
+  <div class="relative min-h-screen flex flex-col text-white">
+    <Background/>
+    <div class="flex flex-1 bg-black/40 backdrop-blur-sm">
       <div class="w-[25vw]"></div>
       <div class="w-[50vw] flex flex-col">
         <Header />
