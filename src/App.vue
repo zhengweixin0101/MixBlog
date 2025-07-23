@@ -1,5 +1,5 @@
 <template>
-  <div class="relative min-h-screen flex flex-col bg-#0e1111 text-white overflow-x-hidden">
+  <div class="relative min-h-screen flex flex-col text-white">
     <Background />
     <div class="flex flex-1">
       <div class="w-[25vw]"></div>
