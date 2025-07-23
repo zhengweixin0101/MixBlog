@@ -88,7 +88,7 @@ function loop() {
     showContext.fillStyle = 'rgba(0,0,0,0.04)'
     showContext.fillRect(-(longSide * 3), -(longSide * 3), longSide * 6, longSide * 6)
   }
-  showContext.rotate((0.025 * Math.PI) / 180)
+  showContext.rotate((0.01 * Math.PI) / 180)
 }
 
 function animate() {
