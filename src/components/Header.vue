@@ -5,11 +5,13 @@
         <li v-for="(item, index) in navItems" :key="index">
           <router-link
             :to="item.href"
+            class="flex items-center space-x-1 no-underline font-bold"
             :class="route.path === item.href
-              ? 'bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent font-bold'
-              : 'text-white no-underline font-bold'"
+              ? 'bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent'
+              : 'text-white'"
           >
-            {{ item.label }}
+            <i :class="['iconfont', item.icon]"></i>
+            <span>{{ item.label }}</span>
           </router-link>
         </li>
       </ul>
@@ -23,7 +25,7 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const navItems = [
-  { label: 'Home', href: '/' },
-  { label: 'About', href: '/about.html' },
+  { label: 'Home', href: '/', icon: 'icon-house-chimney' },
+  { label: 'About', href: '/about.html', icon: 'icon-about_Aboutrukou' },
 ]
 </script>

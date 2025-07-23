@@ -20,10 +20,10 @@
             About Me
           </a>
         </div>
-        <div data-fade="5" class="mt-5 flex space-x-4">
-          <a href="#" class="text-gray-400 hover:text-white no-underline">Apps</a>
-          <a href="#" class="text-gray-400 hover:text-white no-underline">Mail</a>
-          <a href="#" class="text-gray-400 hover:text-white no-underline">Github</a>
+        <div data-fade="5" class="mt-5 flex space-x-6">
+          <a href="#" class="text-gray-400 hover:text-white no-underline"><i class="iconfont icon-shapes"></i> Apps</a>
+          <a href="#" class="text-gray-400 hover:text-white no-underline"><i class="iconfont icon-envelope"></i> Mail</a>
+          <a href="#" class="text-gray-400 hover:text-white no-underline"><i class="iconfont icon-github"></i> Github</a>
         </div>
       </div>
 
