@@ -1,5 +1,16 @@
-# Vue 3 + Vite
+# My blog
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+一个使用Vue3+Unocss搭建的个人博客。
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+本博客是一个究极缝合怪，也是我第一个完全从0开发的项目。
+
+- 背景参考 [小孙同学的个人主页](https://github.com/sun0225SUN/star-trail) 
+- 界面参考 [Moeyy的博客](https://moeyy.cn/)
+
+
+
+## 特点
+
+- 采用Unocss原子引擎
+- 使用阿里巴巴图标库
+- 待开发......
