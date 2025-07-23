@@ -1,5 +1,5 @@
 <template>
-  <main class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center mt--10">
+  <main class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center mt--5">
     <div class="flex flex-col md:flex-row items-center justify-between w-full">
       <!-- 左侧 -->
       <div>
