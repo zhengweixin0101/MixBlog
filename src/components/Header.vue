@@ -1,5 +1,5 @@
 <template>
-  <nav class="w-full py-8 fixed z-50 bg-#0e1111">
+  <nav class="w-full py-8 z-50 bg-#0e1111">
     <div class="max-w-screen-xl">
       <ul class="flex space-x-4 list-none">
         <li v-for="(item, index) in navItems" :key="index">
