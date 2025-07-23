@@ -8,7 +8,6 @@ import StarTrails from './StarTrails.vue'
     class="fixed inset-0 -z-10 pointer-events-none"
   >
     <StarTrails class="absolute inset-0" />
-    <!-- 渐变遮罩，从下往上透明 -->
     <div
       class="absolute bottom-0 left-0 w-full h-40vh pointer-events-none"
       style="background: linear-gradient(to top, #0e1111, transparent)"
