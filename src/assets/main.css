@@ -38,8 +38,8 @@ html, body {
 /* 浮现动画 */
 .fade-in-start [data-fade] {
   opacity: 0;
-  transform: translateY(10px);
-  animation: fade-in 0.8s ease-out forwards;
+  transform: translateY(50px);
+  animation: fade-in 0.5s cubic-bezier(0.6, 0, 0.4, 1) forwards;
 }
 
 @keyframes fade-in {
