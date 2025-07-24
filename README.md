@@ -14,3 +14,34 @@
 - 采用Unocss原子引擎
 - 使用阿里巴巴图标库
 - 待开发......
+
+
+
+## 特性
+
+### 丝滑的浮现动画
+
+​		在开始的元素设定`v-fade-in`属性，需要显示动画的元素添加`data-fade`
+
+​		示例：
+
+```html
+<main v-fade-in>
+    <H1 data-fade>这是第一个浮现</H1>
+    <p data-fade>这是第二个</p>
+    <p data-fade>以此类推，依次浮现</p>
+</main>
+```
+
+​		支持自定义顺序：
+
+```html
+<main v-fade-in>
+    <H1 data-fade>这是第三个浮现</H1>
+    <p data-fade>这是第四个</p>
+    <p data-fade="2">这是第三个</p>
+    <p data-fade="1">这是第一个</p>
+</main>
+```
+
+### 待开发......

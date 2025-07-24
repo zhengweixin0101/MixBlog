@@ -1,10 +1,10 @@
 <template>
   <div class="relative min-h-screen flex flex-col text-white">
-    <Background/>
+    <Background />
+    <Header />
     <div class="flex flex-1 bg-black/40 backdrop-blur-sm">
       <div class="w-[25vw]"></div>
       <div class="w-[50vw] flex flex-col">
-        <Header />
         <main class="flex-1 relative z-10 overflow-auto">
           <RouterView />
         </main>
