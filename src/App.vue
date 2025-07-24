@@ -5,9 +5,9 @@
     <div class="flex flex-1 bg-black/40 backdrop-blur-sm">
       <div class="w-[25vw]"></div>
       <div class="w-[50vw] flex flex-col">
-        <main class="flex-1 relative z-10 overflow-auto">
+        <div class="flex-1 relative z-10">
           <RouterView />
-        </main>
+        </div>
         <Footer />
       </div>
       <div class="w-[25vw]"></div>
