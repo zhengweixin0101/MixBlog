@@ -2,7 +2,7 @@
 import Title from '@/components/PageTitle.vue'
 
 import { ref, computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 
 const posts = import.meta.glob('/src/posts/*.md', { eager: true })
 
@@ -29,29 +29,34 @@ const filteredPosts = computed(() => {
     .filter(post => post.title.toLowerCase().includes(term))
     .sort((a, b) => new Date(b.date) - new Date(a.date))
 })
+
+const router = useRouter()
+function delayedNavigate(path) {
+  setTimeout(() => {
+    router.push(path)
+  }, 200)
+}
 </script>
 
 <template>
-  <main class="fade-in-start">
+  <main v-fade-in>
     <section class="layout py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <Title text="Posts" />
-      <p class="mt-2 text-gray-600 dark:text-gray-300" data-fade="1">
+      <Title data-fade text="Posts" />
+      <p data-fade class="mt-2 text-gray-300">
         Articles about Some of My Whimsical Ideas
       </p>
-
-      <input
-        v-model="searchTerm"
-        placeholder="Search..."
-        type="text"
-        class="mt-4 w-full rounded-md dark:bg-dark border border-gray-300 dark:border-gray-600
-               focus:border-primary-300 focus:outline-none focus:ring-0 dark:focus:border-primary-300"
-        data-fade="2"
-      />
-
-      <div
-        class="mt-2 flex flex-wrap items-baseline justify-start gap-2 text-sm text-gray-600 dark:text-gray-300"
-        data-fade="3"
-      >
+      <div data-fade class="relative mt-4 w-full">
+        <i class="iconfont icon-sousuo absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+        <input
+          v-model="searchTerm"
+          placeholder="Search..."
+          type="text"
+          class="w-full h-12 pl-10 pr-4 rounded-xl border-none
+                 backdrop-blur bg-white/10 placeholder-gray-500 text-white
+                 transition-shadow duration-300 focus:outline-none focus:shadow-[0_0_0_1px_#00e699]"
+        />
+      </div>
+      <!-- div data-fade class="mt-2 flex flex-wrap items-baseline justify-start gap-2 text-sm text-gray-600">
         <span class="font-medium">Tag:</span>
         <a
           href="#skip-tags"
@@ -76,72 +81,79 @@ const filteredPosts = computed(() => {
           {{ tag }}
         </button>
         <div id="skip-tags" class="hidden"></div>
-      </div>
+      </div -->
 
-      <ul
-        class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
-        data-fade="5"
-      >
-        <li
+      <ul class="mt-8 grid gap-4 grid-cols-2">
+        <li data-fade
           v-for="post in filteredPosts"
           :key="post.slug"
-          class="w-full rounded-md border border-gray-300 bg-white dark:border-gray-600 dark:bg-dark
-                 scale-100 hover:scale-[1.02] active:scale-[0.97] motion-safe:transform-gpu
-                 transition duration-100 motion-reduce:hover:scale-100 animate-shadow"
+          class="w-full rounded-xl list-none will-change-transform
+                 scale-100 hover:scale-[1.02] active:scale-[0.97] motion-safe:transform-gpu motion-reduce:hover:scale-100 transition duration-200
+                 animate-shadow backdrop-blur bg-white/10"
         >
-          <RouterLink
-            :to="`/posts/${post.slug}.html`"
-            class="block h-full rounded-md focus:outline-none focus-visible:ring focus-visible:ring-primary-300 p-4"
+          <div
+            class="block h-full rounded-md p-4 no-underline
+                 focus:outline-none focus-visible:ring focus-visible:ring-[#00e699]
+                 transition-transform duration-200 active:scale-95 cursor-pointer"
+            @click="delayedNavigate(`/posts/${post.slug}.html`)"
           >
-            <h4 class="text-gray-800 dark:text-gray-100">{{ post.title }}</h4>
-            <div
-              class="mt-2 flex items-center justify-start gap-2 text-sm font-medium text-gray-600 dark:text-gray-300"
-            >
-              <svg
-                stroke="currentColor"
-                fill="none"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                class="inline-block text-base"
-                height="1em"
-                width="1em"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
+            <h4 class="text-white text-xl">{{ post.title }}</h4>
+            <div class="mt-1 flex items-center justify-start gap-2 text-sm font-medium text-gray-300">
+              <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true" class="inline-block text-base" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
               <time
-                class="transition-colors bg-gradient-to-tr from-primary-300/40 via-primary-300/40 to-primary-400/40
-                       dark:from-primary-300 dark:to-primary-400 dark:bg-clip-text dark:text-transparent"
+                class="bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent -webkit-bg-clip-text"
                 :datetime="post.date !== '未知日期' ? post.date : null"
               >
                 {{ post.date }}
               </time>
             </div>
-          </RouterLink>
+          </div>
         </li>
       </ul>
 
-      <div
-        class="mt-8 flex flex-col items-start gap-4 md:flex-row-reverse md:justify-between"
-      >
-        <RouterLink
-          to="/"
-          class="animated-underline custom-link inline-flex items-center font-medium focus:outline-none
-                 focus-visible:ring focus-visible:ring-primary-300 border-b border-dotted border-dark
-                 hover:border-black/0"
+      <div data-fade class="mt-8 flex flex-row items-center justify-end gap-4">
+        <RouterLink to="/"
+          class="custom-gradient-link inline-flex relative font-medium
+                  bg-gradient-to-r from-[#00e699] to-[#00e2d8]
+                  bg-clip-text text-transparent -webkit-bg-clip-text
+                  no-underline"
         >
-          <span
-            class="dark:bg-gradient-to-tr dark:from-primary-300 dark:to-primary-400
-                   dark:bg-clip-text dark:text-transparent"
-            >← Back to Home</span
-          >
+          <span class="dark:bg-gradient-to-tr dark:from-primary-300 dark:to-primary-400 dark:bg-clip-text dark:text-transparent">← Back to Home</span>
         </RouterLink>
       </div>
     </section>
   </main>
+  <div class="mb-50"></div>
 </template>
+
+<style>
+.custom-gradient-link {
+  position: relative;
+  border-bottom: 1.5px dotted white;
+  transition: border-bottom-color 0.5s ease; 
+  --underline-width: 0%;
+}
+
+.custom-gradient-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px; /* 实线下划线加粗 */
+  background: linear-gradient(90deg, #00e699, #00e2d8);
+  width: var(--underline-width);
+  transition: width 0.3s ease;
+  border-radius: 9999px; /* 圆角，线条更圆滑 */
+  pointer-events: none;
+}
+
+.custom-gradient-link:hover {
+  border-bottom-color: transparent;
+}
+
+.custom-gradient-link:hover::after {
+  --underline-width: 100%;
+}
+</style>

@@ -31,7 +31,7 @@ export default {
           observer.unobserve(el)
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.05 } //速度
     )
 
     observer.observe(el)
