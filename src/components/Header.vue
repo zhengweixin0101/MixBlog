@@ -34,6 +34,7 @@ const route = useRoute()
 
 const navItems = [
   { label: 'Home', href: '/', icon: 'icon-house-chimney' },
+  { label: 'Posts', href: '/posts.html', icon: 'icon-about' },
   { label: 'About', href: '/about.html', icon: 'icon-about' },
 ]
 </script>

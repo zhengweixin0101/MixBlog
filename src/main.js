@@ -5,12 +5,16 @@ import 'uno.css'
 import './assets/main.css'
 
 import Home from './views/Home.vue'
+import ArticlePage from './views/ArticlePage.vue'
+import ArticleList from './views/ArticleList.vue'
 import About from './views/About.vue'
 
 import fadeIn from './directives/fadeIn.js'
 
 const routes = [
   { path: '/', component: Home },
+  { path: '/posts/:slug.html', component: ArticlePage },
+  { path: '/posts.html', component: ArticleList },
   { path: '/about.html', component: About },
 ]
 
