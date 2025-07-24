@@ -35,6 +35,16 @@ html, body {
   background-color: #777;
 }
 
+/* 移动端隐藏滚动条 */
+@media (max-width: 768px) {
+  * {
+    scrollbar-width: none; /* Firefox */
+  }
+  *::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+}
+
 /* 浮现动画 */
 [data-fade] {
   opacity: 0;

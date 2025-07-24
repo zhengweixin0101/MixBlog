@@ -8,11 +8,6 @@ const posts = import.meta.glob('/src/posts/*.md', { eager: true })
 
 const searchTerm = ref('')
 
-const tags = [
-  'CDN', 'CloudFlare', 'OpenResty', 'Fly.io', 'mp4', 'Appnode', 'IPV6',
-  'AWS', 'Alist', 'Docker', 'Web', 'PaaS', 'NextJS', 'fly.io', 'Paas'
-]
-
 // 文章列表，支持搜索
 const filteredPosts = computed(() => {
   const term = searchTerm.value.toLowerCase()
@@ -56,33 +51,7 @@ function delayedNavigate(path) {
                  transition-shadow duration-300 focus:outline-none focus:shadow-[0_0_0_1px_#00e699]"
         />
       </div>
-      <!-- div data-fade class="mt-2 flex flex-wrap items-baseline justify-start gap-2 text-sm text-gray-600">
-        <span class="font-medium">Tag:</span>
-        <a
-          href="#skip-tags"
-          class="inline-block rounded-md px-1.5 py-0.5 font-medium transition bg-gray-100 text-gray-700
-                 hover:text-black disabled:bg-gray-200 disabled:text-gray-300 dark:bg-gray-700 dark:text-gray-200
-                 dark:hover:text-white dark:disabled:bg-gray-600 dark:disabled:text-gray-500
-                 focus:outline-none focus-visible:ring focus-visible:ring-primary-300
-                 disabled:cursor-not-allowed pointer-events-none absolute opacity-0
-                 focus:inline-block focus:translate-y-[1.4rem] focus:opacity-100"
-          >Skip tag</a
-        >
-        <button
-          v-for="tag in tags"
-          :key="tag"
-          disabled
-          class="inline-block rounded-md px-1.5 py-0.5 font-medium transition-colors
-                 bg-gray-100 text-gray-700 hover:text-black disabled:bg-gray-200 disabled:text-gray-300
-                 dark:bg-gray-700 dark:text-gray-200 dark:hover:text-white dark:disabled:bg-gray-600
-                 dark:disabled:text-gray-500 focus:outline-none focus-visible:ring focus-visible:ring-primary-300
-                 disabled:cursor-not-allowed"
-        >
-          {{ tag }}
-        </button>
-        <div id="skip-tags" class="hidden"></div>
-      </div -->
-
+      
       <ul class="mt-8 grid gap-4 grid-cols-2">
         <li data-fade
           v-for="post in filteredPosts"
