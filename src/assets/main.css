@@ -36,10 +36,15 @@ html, body {
 }
 
 /* 浮现动画 */
-.fade-in-start [data-fade] {
+[data-fade] {
   opacity: 0;
   transform: translateY(50px);
+  visibility: hidden;
+}
+
+.fade-in-start [data-fade] {
   animation: fade-in 0.5s cubic-bezier(0.6, 0, 0.4, 1) forwards;
+  visibility: visible;
 }
 
 @keyframes fade-in {
