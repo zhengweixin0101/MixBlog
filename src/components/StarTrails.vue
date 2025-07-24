@@ -39,36 +39,10 @@ function drawStars() {
   })
 }
 
-function loop() {
-  showContext.clearRect(0, 0, canvas.value.width, canvas.value.height) // 清空画布
-  showContext.drawImage(helpCanvas, -helpCanvas.width / (2 * (window.devicePixelRatio || 1)), -helpCanvas.height / (2 * (window.devicePixelRatio || 1)))
-
-  loop.drawTimes = (loop.drawTimes || 0) + 1
-
-  if (loop.drawTimes > 200 && loop.drawTimes % 8 === 0) {
-    showContext.fillStyle = 'rgba(0,0,0,0.04)'
-    showContext.fillRect(-(longSide * 3), -(longSide * 3), longSide * 6, longSide * 6)
-  }
-  showContext.rotate((0.01 * Math.PI) / 180)
-}
-
-function animate() {
-  animationId = requestAnimationFrame(() => {
-    loop()
-    animate()
-  })
-}
-
 function resize() {
   if (!canvas.value) return
-
-  // 取消动画
-  if (animationId) {
-    cancelAnimationFrame(animationId)
-    animationId = null
-  }
-
   const show = canvas.value
+
   const dpr = window.devicePixelRatio || 1
   showWidth = show.clientWidth
   showHeight = show.clientHeight
@@ -103,9 +77,25 @@ function resize() {
   } else {
     showContext.translate(showWidth, 0)
   }
+}
 
-  // 重新启动动画
-  animate()
+function loop() {
+  showContext.drawImage(helpCanvas, -helpCanvas.width / (2 * (window.devicePixelRatio || 1)), -helpCanvas.height / (2 * (window.devicePixelRatio || 1)))
+
+  loop.drawTimes = (loop.drawTimes || 0) + 1
+
+  if (loop.drawTimes > 200 && loop.drawTimes % 8 === 0) {
+    showContext.fillStyle = 'rgba(0,0,0,0.04)'
+    showContext.fillRect(-(longSide * 3), -(longSide * 3), longSide * 6, longSide * 6)
+  }
+  showContext.rotate((0.01 * Math.PI) / 180)
+}
+
+function animate() {
+  animationId = requestAnimationFrame(() => {
+    loop()
+    animate()
+  })
 }
 
 onMounted(() => {
@@ -116,6 +106,8 @@ onMounted(() => {
 
   resize()
   window.addEventListener('resize', resize)
+
+  animate()
 })
 
 onBeforeUnmount(() => {
