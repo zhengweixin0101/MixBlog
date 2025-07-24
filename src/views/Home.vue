@@ -1,5 +1,5 @@
 <template>
-  <main v-fade-in class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center mt--5">
+  <main v-fade-in class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center">
     <div class="flex flex-col md:flex-row items-center justify-between w-full">
       <!-- 左侧 -->
       <div>
@@ -37,7 +37,6 @@
       </div>
     </div>
   </main>
-  <div class="mb-4"></div>
 </template>
 
 <style>

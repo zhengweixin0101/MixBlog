@@ -3,7 +3,7 @@
     <nav
       class="fixed top-8 left-1/2 -translate-x-1/2 w-[50vw] z-50
              py-2 px-4 rounded-2xl shadow-2xl
-             backdrop-blur bg-white/10 border border-white/20"
+             backdrop-blur bg-white/5"
     >
       <ul class="flex space-x-4 list-none">
         <li v-for="(item, index) in navItems" :key="index">
