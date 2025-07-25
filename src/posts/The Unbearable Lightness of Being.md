@@ -1,7 +1,8 @@
 ---
 title: The Unbearable Lightness of Being
-pubDate: 1984-01-24
-categories: ['Articles']
+date: 1984-01-24
+tags:
+  - tag6
 description: ''
 slug: the-unbearable-lightness-of-being
 ---

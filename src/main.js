@@ -23,6 +23,9 @@ const router = createRouter({
   routes,
 })
 
+import { Buffer } from 'buffer'
+window.Buffer = Buffer
+
 const app = createApp(App)
 
 app.directive('fade-in', fadeIn)

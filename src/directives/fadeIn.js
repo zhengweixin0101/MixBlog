@@ -1,26 +1,35 @@
 export default {
   mounted(el) {
-    const all = Array.from(el.querySelectorAll('[data-fade]'))
+    const elements = Array.from(el.querySelectorAll('[data-fade]'))
 
-    const withNumber = all.filter(el => {
-      const val = el.getAttribute('data-fade')
-      return /^\d+$/.test(val)
+    const positioned = []
+    const unpositioned = []
+
+    elements.forEach((el) => {
+      const attr = el.getAttribute('data-fade')
+      const index = parseInt(attr, 10)
+      if (!isNaN(index)) {
+        positioned[index - 1] = el
+      } else {
+        unpositioned.push(el)
+      }
     })
 
-    const withoutNumber = all.filter(el => {
-      const val = el.getAttribute('data-fade')
-      return !/^\d+$/.test(val)
-    })
+    const final = []
+    let upIndex = 0
+    for (let i = 0; i < elements.length; i++) {
+      if (positioned[i]) {
+        final.push(positioned[i])
+      } else if (upIndex < unpositioned.length) {
+        final.push(unpositioned[upIndex++])
+      }
+    }
 
-    // 按数字升序排序
-    withNumber.sort((a, b) => {
-      return Number(a.getAttribute('data-fade')) - Number(b.getAttribute('data-fade'))
-    })
+    while (upIndex < unpositioned.length) {
+      final.push(unpositioned[upIndex++])
+    }
 
-    // 合并数组，有数字的在前，无数字的在后
-    const combined = [...withNumber, ...withoutNumber]
-
-    combined.forEach((el, i) => {
+    final.forEach((el, i) => {
       el.style.animationDelay = `${(i + 1) * 0.1}s`
     })
 
@@ -31,9 +40,9 @@ export default {
           observer.unobserve(el)
         }
       },
-      { threshold: 0.05 } //速度
+      { threshold: 0.05 }
     )
 
     observer.observe(el)
-  },
+  }
 }

@@ -4,7 +4,6 @@
     <Header />
     <div class="flex flex-1 bg-black/40 backdrop-blur-sm">
       <div class="flex-1 w-full flex flex-col px-4">
-        <!-- 响应式最大宽度设置，2xl 以下为更宽，2xl 时为 60% -->
         <div class="w-full mx-auto flex-1 flex flex-col
                     max-w-full sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[75vw] 2xl:max-w-[60vw]">
           <div class="flex-1 relative z-10">
