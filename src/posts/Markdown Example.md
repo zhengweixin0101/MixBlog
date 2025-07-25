@@ -2,7 +2,7 @@
 title: Markdown Example
 date: 1921-01-10
 tags:
-  - tag1
+  - tag5
 description: "Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro."
 slug: markdown-example
 draft: true

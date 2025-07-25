@@ -21,10 +21,28 @@ const posts = Object.entries(rawPosts).map(([path, rawContent]) => {
 })
 
 const searchTerm = ref('')
+const selectedTag = ref('')
+
+const allTags = computed(() => {
+  const tags = new Set()
+  posts.forEach(post => {
+    post.tags.forEach(tag => tags.add(tag))
+  })
+  return Array.from(tags).sort()
+})
+
+function toggleTag(tag) {
+  selectedTag.value = selectedTag.value === tag ? '' : tag
+}
+
 const filteredPosts = computed(() => {
   const term = searchTerm.value.toLowerCase()
   return posts
-    .filter((post) => post.title.toLowerCase().includes(term))
+    .filter((post) => {
+      const matchesSearch = post.title.toLowerCase().includes(term)
+      const matchesTag = !selectedTag.value || post.tags.includes(selectedTag.value)
+      return matchesSearch && matchesTag
+    })
     .sort((a, b) => new Date(b.date) - new Date(a.date))
 })
 
@@ -61,10 +79,26 @@ function formatDate(date) {
         />
       </div>
 
+      <div data-fade class="mt-4 flex flex-wrap items-baseline justify-start gap-2 text-sm text-gray-400">
+        <span class="font-medium">Tag:</span>
+        <button
+          v-for="tag in allTags"
+          :key="tag"
+          @click="toggleTag(tag)"
+          :class="{
+            'bg-white/20 text-white': selectedTag === tag,
+            'bg-white/10 text-white/80': selectedTag !== tag
+          }"
+          class="inline-block px-2 py-1 text-xs rounded-full bg-white/10 text-white/80 transition-colors cursor-pointer shadow-none border-none"
+        >
+          {{ tag }}
+        </button>
+      </div>
+
       <ul class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
         <li
           v-for="post in filteredPosts"
-          :key="post.slug"
+          :key="post.slug + selectedTag + searchTerm"
           data-fade
           class="relative w-full h-160px rounded-xl list-none will-change-transform
                  scale-100 hover:scale-[1.02] active:scale-[0.97]
@@ -104,17 +138,28 @@ function formatDate(date) {
                 {{ formatDate(post.date) }}
               </time>
             </div>
+            <div v-if="post.tags.length" class="absolute right-4 bottom-4 flex flex-wrap gap-1">
+              <span
+                v-for="tag in post.tags"
+                :key="tag"
+                class="px-2 py-1 text-xs rounded-full bg-white/10 text-white/80"
+              >
+                {{ tag }}
+              </span>
+            </div>
           </div>
         </li>
       </ul>
 
       <div data-fade class="mt-8 flex flex-row items-center justify-end gap-4">
         <RouterLink
+          :key="$route.path + selectedTag + searchTerm"
           to="/"
           class="custom-gradient-link inline-flex relative font-medium
                   bg-gradient-to-r from-[#00e699] to-[#00e2d8]
                   bg-clip-text text-transparent -webkit-bg-clip-text
                   no-underline"
+          data-fade
         >
           <span
             class="dark:bg-gradient-to-tr dark:from-primary-300 dark:to-primary-400 dark:bg-clip-text dark:text-transparent">
