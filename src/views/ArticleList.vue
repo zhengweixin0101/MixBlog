@@ -8,11 +8,6 @@ const posts = import.meta.glob('/src/posts/*.md', { eager: true })
 
 const searchTerm = ref('')
 
-const tags = [
-  'CDN', 'CloudFlare', 'OpenResty', 'Fly.io', 'mp4', 'Appnode', 'IPV6',
-  'AWS', 'Alist', 'Docker', 'Web', 'PaaS', 'NextJS', 'fly.io', 'Paas'
-]
-
 // 文章列表，支持搜索
 const filteredPosts = computed(() => {
   const term = searchTerm.value.toLowerCase()
@@ -40,12 +35,13 @@ function delayedNavigate(path) {
 
 <template>
   <main v-fade-in>
-    <section class="layout py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section class="py-12 w-full max-w-screen-xl mx-auto px-4 sm:px-6 md:px-12 lg:px-20">
       <Title data-fade text="Posts" />
       <p data-fade class="mt-2 text-gray-300">
         Articles about Some of My Whimsical Ideas
       </p>
-      <div data-fade class="relative mt-4 w-full">
+
+      <div data-fade class="relative mt-6 sm:mt-8 w-full">
         <i class="iconfont icon-sousuo absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
         <input
           v-model="searchTerm"
@@ -56,51 +52,29 @@ function delayedNavigate(path) {
                  transition-shadow duration-300 focus:outline-none focus:shadow-[0_0_0_1px_#00e699]"
         />
       </div>
-      <!-- div data-fade class="mt-2 flex flex-wrap items-baseline justify-start gap-2 text-sm text-gray-600">
-        <span class="font-medium">Tag:</span>
-        <a
-          href="#skip-tags"
-          class="inline-block rounded-md px-1.5 py-0.5 font-medium transition bg-gray-100 text-gray-700
-                 hover:text-black disabled:bg-gray-200 disabled:text-gray-300 dark:bg-gray-700 dark:text-gray-200
-                 dark:hover:text-white dark:disabled:bg-gray-600 dark:disabled:text-gray-500
-                 focus:outline-none focus-visible:ring focus-visible:ring-primary-300
-                 disabled:cursor-not-allowed pointer-events-none absolute opacity-0
-                 focus:inline-block focus:translate-y-[1.4rem] focus:opacity-100"
-          >Skip tag</a
-        >
-        <button
-          v-for="tag in tags"
-          :key="tag"
-          disabled
-          class="inline-block rounded-md px-1.5 py-0.5 font-medium transition-colors
-                 bg-gray-100 text-gray-700 hover:text-black disabled:bg-gray-200 disabled:text-gray-300
-                 dark:bg-gray-700 dark:text-gray-200 dark:hover:text-white dark:disabled:bg-gray-600
-                 dark:disabled:text-gray-500 focus:outline-none focus-visible:ring focus-visible:ring-primary-300
-                 disabled:cursor-not-allowed"
-        >
-          {{ tag }}
-        </button>
-        <div id="skip-tags" class="hidden"></div>
-      </div -->
 
-      <ul class="mt-8 grid gap-4 grid-cols-2">
+      <ul class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
         <li data-fade
           v-for="post in filteredPosts"
           :key="post.slug"
-          class="w-full rounded-xl list-none will-change-transform
-                 scale-100 hover:scale-[1.02] active:scale-[0.97] motion-safe:transform-gpu motion-reduce:hover:scale-100 transition duration-200
+          class="w-full min-h-[120px] rounded-xl list-none will-change-transform
+                 scale-100 hover:scale-[1.02] active:scale-[0.97]
+                 motion-safe:transform-gpu motion-reduce:hover:scale-100 transition duration-200
                  animate-shadow backdrop-blur bg-white/10"
         >
           <div
             class="block h-full rounded-md p-4 no-underline
-                 focus:outline-none focus-visible:ring focus-visible:ring-[#00e699]
-                 transition-transform duration-200 active:scale-95 cursor-pointer"
+                   focus:outline-none focus-visible:ring focus-visible:ring-[#00e699]
+                   transition-transform duration-200 active:scale-95 cursor-pointer"
             @click="delayedNavigate(`/posts/${post.slug}.html`)"
           >
             <h4 class="text-white text-xl">{{ post.title }}</h4>
             <div class="mt-1 flex items-center justify-start gap-2 text-sm font-medium text-gray-300">
-              <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true" class="inline-block text-base" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"
+                class="inline-block text-base" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z">
+                </path>
               </svg>
               <time
                 class="bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent -webkit-bg-clip-text"
@@ -114,13 +88,17 @@ function delayedNavigate(path) {
       </ul>
 
       <div data-fade class="mt-8 flex flex-row items-center justify-end gap-4">
-        <RouterLink to="/"
+        <RouterLink
+          to="/"
           class="custom-gradient-link inline-flex relative font-medium
                   bg-gradient-to-r from-[#00e699] to-[#00e2d8]
                   bg-clip-text text-transparent -webkit-bg-clip-text
                   no-underline"
         >
-          <span class="dark:bg-gradient-to-tr dark:from-primary-300 dark:to-primary-400 dark:bg-clip-text dark:text-transparent">← Back to Home</span>
+          <span
+            class="dark:bg-gradient-to-tr dark:from-primary-300 dark:to-primary-400 dark:bg-clip-text dark:text-transparent">
+            ← Back to Home
+          </span>
         </RouterLink>
       </div>
     </section>
@@ -132,7 +110,7 @@ function delayedNavigate(path) {
 .custom-gradient-link {
   position: relative;
   border-bottom: 1.5px dotted white;
-  transition: border-bottom-color 0.5s ease; 
+  transition: border-bottom-color 0.5s ease;
   --underline-width: 0%;
 }
 
@@ -141,11 +119,11 @@ function delayedNavigate(path) {
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 2px; /* 实线下划线加粗 */
+  height: 2px;
   background: linear-gradient(90deg, #00e699, #00e2d8);
   width: var(--underline-width);
   transition: width 0.3s ease;
-  border-radius: 9999px; /* 圆角，线条更圆滑 */
+  border-radius: 9999px;
   pointer-events: none;
 }
 

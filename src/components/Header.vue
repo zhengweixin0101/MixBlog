@@ -1,26 +1,28 @@
 <template>
   <header>
     <nav
-      class="fixed top-8 left-1/2 -translate-x-1/2 w-[50vw] z-50
-             py-2 px-4 rounded-2xl shadow-2xl
-             backdrop-blur bg-white/5"
+      class="fixed z-50 top-0 left-0 right-0
+             px-4 py-2 w-full
+             bg-[#070808]
+             md:top-8 md:left-1/2 md:-translate-x-1/2 md:w-[90vw]
+             md:bg-white/5 md:backdrop-blur
+             md:rounded-2xl md:shadow-2xl
+             md:max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw]"
     >
-      <ul class="flex space-x-4 list-none">
+      <ul class="flex justify-center md:justify-start space-x-4 overflow-x-auto list-none p-0 m-0">
         <li v-for="(item, index) in navItems" :key="index">
           <router-link
             :to="item.href"
-            class="flex items-center space-x-1 no-underline px-3 py-2 rounded font-bold transition duration-300 text-white"
+            class="flex items-center space-x-1 no-underline px-3 py-2 rounded font-bold transition duration-300 whitespace-nowrap"
             :class="route.path === item.href
-              ? 'active' 
-              : 'hover:brightness-75 cursor-pointer'"
+              ? 'active-gradient-text animate-gradient-flow'
+              : 'text-white hover:brightness-75 cursor-pointer'"
           >
-            <i 
-              :class="['iconfont', item.icon]" 
+            <i
+              :class="['iconfont', item.icon]"
               :style="route.path === item.href ? 'color: #00e699' : ''"
             ></i>
-            <span 
-              :class="route.path === item.href ? 'active-gradient-text animate-gradient-flow' : ''"
-            >{{ item.label }}</span>
+            <span>{{ item.label }}</span>
           </router-link>
         </li>
       </ul>
