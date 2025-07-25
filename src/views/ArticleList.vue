@@ -110,11 +110,11 @@ function delayedNavigate(path) {
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 2px; /* 实线下划线加粗 */
+  height: 2px;
   background: linear-gradient(90deg, #00e699, #00e2d8);
   width: var(--underline-width);
   transition: width 0.3s ease;
-  border-radius: 9999px; /* 圆角，线条更圆滑 */
+  border-radius: 9999px;
   pointer-events: none;
 }
 

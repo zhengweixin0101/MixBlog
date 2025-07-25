@@ -1,10 +1,10 @@
 <template>
   <main
     v-fade-in
-    class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center px-4 md:px-8"
+    class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center"
   >
     <div
-      class="flex flex-col-reverse md:flex-row items-center justify-between w-full gap-10 md:gap-0"
+      class="flex flex-col-reverse md:flex-row items-center justify-between w-full gap-10 md:gap-10"
     >
       <!-- 左侧 -->
       <div class="text-center md:text-left">

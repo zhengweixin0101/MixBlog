@@ -3,17 +3,15 @@
     <Background />
     <Header />
     <div class="flex flex-1 bg-black/40 backdrop-blur-sm">
-      <div class="hidden md:block md:w-1/10 lg:w-1/5 xl:w-1/4">
-        <!-- 左侧 -->
-      </div>
-      <div class="flex-1 w-full flex flex-col max-w-screen-xl mx-auto">
-        <div class="flex-1 relative z-10">
-          <RouterView />
+      <div class="flex-1 w-full flex flex-col px-4">
+        <!-- 响应式最大宽度设置，2xl 以下为更宽，2xl 时为 60% -->
+        <div class="w-full mx-auto flex-1 flex flex-col
+                    max-w-full sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[75vw] 2xl:max-w-[60vw]">
+          <div class="flex-1 relative z-10">
+            <RouterView />
+          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
-      <div class="hidden md:block md:w-1/10 lg:w-1/5 xl:w-1/4">
-        <!-- 右侧 -->
       </div>
     </div>
   </div>
