@@ -1,7 +1,7 @@
 <template>
   <main
     v-fade-in
-    class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center"
+    class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
   >
     <div
       class="flex flex-col-reverse md:flex-row items-center justify-between w-full gap-10 md:gap-10"

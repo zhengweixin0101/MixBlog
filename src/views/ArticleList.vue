@@ -35,7 +35,7 @@ function delayedNavigate(path) {
 
 <template>
   <main v-fade-in>
-    <section class="layout py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <Title data-fade text="Posts" />
       <p data-fade class="mt-2 text-gray-300">
         Articles about Some of My Whimsical Ideas
