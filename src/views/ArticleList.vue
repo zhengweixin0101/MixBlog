@@ -16,7 +16,7 @@ const posts = Object.entries(rawPosts).map(([path, rawContent]) => {
     title: frontmatter.title || slug,
     date: frontmatter.date || '未知日期',
     tags: frontmatter.tags || [],
-    description: frontmatter.description || content.trim().slice(0, 20),
+    description: frontmatter.description || content.trim().slice(0, 60) + (content.trim().length > 100 ? '……' : ''),
   }
 })
 
