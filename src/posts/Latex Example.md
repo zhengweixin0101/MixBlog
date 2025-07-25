@@ -1,7 +1,8 @@
 ---
 title: Latex Example
-pubDate: 2023-10-01
-categories: ["Examples"]
+date: 2023-10-01
+tags:
+  - tag1
 description: "Here is a sample of some basic Latex syntax that can be used when writing Latex content in Astro."
 slug: latex-example
 draft: true

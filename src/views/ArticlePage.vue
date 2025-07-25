@@ -1,65 +1,47 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
+import matter from 'gray-matter'
 import { marked } from 'marked'
 
-const posts = import.meta.glob('/src/posts/*.md', { query: '?raw', import: 'default' })
-
-const content = ref('加载中...')
 const route = useRoute()
 
-onMounted(async () => {
-  const slug = route.params.slug
+const content = ref('')
+const frontmatter = ref({})
+
+const posts = import.meta.glob('/src/posts/*.md', { import: 'default', query: '?raw' })
+
+async function loadPost(slug) {
   const path = `/src/posts/${slug}.md`
-
   const loader = posts[path]
+  if (!loader) {
+    content.value = '<h1>文章未找到</h1>'
+    frontmatter.value = {}
+    return
+  }
+  try {
+    const raw = await loader()
+    const { content: mdContent, data } = matter(raw)
+    content.value = marked.parse(mdContent)
+    frontmatter.value = data
+  } catch (err) {
+    content.value = `<h1>加载文章出错</h1><p>${err.message}</p>`
+    frontmatter.value = {}
+  }
+}
 
-  if (loader) {
-    const rawContent = await loader()
-    content.value = marked(rawContent)
-  } else {
-    content.value = '<h1>文章不存在</h1>'
+watchEffect(() => {
+  const slug = route.params.slug
+  if (slug) {
+    loadPost(slug)
   }
 })
 </script>
 
 <template>
-  <article v-html="content" class="article-container prose prose-invert max-w-3xl mx-auto mt-10" />
+  <main class="prose max-w-screen-md mx-auto px-4 py-8 mt-40">
+    <h1>{{ frontmatter.title || '无标题文章' }}</h1>
+    <p class="text-sm text-gray-400 mb-4">{{ frontmatter.date || '' }}</p>
+    <article v-html="content" />
+  </main>
 </template>
-
-<style scoped>
-.article-container {
-  max-width: 700px;
-  margin: 0 auto;
-  line-height: 1.8;
-  font-size: 1.1rem;
-  color: #ddd;
-}
-
-.article-container h1,
-.article-container h2,
-.article-container h3 {
-  font-weight: bold;
-  margin-top: 2em;
-  margin-bottom: 1em;
-}
-
-.article-container p {
-  margin-bottom: 1em;
-}
-
-.article-container pre {
-  background: #1e1e1e;
-  padding: 1em;
-  overflow-x: auto;
-  border-radius: 8px;
-  color: #eee;
-}
-
-.article-container code {
-  background: #2e2e2e;
-  padding: 0.2em 0.4em;
-  border-radius: 4px;
-  font-family: monospace;
-}
-</style>

@@ -1,27 +1,30 @@
 <script setup>
 import Title from '@/components/PageTitle.vue'
-
 import { ref, computed } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
+import matter from 'gray-matter'
+import dayjs from 'dayjs'
 
-const posts = import.meta.glob('/src/posts/*.md', { eager: true })
+// 读取原始 Markdown 内容
+const rawPosts = import.meta.glob('/src/posts/*.md', { as: 'raw', eager: true })
+
+const posts = Object.entries(rawPosts).map(([path, rawContent]) => {
+  const { data: frontmatter, content } = matter(rawContent)
+  const slug = path.split('/').pop().replace(/\.md$/, '')
+  return {
+    slug,
+    title: frontmatter.title || slug,
+    date: frontmatter.date || '未知日期',
+    tags: frontmatter.tags || [],
+    description: frontmatter.description || content.trim().slice(0, 20),
+  }
+})
 
 const searchTerm = ref('')
-
-// 文章列表，支持搜索
 const filteredPosts = computed(() => {
   const term = searchTerm.value.toLowerCase()
-  return Object.entries(posts)
-    .map(([path, module]) => {
-      const slug = path.split('/').pop().replace(/\.md$/, '')
-      return {
-        slug,
-        title: module.frontmatter?.title || slug,
-        date: module.frontmatter?.date || '未知日期',
-        tags: module.frontmatter?.tags || []
-      }
-    })
-    .filter(post => post.title.toLowerCase().includes(term))
+  return posts
+    .filter((post) => post.title.toLowerCase().includes(term))
     .sort((a, b) => new Date(b.date) - new Date(a.date))
 })
 
@@ -30,6 +33,11 @@ function delayedNavigate(path) {
   setTimeout(() => {
     router.push(path)
   }, 200)
+}
+
+function formatDate(date) {
+  if (!date || date === '未知日期') return '未知日期'
+  return dayjs(date).format('YYYY-MM-DD')
 }
 </script>
 
@@ -54,10 +62,11 @@ function delayedNavigate(path) {
       </div>
 
       <ul class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
-        <li data-fade
+        <li
           v-for="post in filteredPosts"
           :key="post.slug"
-          class="w-full h-160px rounded-xl list-none will-change-transform
+          data-fade
+          class="relative w-full h-160px rounded-xl list-none will-change-transform
                  scale-100 hover:scale-[1.02] active:scale-[0.97]
                  motion-safe:transform-gpu motion-reduce:hover:scale-100 transition duration-200
                  animate-shadow backdrop-blur bg-white/10"
@@ -69,18 +78,30 @@ function delayedNavigate(path) {
             @click="delayedNavigate(`/posts/${post.slug}.html`)"
           >
             <h4 class="text-white text-xl">{{ post.title }}</h4>
-            <div class="mt-1 flex items-center justify-start gap-2 text-sm font-medium text-gray-300">
-              <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"
-                class="inline-block text-base" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z">
-                </path>
-              </svg>
-              <time
-                class="bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent -webkit-bg-clip-text"
-                :datetime="post.date !== '未知日期' ? post.date : null"
+            <p class="mt-1 text-gray-400 text-sm">{{ post.description }}</p>
+
+            <div class="absolute left-4 bottom-4 text-sm text-gray-400 pointer-events-none flex items-center gap-2">
+              <svg
+                stroke="currentColor"
+                fill="none"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                class="inline-block text-base"
+                height="1em"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                {{ post.date }}
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+              </svg>
+              <time :datetime="post.date !== '未知日期' ? post.date : null"
+                    class="bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent -webkit-bg-clip-text"
+              >
+                {{ formatDate(post.date) }}
               </time>
             </div>
           </div>
@@ -113,7 +134,6 @@ function delayedNavigate(path) {
   transition: border-bottom-color 0.5s ease;
   --underline-width: 0%;
 }
-
 .custom-gradient-link::after {
   content: "";
   position: absolute;
@@ -126,11 +146,9 @@ function delayedNavigate(path) {
   border-radius: 9999px;
   pointer-events: none;
 }
-
 .custom-gradient-link:hover {
   border-bottom-color: transparent;
 }
-
 .custom-gradient-link:hover::after {
   --underline-width: 100%;
 }
