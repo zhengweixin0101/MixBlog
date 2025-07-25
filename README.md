@@ -1,4 +1,4 @@
-# My blog（半成品）
+# My blog（残废版）
 
 一个使用Vue3+Unocss搭建的个人博客。
 
@@ -21,26 +21,16 @@
 
 ### 丝滑的浮现动画
 
-​		在开始的元素设定`v-fade-in`属性，需要显示动画的元素添加`data-fade`
+​		在开始的元素设定`v-fade-in`属性，需要显示动画的元素添加`data-fade`，支持自定义顺序
 
 ​		示例：
 
 ```html
 <main v-fade-in>
-    <H1 data-fade>这是第一个浮现</H1>
-    <p data-fade>这是第二个</p>
-    <p data-fade>以此类推，依次浮现</p>
-</main>
-```
-
-​		支持自定义顺序：
-
-```html
-<main v-fade-in>
-    <H1 data-fade>这是第三个浮现</H1>
-    <p data-fade>这是第四个</p>
-    <p data-fade="2">这是第三个</p>
-    <p data-fade="1">这是第一个</p>
+    <p data-fade>第一</p>
+    <p data-fade="3">第三</p>
+    <p data-fade>第二</p>
+    <p data-fade>第四</p>
 </main>
 ```
 
