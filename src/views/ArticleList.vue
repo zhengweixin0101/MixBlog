@@ -57,7 +57,7 @@ function delayedNavigate(path) {
         <li data-fade
           v-for="post in filteredPosts"
           :key="post.slug"
-          class="w-full min-h-[120px] rounded-xl list-none will-change-transform
+          class="w-full h-160px rounded-xl list-none will-change-transform
                  scale-100 hover:scale-[1.02] active:scale-[0.97]
                  motion-safe:transform-gpu motion-reduce:hover:scale-100 transition duration-200
                  animate-shadow backdrop-blur bg-white/10"
