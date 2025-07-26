@@ -6,7 +6,7 @@ import matter from 'gray-matter'
 import dayjs from 'dayjs'
 
 // 读取原始 Markdown 内容
-const rawPosts = import.meta.glob('/src/posts/*.md', { as: 'raw', eager: true })
+const rawPosts = import.meta.glob('/src/posts/*.md', { query: '?raw', import: 'default', eager: true })
 
 const posts = Object.entries(rawPosts).map(([path, rawContent]) => {
   const { data: frontmatter, content } = matter(rawContent)

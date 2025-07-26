@@ -14,9 +14,10 @@
           <router-link
             :to="item.href"
             class="flex items-center space-x-1 no-underline px-3 py-2 rounded font-bold transition duration-300 whitespace-nowrap"
-            :class="route.path === item.href
-              ? 'active-gradient-text animate-gradient-flow'
-              : 'text-white hover:brightness-75 cursor-pointer'"
+            :class="{
+              'active-gradient-text animate-gradient-flow': route.path === item.href && isRouteReady,
+              'text-white hover:brightness-75 cursor-pointer': route.path !== item.href || !isRouteReady
+            }"
           >
             <i
               :class="['iconfont', item.icon]"
@@ -32,7 +33,14 @@
 
 <script setup>
 import { useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
+
 const route = useRoute()
+const isRouteReady = ref(false)
+
+onMounted(() => {
+  isRouteReady.value = true
+})
 
 const navItems = [
   { label: 'Home', href: '/', icon: 'icon-house-chimney' },

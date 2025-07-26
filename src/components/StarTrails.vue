@@ -54,15 +54,25 @@ function resize() {
 
   longSide = Math.max(showWidth, showHeight)
 
-  helpCanvas.width = longSide * 2.6 * dpr
-  helpCanvas.height = longSide * 2.6 * dpr
+  helpCanvas.width = longSide * 2 * dpr
+  helpCanvas.height = longSide * 2 * dpr
 
   helpContext.setTransform(1, 0, 0, 1, 0, 0)
   helpContext.clearRect(0, 0, helpCanvas.width, helpCanvas.height)
   helpContext.scale(dpr, dpr)
 
   stars.length = 0
-  for (let i = 0; i < 18000; i++) {
+
+  const baseStarCount = 6000
+  const densityFactor = Math.min(window.innerWidth, window.innerHeight) / 800
+  const maxStarCount = 8000
+
+  const starCount = Math.min(
+    Math.floor(baseStarCount * densityFactor),
+    maxStarCount
+  )
+
+  for (let i = 0; i < starCount; i++) {
     stars.push(createStar())
   }
 
@@ -79,16 +89,29 @@ function resize() {
   }
 }
 
-function loop() {
-  showContext.drawImage(helpCanvas, -helpCanvas.width / (2 * (window.devicePixelRatio || 1)), -helpCanvas.height / (2 * (window.devicePixelRatio || 1)))
+let lastDraw = 0
 
-  loop.drawTimes = (loop.drawTimes || 0) + 1
+function loop(timestamp = 0) {
+  if (timestamp - lastDraw > 1000 / 15) {
+    showContext.drawImage(
+      helpCanvas,
+      -helpCanvas.width / (2 * (window.devicePixelRatio || 1)),
+      -helpCanvas.height / (2 * (window.devicePixelRatio || 1))
+    )
 
-  if (loop.drawTimes > 200 && loop.drawTimes % 8 === 0) {
-    showContext.fillStyle = 'rgba(0,0,0,0.04)'
-    showContext.fillRect(-(longSide * 3), -(longSide * 3), longSide * 6, longSide * 6)
+    loop.drawTimes = (loop.drawTimes || 0) + 1
+
+    if (loop.drawTimes > 200 && loop.drawTimes % 16 === 0) {
+      showContext.fillStyle = 'rgba(0,0,0,0.04)'
+      showContext.fillRect(-(longSide * 3), -(longSide * 3), longSide * 6, longSide * 6)
+    }
+
+    showContext.rotate((0.1 * Math.PI) / 180)
+
+    lastDraw = timestamp
   }
-  showContext.rotate((0.01 * Math.PI) / 180)
+
+  animationId = requestAnimationFrame(loop)
 }
 
 function animate() {
