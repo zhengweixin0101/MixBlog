@@ -90,7 +90,6 @@ function resize() {
 }
 
 let lastDraw = 0
-const targetInterval = 1000/15
 
 function loop(timestamp = 0) {
   if (timestamp - lastDraw > 1000 / 15) {
@@ -107,7 +106,7 @@ function loop(timestamp = 0) {
       showContext.fillRect(-(longSide * 3), -(longSide * 3), longSide * 6, longSide * 6)
     }
 
-    showContext.rotate((0.06 * Math.PI) / 180)
+    showContext.rotate((0.1 * Math.PI) / 180)
 
     lastDraw = timestamp
   }
