@@ -54,8 +54,8 @@ function resize() {
 
   longSide = Math.max(showWidth, showHeight)
 
-  helpCanvas.width = longSide * 2.6 * dpr
-  helpCanvas.height = longSide * 2.6 * dpr
+  helpCanvas.width = longSide * 2 * dpr
+  helpCanvas.height = longSide * 2 * dpr
 
   helpContext.setTransform(1, 0, 0, 1, 0, 0)
   helpContext.clearRect(0, 0, helpCanvas.width, helpCanvas.height)
@@ -90,6 +90,8 @@ function resize() {
 }
 
 let lastDraw = 0
+const targetInterval = 1000/15
+
 function loop(timestamp = 0) {
   if (timestamp - lastDraw > 1000 / 15) {
     showContext.drawImage(
@@ -100,7 +102,7 @@ function loop(timestamp = 0) {
 
     loop.drawTimes = (loop.drawTimes || 0) + 1
 
-    if (loop.drawTimes > 200 && loop.drawTimes % 8 === 0) {
+    if (loop.drawTimes > 200 && loop.drawTimes % 16 === 0) {
       showContext.fillStyle = 'rgba(0,0,0,0.04)'
       showContext.fillRect(-(longSide * 3), -(longSide * 3), longSide * 6, longSide * 6)
     }
