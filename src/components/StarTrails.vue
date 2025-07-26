@@ -65,7 +65,7 @@ function resize() {
 
   const baseStarCount = 6000
   const densityFactor = Math.min(window.innerWidth, window.innerHeight) / 800
-  const maxStarCount = 10000
+  const maxStarCount = 8000
 
   const starCount = Math.min(
     Math.floor(baseStarCount * densityFactor),
