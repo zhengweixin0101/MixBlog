@@ -62,7 +62,17 @@ function resize() {
   helpContext.scale(dpr, dpr)
 
   stars.length = 0
-  for (let i = 0; i < 10000; i++) {
+
+  const baseStarCount = 8000
+  const densityFactor = Math.min(window.innerWidth, window.innerHeight) / 800
+  const maxStarCount = 10000
+
+  const starCount = Math.min(
+    Math.floor(baseStarCount * densityFactor),
+    maxStarCount
+  )
+
+  for (let i = 0; i < starCount; i++) {
     stars.push(createStar())
   }
 
