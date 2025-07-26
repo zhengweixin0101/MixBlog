@@ -89,20 +89,28 @@ function resize() {
   }
 }
 
-function loop() {
-  showContext.drawImage(helpCanvas, -helpCanvas.width / (2 * (window.devicePixelRatio || 1)), -helpCanvas.height / (2 * (window.devicePixelRatio || 1)))
+let lastDraw = 0
+function loop(timestamp = 0) {
+  if (timestamp - lastDraw > 1000 / 15) {
+    showContext.drawImage(
+      helpCanvas,
+      -helpCanvas.width / (2 * (window.devicePixelRatio || 1)),
+      -helpCanvas.height / (2 * (window.devicePixelRatio || 1))
+    )
 
-  loop.drawTimes = (loop.drawTimes || 0) + 1
+    loop.drawTimes = (loop.drawTimes || 0) + 1
 
-  if (loop.drawTimes > 200 && loop.drawTimes % 8 === 0) {
-    showContext.fillStyle = 'rgba(0,0,0,0.04)'
-    showContext.fillRect(-(longSide * 3), -(longSide * 3), longSide * 6, longSide * 6)
+    if (loop.drawTimes > 200 && loop.drawTimes % 8 === 0) {
+      showContext.fillStyle = 'rgba(0,0,0,0.04)'
+      showContext.fillRect(-(longSide * 3), -(longSide * 3), longSide * 6, longSide * 6)
+    }
+
+    showContext.rotate((0.06 * Math.PI) / 180)
+
+    lastDraw = timestamp
   }
 
-  const baseRotation = 0.02
-  const scaleFactor = 800 / longSide
-  const adjustedRotation = (baseRotation * scaleFactor * Math.PI) / 180
-  showContext.rotate(adjustedRotation)
+  animationId = requestAnimationFrame(loop)
 }
 
 function animate() {
