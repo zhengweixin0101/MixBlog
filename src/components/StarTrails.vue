@@ -62,7 +62,7 @@ function resize() {
   helpContext.scale(dpr, dpr)
 
   stars.length = 0
-  for (let i = 0; i < 18000; i++) {
+  for (let i = 0; i < 10000; i++) {
     stars.push(createStar())
   }
 
@@ -88,7 +88,11 @@ function loop() {
     showContext.fillStyle = 'rgba(0,0,0,0.04)'
     showContext.fillRect(-(longSide * 3), -(longSide * 3), longSide * 6, longSide * 6)
   }
-  showContext.rotate((0.01 * Math.PI) / 180)
+
+  const baseRotation = 0.02
+  const scaleFactor = 800 / longSide
+  const adjustedRotation = (baseRotation * scaleFactor * Math.PI) / 180
+  showContext.rotate(adjustedRotation)
 }
 
 function animate() {
