@@ -1,6 +1,5 @@
 <template>
   <div class="relative min-h-screen flex flex-col text-white">
-    <Background />
     <Header />
     <div class="flex flex-1 bg-black/40 backdrop-blur-sm">
       <div class="flex-1 w-full flex flex-col px-4">
@@ -14,6 +13,7 @@
       </div>
     </div>
   </div>
+  <Background />
 </template>
 
 <script setup>
