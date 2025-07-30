@@ -29,7 +29,6 @@ async function loadPost(slug) {
     const { content: mdContent, data } = matter(raw)
     const html = marked.parse(mdContent)
 
-    // 使用 DOMParser 解析
     const parser = new DOMParser()
     const doc = parser.parseFromString(html, 'text/html')
 
@@ -66,14 +65,19 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="flex gap-8 flex-col md:flex-row">
-    <main class="prose max-w-screen-md mx-auto px-4 py-8 mt-40">
+  <div
+    class="flex gap-8 flex-col md:flex-row
+           md:left-1/2 md:-translate-x-1/2
+           max-w-full sm:max-w-[90vw] md:max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw]"
+    style="position: relative;"
+  >
+    <main class="prose max-w-none flex-1 px-4 py-8 mt-40">
       <h1>{{ frontmatter.title || '无标题文章' }}</h1>
       <p class="text-sm text-gray-400 mb-4">{{ frontmatter.date || '' }}</p>
 
       <article v-html="content" />
     </main>
 
-    <Sidebar :toc="toc" :title="frontmatter.title" />
+    <Sidebar class="w-72 flex-shrink-0" :toc="toc" :title="frontmatter.title" />
   </div>
 </template>
