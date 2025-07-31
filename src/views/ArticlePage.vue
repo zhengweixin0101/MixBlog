@@ -66,18 +66,20 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div v-fade-in
-    class="flex gap-8 flex-col md:flex-row
-           md:left-1/2 md:-translate-x-1/2
-           max-w-full sm:max-w-[90vw] md:max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw]"
-    style="position: relative;"
-  >
-    <main class="max-w-none flex-1 px-4 py-8">
-      <Title data-fade :text="frontmatter.title || '无标题文章'" />
-      <p data-fade class="text-sm text-gray-400 mt-1 mb-5">{{ frontmatter.date || '' }}</p>
-      <article data-fade v-html="content" />
-    </main>
-
-    <Sidebar data-fade class="top-50 w-72 flex-shrink-0" :toc="toc" :title="frontmatter.title" />
-  </div>
+  <main v-fade-in>
+    <div class="max-w-full sm:max-w-[90vw] md:max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw] mx-auto" style="position: relative;">
+      <div class="px-4 py-4">
+        <Title :text="frontmatter.title || '无标题文章'" />
+        <p data-fade class="text-sm text-gray-400 mt-1 pb-3" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
+          {{ frontmatter.date || '' }}
+        </p>
+      </div>
+      <div class="flex gap-8 flex-col md:flex-row">
+        <section class="max-w-none flex-1 px-4">
+          <article data-fade v-html="content" />
+        </section>
+        <Sidebar data-fade class="w-72 flex-shrink-0" :toc="toc" :title="frontmatter.title" />
+      </div>
+    </div>
+  </main>
 </template>
