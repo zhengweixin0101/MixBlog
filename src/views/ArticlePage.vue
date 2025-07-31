@@ -78,7 +78,7 @@ watchEffect(() => {
         <section class="max-w-none flex-1 px-4">
           <article data-fade v-html="content" />
         </section>
-        <Sidebar data-fade class="w-72 flex-shrink-0" :toc="toc" :title="frontmatter.title" />
+        <Sidebar data-fade class="w-72 flex-shrink-0 sticky top-30" :toc="toc" :title="frontmatter.title" />
       </div>
     </div>
   </main>
