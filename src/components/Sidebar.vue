@@ -1,6 +1,6 @@
 <template>
   <aside
-    class="hidden md:block w-62 sticky top-50 p-4 rounded-lg backdrop-blur-sm bg-white/10 self-start not-prose"
+    class="hidden md:block w-62 sticky p-4 rounded-lg backdrop-blur-sm bg-white/10 self-start"
   >
     <section>
       <div

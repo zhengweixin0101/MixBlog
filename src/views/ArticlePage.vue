@@ -78,6 +78,6 @@ watchEffect(() => {
       <article v-html="content" />
     </main>
 
-    <Sidebar class="w-72 flex-shrink-0" :toc="toc" :title="frontmatter.title" />
+    <Sidebar class="top-50 w-72 flex-shrink-0" :toc="toc" :title="frontmatter.title" />
   </div>
 </template>
