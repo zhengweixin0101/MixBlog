@@ -24,9 +24,11 @@ async function preloadSlugs() {
   for (const [path, loader] of entries) {
     const raw = await loader()
     const { data } = matter(raw)
-    if (data.slug) {
-      map[data.slug] = path
-    }
+
+    const fileName = path.split('/').pop().replace(/\.md$/, '')
+    const slug = data.slug || fileName
+
+    map[slug] = path
   }
 
   slugMap.value = map
