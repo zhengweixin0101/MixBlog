@@ -98,9 +98,12 @@ const formattedDate = computed(() => {
     <div class="max-w-full sm:max-w-[90vw] md:max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw] mx-auto" style="position: relative;">
       <div class="px-4 py-4">
         <Title data-fade :text="frontmatter.title || '无标题文章'" />
-        <p data-fade class="text-sm text-gray-400 mt-2 pb-3" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
-          {{ formattedDate }}
-        </p>
+        <div data-fade class="text-sm text-gray-400 mt-2 pb-4 flex flex-col gap-2" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
+          <span>{{ formattedDate }}</span>
+          <div class="flex flex-wrap gap-2">
+            <span v-for="tag in frontmatter.tags || []" :key="tag" class="px-2 py-1 text-xs rounded-full bg-white/10 text-white/80">{{ tag }}</span>
+          </div>
+        </div>
       </div>
       <div class="flex gap-8 flex-col md:flex-row">
         <section class="max-w-none flex-1 px-4">
