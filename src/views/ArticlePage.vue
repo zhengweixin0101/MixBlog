@@ -13,12 +13,28 @@ const content = ref('')
 const frontmatter = ref({})
 const toc = ref([])
 
-const posts = import.meta.glob('/src/posts/*.md', { import: 'default', query: '?raw' })
+const postsRaw = import.meta.glob('/src/posts/*.md', { import: 'default', query: '?raw' })
+
+const slugMap = ref({})
+
+async function preloadSlugs() {
+  const entries = Object.entries(postsRaw)
+  const map = {}
+
+  for (const [path, loader] of entries) {
+    const raw = await loader()
+    const { data } = matter(raw)
+    if (data.slug) {
+      map[data.slug] = path
+    }
+  }
+
+  slugMap.value = map
+}
 
 async function loadPost(slug) {
-  const path = `/src/posts/${slug}.md`
-  const loader = posts[path]
-  if (!loader) {
+  const path = slugMap.value[slug]
+  if (!path) {
     content.value = '<h1>文章未找到</h1>'
     frontmatter.value = {}
     toc.value = []
@@ -26,7 +42,7 @@ async function loadPost(slug) {
   }
 
   try {
-    const raw = await loader()
+    const raw = await postsRaw[path]()
     const { content: mdContent, data } = matter(raw)
     const html = marked.parse(mdContent)
 
@@ -57,11 +73,15 @@ async function loadPost(slug) {
   }
 }
 
-watchEffect(() => {
+watchEffect(async () => {
   const slug = route.params.slug
-  if (slug) {
-    loadPost(slug)
+  if (!slug) return
+
+  if (Object.keys(slugMap.value).length === 0) {
+    await preloadSlugs()
   }
+
+  loadPost(slug)
 })
 </script>
 

@@ -8,17 +8,21 @@ import dayjs from 'dayjs'
 // 读取原始 Markdown 内容
 const rawPosts = import.meta.glob('/src/posts/*.md', { query: '?raw', import: 'default', eager: true })
 
-const posts = Object.entries(rawPosts).map(([path, rawContent]) => {
-  const { data: frontmatter, content } = matter(rawContent)
-  const slug = path.split('/').pop().replace(/\.md$/, '')
-  return {
-    slug,
-    title: frontmatter.title || slug,
-    date: frontmatter.date || '未知日期',
-    tags: frontmatter.tags || [],
-    description: frontmatter.description || content.trim().slice(0, 60) + (content.trim().length > 100 ? '……' : ''),
-  }
-})
+// 解析所有文章并提取frontmatter
+const posts = Object.entries(rawPosts)
+  .map(([path, rawContent]) => {
+    const { data: frontmatter, content } = matter(rawContent)
+    const slug = frontmatter.slug
+    if (!slug) return null
+    return {
+      slug,
+      title: frontmatter.title || slug,
+      date: frontmatter.date || '未知日期',
+      tags: frontmatter.tags || [],
+      description: frontmatter.description || content.trim().slice(0, 60) + (content.trim().length > 100 ? '……' : ''),
+    }
+  })
+  .filter(Boolean)
 
 const searchTerm = ref('')
 const selectedTag = ref('')
