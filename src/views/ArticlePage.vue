@@ -5,6 +5,7 @@ import matter from 'gray-matter'
 import { marked } from 'marked'
 
 import Sidebar from '@/components/Sidebar.vue'
+import Title from '@/components/PageTitle.vue'
 
 const route = useRoute()
 
@@ -65,19 +66,18 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div
+  <div v-fade-in
     class="flex gap-8 flex-col md:flex-row
            md:left-1/2 md:-translate-x-1/2
            max-w-full sm:max-w-[90vw] md:max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw]"
     style="position: relative;"
   >
-    <main class="prose max-w-none flex-1 px-4 py-8 mt-40">
-      <h1>{{ frontmatter.title || '无标题文章' }}</h1>
-      <p class="text-sm text-gray-400 mb-4">{{ frontmatter.date || '' }}</p>
-
-      <article v-html="content" />
+    <main class="max-w-none flex-1 px-4 py-8">
+      <Title data-fade :text="frontmatter.title || '无标题文章'" />
+      <p data-fade class="text-sm text-gray-400 mt-1 mb-5">{{ frontmatter.date || '' }}</p>
+      <article data-fade v-html="content" />
     </main>
 
-    <Sidebar class="top-50 w-72 flex-shrink-0" :toc="toc" :title="frontmatter.title" />
+    <Sidebar data-fade class="top-50 w-72 flex-shrink-0" :toc="toc" :title="frontmatter.title" />
   </div>
 </template>
