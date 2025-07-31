@@ -1,8 +1,9 @@
 <script setup>
-import { ref, watchEffect } from 'vue'
+import { ref, watchEffect, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import matter from 'gray-matter'
 import { marked } from 'marked'
+import dayjs from 'dayjs'
 
 import Sidebar from '@/components/Sidebar.vue'
 import Title from '@/components/PageTitle.vue'
@@ -85,6 +86,11 @@ watchEffect(async () => {
 
   loadPost(slug)
 })
+
+const formattedDate = computed(() => {
+  if (!frontmatter.value.date) return ''
+  return `ShinX 发布于 ${dayjs(frontmatter.value.date).format('YYYY-MM-DD')}`
+})
 </script>
 
 <template>
@@ -92,8 +98,8 @@ watchEffect(async () => {
     <div class="max-w-full sm:max-w-[90vw] md:max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw] mx-auto" style="position: relative;">
       <div class="px-4 py-4">
         <Title data-fade :text="frontmatter.title || '无标题文章'" />
-        <p data-fade class="text-sm text-gray-400 mt-1 pb-3" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
-          {{ frontmatter.date || '' }}
+        <p data-fade class="text-sm text-gray-400 mt-2 pb-3" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
+          {{ formattedDate }}
         </p>
       </div>
       <div class="flex gap-8 flex-col md:flex-row">
