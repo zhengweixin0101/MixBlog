@@ -15,7 +15,7 @@
             :to="item.href"
             class="flex items-center space-x-1 no-underline px-3 py-2 rounded font-bold transition duration-300 whitespace-nowrap"
             :class="{
-              'active-gradient-text animate-gradient-flow': route.path === item.href && isRouteReady,
+              'active-gradient-text animate-gradient-flow': (route.path === item.href || (item.href === '/posts.html' && route.path.startsWith('/posts/'))) && isRouteReady,
               'text-white hover:brightness-75 cursor-pointer': route.path !== item.href || !isRouteReady
             }"
           >
