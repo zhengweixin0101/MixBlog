@@ -91,7 +91,7 @@ watchEffect(async () => {
   <main v-fade-in>
     <div class="max-w-full sm:max-w-[90vw] md:max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw] mx-auto" style="position: relative;">
       <div class="px-4 py-4">
-        <Title :text="frontmatter.title || '无标题文章'" />
+        <Title data-fade :text="frontmatter.title || '无标题文章'" />
         <p data-fade class="text-sm text-gray-400 mt-1 pb-3" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
           {{ frontmatter.date || '' }}
         </p>
