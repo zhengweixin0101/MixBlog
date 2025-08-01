@@ -8,6 +8,8 @@ import dayjs from 'dayjs'
 import Sidebar from '@/components/Sidebar.vue'
 import Title from '@/components/PageTitle.vue'
 
+import '@/assets/article-content.css'
+
 const route = useRoute()
 
 const content = ref('')
@@ -105,9 +107,9 @@ const formattedDate = computed(() => {
           </div>
         </div>
       </div>
-      <div class="flex gap-8 flex-col md:flex-row">
-        <section class="max-w-none flex-1 px-4">
-          <article data-fade v-html="content" />
+      <div class="flex gap-8 flex-col md:flex-row max-w-full">
+        <section class="px-4" style="flex: 1 1 auto; min-width: 0; max-width: calc(75vw - 288px - 32px);">
+          <article data-fade v-html="content" class="article-content" />
         </section>
         <Sidebar data-fade class="w-72 flex-shrink-0 sticky top-30" :toc="toc" :title="frontmatter.title" />
       </div>
