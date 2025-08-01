@@ -1,10 +1,14 @@
 <script setup>
-import { ref, watchEffect } from 'vue'
+import { ref, watchEffect, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import matter from 'gray-matter'
 import { marked } from 'marked'
+import dayjs from 'dayjs'
 
 import Sidebar from '@/components/Sidebar.vue'
+import Title from '@/components/PageTitle.vue'
+
+import '@/assets/article-content.css'
 
 const route = useRoute()
 
@@ -12,12 +16,30 @@ const content = ref('')
 const frontmatter = ref({})
 const toc = ref([])
 
-const posts = import.meta.glob('/src/posts/*.md', { import: 'default', query: '?raw' })
+const postsRaw = import.meta.glob('/src/posts/*.md', { import: 'default', query: '?raw' })
+
+const slugMap = ref({})
+
+async function preloadSlugs() {
+  const entries = Object.entries(postsRaw)
+  const map = {}
+
+  for (const [path, loader] of entries) {
+    const raw = await loader()
+    const { data } = matter(raw)
+
+    const fileName = path.split('/').pop().replace(/\.md$/, '')
+    const slug = data.slug || fileName
+
+    map[slug] = path
+  }
+
+  slugMap.value = map
+}
 
 async function loadPost(slug) {
-  const path = `/src/posts/${slug}.md`
-  const loader = posts[path]
-  if (!loader) {
+  const path = slugMap.value[slug]
+  if (!path) {
     content.value = '<h1>文章未找到</h1>'
     frontmatter.value = {}
     toc.value = []
@@ -25,7 +47,7 @@ async function loadPost(slug) {
   }
 
   try {
-    const raw = await loader()
+    const raw = await postsRaw[path]()
     const { content: mdContent, data } = matter(raw)
     const html = marked.parse(mdContent)
 
@@ -56,28 +78,41 @@ async function loadPost(slug) {
   }
 }
 
-watchEffect(() => {
+watchEffect(async () => {
   const slug = route.params.slug
-  if (slug) {
-    loadPost(slug)
+  if (!slug) return
+
+  if (Object.keys(slugMap.value).length === 0) {
+    await preloadSlugs()
   }
+
+  loadPost(slug)
+})
+
+const formattedDate = computed(() => {
+  if (!frontmatter.value.date) return ''
+  return `ShinX 发布于 ${dayjs(frontmatter.value.date).format('YYYY-MM-DD')}`
 })
 </script>
 
 <template>
-  <div
-    class="flex gap-8 flex-col md:flex-row
-           md:left-1/2 md:-translate-x-1/2
-           max-w-full sm:max-w-[90vw] md:max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw]"
-    style="position: relative;"
-  >
-    <main class="prose max-w-none flex-1 px-4 py-8 mt-40">
-      <h1>{{ frontmatter.title || '无标题文章' }}</h1>
-      <p class="text-sm text-gray-400 mb-4">{{ frontmatter.date || '' }}</p>
-
-      <article v-html="content" />
-    </main>
-
-    <Sidebar class="w-72 flex-shrink-0" :toc="toc" :title="frontmatter.title" />
-  </div>
+  <main v-fade-in>
+    <div class="max-w-full sm:max-w-[90vw] md:max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw] mx-auto" style="position: relative;">
+      <div class="px-4 py-4">
+        <Title data-fade :text="frontmatter.title || '无标题文章'" />
+        <div data-fade class="text-sm text-gray-400 mt-2 pb-4 flex flex-col gap-2" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
+          <span>{{ formattedDate }}</span>
+          <div class="flex flex-wrap gap-2">
+            <span v-for="tag in frontmatter.tags || []" :key="tag" class="px-2 py-1 text-xs rounded-full bg-white/10 text-white/80">{{ tag }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-8 flex-col md:flex-row max-w-full">
+        <section class="px-4 flex-1 min-w-0 max-w-full md:max-w-[calc(75vw-288px-32px)]">
+          <article data-fade v-html="content" class="article-content whitespace-normal break-words" />
+        </section>
+        <Sidebar data-fade class="w-72 flex-shrink-0 sticky top-30 hidden md:block" :toc="toc" :title="frontmatter.title" />
+      </div>
+    </div>
+  </main>
 </template>

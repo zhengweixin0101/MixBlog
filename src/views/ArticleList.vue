@@ -5,20 +5,24 @@ import { RouterLink, useRouter } from 'vue-router'
 import matter from 'gray-matter'
 import dayjs from 'dayjs'
 
-// 读取原始 Markdown 内容
+// 读取Markdown
 const rawPosts = import.meta.glob('/src/posts/*.md', { query: '?raw', import: 'default', eager: true })
 
-const posts = Object.entries(rawPosts).map(([path, rawContent]) => {
-  const { data: frontmatter, content } = matter(rawContent)
-  const slug = path.split('/').pop().replace(/\.md$/, '')
-  return {
-    slug,
-    title: frontmatter.title || slug,
-    date: frontmatter.date || '未知日期',
-    tags: frontmatter.tags || [],
-    description: frontmatter.description || content.trim().slice(0, 60) + (content.trim().length > 100 ? '……' : ''),
-  }
-})
+const posts = Object.entries(rawPosts)
+  .map(([path, rawContent]) => {
+    const { data: frontmatter, content } = matter(rawContent)
+    const fileName = path.split('/').pop().replace(/\.md$/, '')
+
+    const slug = frontmatter.slug || fileName
+
+    return {
+      slug,
+      title: frontmatter.title || slug,
+      date: frontmatter.date || '未知日期',
+      tags: frontmatter.tags || [],
+      description: frontmatter.description || content.trim().slice(0, 60) + (content.trim().length > 100 ? '……' : ''),
+    }
+  })
 
 const searchTerm = ref('')
 const selectedTag = ref('')
@@ -64,7 +68,7 @@ function formatDate(date) {
     <section class="py-12 w-full max-w-screen-xl mx-auto">
       <Title data-fade text="Posts" />
       <p data-fade class="mt-2 text-gray-300">
-        Articles about Some of My Whimsical Ideas
+        Articles about Some of My Whimsical Ideas.
       </p>
 
       <div data-fade class="relative mt-6 sm:mt-8 w-full">
