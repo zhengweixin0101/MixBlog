@@ -182,7 +182,9 @@ const formattedDate = computed(() => {
         <section class="px-4 flex-1 min-w-0 max-w-full md:max-w-[calc(75vw-288px-32px)]">
           <article data-fade v-html="content" class="article-content whitespace-normal break-words" />
         </section>
-        <Sidebar data-fade class="w-72 flex-shrink-0 sticky top-30 mr-3 hidden md:block" :toc="toc" :title="frontmatter.title" />
+        <div data-fade class="sticky top-30 w-72 flex-shrink-0 mr-3 hidden md:block self-start">
+          <Sidebar :toc="toc" :title="frontmatter.title" />
+        </div>
       </div>
     </div>
   </main>
