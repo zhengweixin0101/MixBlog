@@ -173,7 +173,6 @@ function formatDate(date) {
       </div>
     </section>
   </main>
-  <div class="mb-50"></div>
 </template>
 
 <style>
