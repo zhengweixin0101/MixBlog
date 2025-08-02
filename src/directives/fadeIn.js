@@ -30,7 +30,7 @@ export default {
     }
 
     final.forEach((el, i) => {
-      el.style.animationDelay = `${(i + 1) * 0.1}s`
+      el.style.animationDelay = `${(i + 1) * 0.07}s`
     })
 
     const observer = new IntersectionObserver(

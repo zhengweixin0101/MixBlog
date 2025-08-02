@@ -52,25 +52,6 @@
   margin: 0.75em 0;
 }
 
-.article-content pre {
-  background-color: #111;
-  color: #eee;
-  padding: 0.8em;
-  border-radius: 6px;
-  overflow-x: auto;
-  font-family: 'Fira Code', monospace;
-  margin: 1em 0;
-}
-
-.article-content code {
-  background-color: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 0.2em 0.4em;
-  border-radius: 4px;
-  color: #fff;
-}
-
 .article-content ul,
 .article-content ol {
   padding-left: 1.2rem;
@@ -206,4 +187,23 @@
 .article-content th,
 .article-content td {
   border: 1px solid #333;
+}
+
+.article-content code:not(pre code) {
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  color: #fff;
+}
+
+.article-content pre {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+
+  white-space: pre;
+  overflow-x: auto; 
 }

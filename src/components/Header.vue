@@ -13,7 +13,7 @@
         <li v-for="(item, index) in navItems" :key="index">
           <router-link
             :to="item.href"
-            class="flex items-center space-x-1 no-underline px-3 py-2 rounded font-bold transition duration-300 whitespace-nowrap"
+            class="flex items-center space-x-1 no-underline px-3 py-2 rounded font-bold whitespace-nowrap"
             :class="{
               'active-gradient-text animate-gradient-flow': (route.path === item.href || (item.href === '/posts.html' && route.path.startsWith('/posts/'))) && isRouteReady,
               'text-white hover:brightness-75 cursor-pointer': route.path !== item.href || !isRouteReady
@@ -66,6 +66,7 @@ const navItems = [
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  animation: gradient-flow 3s linear infinite;
+  animation: none !important;
+  transition: none !important;
 }
 </style>

@@ -1,14 +1,14 @@
 <template>
   <aside
-    class="hidden md:block w-62 sticky p-4 rounded-lg backdrop-blur-sm bg-white/10 self-start"
+    class="hidden md:block w-62 p-4 rounded-lg backdrop-blur-sm bg-white/10 self-start"
   >
     <section>
       <div
-        class="text-xl font-bold mb-4 bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent"
+        class="text-xl font-bold mb-2 bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent"
       >
         目录
       </div>
-      <div class="text-lg font-semibold mb-4">
+      <div class="text-mx font-semibold mb-1">
         {{ title || '无标题文章' }}
       </div>
       <ul class="list-none p-0 m-0">
