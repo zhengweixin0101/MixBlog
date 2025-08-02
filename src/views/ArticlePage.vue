@@ -4,8 +4,13 @@ import { useRoute } from 'vue-router'
 import matter from 'gray-matter'
 import { marked } from 'marked'
 import dayjs from 'dayjs'
+
 import hljs from 'highlight.js'
 import 'highlight.js/styles/vs2015.css'
+
+import katex from 'katex'
+import 'katex/dist/katex.min.css'
+
 import Sidebar from '@/components/Sidebar.vue'
 import Title from '@/components/PageTitle.vue'
 import '@/assets/article-content.css'
@@ -59,6 +64,27 @@ function highlightCodeBlocks(html) {
   )
 }
 
+//渲染 KaTeX 公式
+function renderKatex(html) {
+  // $$...$$ 块级公式
+  html = html.replace(/\$\$([^$]+?)\$\$/g, (_, expr) => {
+    try {
+      return katex.renderToString(expr, { displayMode: true, throwOnError: false })
+    } catch {
+      return `<span class="katex-error">$$${expr}$$</span>`
+    }
+  })
+  // $...$ 行内公式
+  html = html.replace(/\$(.+?)\$/g, (_, expr) => {
+    try {
+      return katex.renderToString(expr, { displayMode: false, throwOnError: false })
+    } catch {
+      return `<span class="katex-error">$${expr}$</span>`
+    }
+  })
+  return html
+}
+
 async function preloadSlugs() {
   const entries = Object.entries(postsRaw)
   const map = {}
@@ -96,6 +122,7 @@ async function loadPost(slug) {
       return `<${tag} id="${id}" class="scroll-mt-40">${text}</${tag}>`
     })
 
+    html = renderKatex(html)
     html = highlightCodeBlocks(html)
 
     content.value = html
