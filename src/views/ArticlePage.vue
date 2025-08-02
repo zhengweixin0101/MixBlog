@@ -117,7 +117,10 @@ async function loadPost(slug) {
 
     const tocItems = []
     html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (match, tag, text) => {
-      const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]/g, '')
+      const id = text.toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\- \u4e00-\u9fa5]/g, '')
+      
       if (tag !== 'h1') tocItems.push({ id, text, tag: tag.toUpperCase() })
       return `<${tag} id="${id}" class="scroll-mt-40">${text}</${tag}>`
     })
