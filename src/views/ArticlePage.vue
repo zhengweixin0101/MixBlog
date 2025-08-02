@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect, computed, onMounted, nextTick } from 'vue'
+import { ref, watchEffect, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import matter from 'gray-matter'
 import { marked } from 'marked'
@@ -121,7 +121,6 @@ watchEffect(async () => {
 
 // 添加复制按钮功能
 onMounted(() => {
-  // Map 存储每个按钮的定时器 ID，防止多次点击冲突
   const timers = new WeakMap()
 
   document.addEventListener('click', (e) => {
@@ -133,7 +132,6 @@ onMounted(() => {
 
     const code = decodeHTMLEntities(encodedCode)
 
-    // 清除之前的定时器，防止文字还没恢复就重复点击
     if (timers.has(btn)) {
       clearTimeout(timers.get(btn))
     }
@@ -143,7 +141,6 @@ onMounted(() => {
     navigator.clipboard.writeText(code).then(() => {
       btn.innerText = '已复制'
       const timerId = setTimeout(() => {
-        // 先判断按钮还存在
         if (document.body.contains(btn)) {
           btn.innerText = originalText
         }
@@ -185,7 +182,7 @@ const formattedDate = computed(() => {
         <section class="px-4 flex-1 min-w-0 max-w-full md:max-w-[calc(75vw-288px-32px)]">
           <article data-fade v-html="content" class="article-content whitespace-normal break-words" />
         </section>
-        <Sidebar data-fade class="w-72 flex-shrink-0 sticky top-30 hidden md:block" :toc="toc" :title="frontmatter.title" />
+        <Sidebar data-fade class="w-72 flex-shrink-0 sticky top-30 mr-3 hidden md:block" :toc="toc" :title="frontmatter.title" />
       </div>
     </div>
   </main>
