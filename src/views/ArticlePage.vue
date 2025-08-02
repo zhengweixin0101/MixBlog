@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect, computed, onMounted } from 'vue'
+import { ref, watchEffect, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import matter from 'gray-matter'
 import { marked } from 'marked'
@@ -64,7 +64,7 @@ function highlightCodeBlocks(html) {
   )
 }
 
-//渲染 KaTeX 公式
+// 渲染 KaTeX 公式
 function renderKatex(html) {
   // $$...$$ 块级公式
   html = html.replace(/\$\$([^$]+?)\$\$/g, (_, expr) => {
@@ -117,7 +117,10 @@ async function loadPost(slug) {
 
     const tocItems = []
     html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (match, tag, text) => {
-      const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]/g, '')
+      const id = text.toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\- \u4e00-\u9fa5]/g, '')
+
       if (tag !== 'h1') tocItems.push({ id, text, tag: tag.toUpperCase() })
       return `<${tag} id="${id}" class="scroll-mt-40">${text}</${tag}>`
     })
@@ -135,6 +138,20 @@ async function loadPost(slug) {
   }
 }
 
+//高亮函数
+const HIGHLIGHT_DURATION = 3000
+function highlightHeading(rawId) {
+  if (!rawId) return
+  const id = decodeURIComponent(rawId)
+  const el = document.getElementById(id)
+  if (!el) return
+
+  el.classList.add('highlighted')
+  setTimeout(() => {
+    el.classList.remove('highlighted')
+  }, HIGHLIGHT_DURATION)
+}
+
 watchEffect(async () => {
   const slug = route.params.slug
   if (!slug) return
@@ -143,7 +160,18 @@ watchEffect(async () => {
     await preloadSlugs()
   }
 
-  loadPost(slug)
+  await loadPost(slug)
+
+  setTimeout(() => {
+    highlightHeading(window.location.hash.slice(1))
+  }, 300)
+})
+
+onMounted(() => {
+  highlightHeading(window.location.hash.slice(1))
+  window.addEventListener('hashchange', () => {
+    highlightHeading(window.location.hash.slice(1))
+  })
 })
 
 // 添加复制按钮功能
