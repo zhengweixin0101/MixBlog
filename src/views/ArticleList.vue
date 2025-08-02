@@ -5,27 +5,28 @@ import { RouterLink, useRouter } from 'vue-router'
 import matter from 'gray-matter'
 import dayjs from 'dayjs'
 
-// 读取Markdown
 const rawPosts = import.meta.glob('/src/posts/*.md', { query: '?raw', import: 'default', eager: true })
 
-const posts = Object.entries(rawPosts)
-  .map(([path, rawContent]) => {
-    const { data: frontmatter, content } = matter(rawContent)
-    const fileName = path.split('/').pop().replace(/\.md$/, '')
-
-    const slug = frontmatter.slug || fileName
-
-    return {
-      slug,
-      title: frontmatter.title || slug,
-      date: frontmatter.date || '未知日期',
-      tags: frontmatter.tags || [],
-      description: frontmatter.description || content.trim().slice(0, 60) + (content.trim().length > 100 ? '……' : ''),
-    }
-  })
+const posts = Object.entries(rawPosts).map(([path, rawContent]) => {
+  const { data: frontmatter, content } = matter(rawContent)
+  const fileName = path.split('/').pop().replace(/\.md$/, '')
+  const slug = frontmatter.slug || fileName
+  return {
+    slug,
+    title: frontmatter.title || slug,
+    date: frontmatter.date || '未知日期',
+    tags: frontmatter.tags || [],
+    description: frontmatter.description || content.trim().slice(0, 60) + (content.trim().length > 100 ? '……' : ''),
+  }
+})
 
 const searchTerm = ref('')
 const selectedTag = ref('')
+const revealedPosts = ref(new Set())
+
+function markRevealed(slug) {
+  revealedPosts.value.add(slug)
+}
 
 const allTags = computed(() => {
   const tags = new Set()
@@ -42,7 +43,7 @@ function toggleTag(tag) {
 const filteredPosts = computed(() => {
   const term = searchTerm.value.toLowerCase()
   return posts
-    .filter((post) => {
+    .filter(post => {
       const matchesSearch = post.title.toLowerCase().includes(term)
       const matchesTag = !selectedTag.value || post.tags.includes(selectedTag.value)
       return matchesSearch && matchesTag
@@ -67,108 +68,33 @@ function formatDate(date) {
   <main v-fade-in>
     <section class="py-12 w-full max-w-screen-xl mx-auto">
       <Title data-fade text="Posts" />
-      <p data-fade class="mt-2 text-gray-300">
-        Articles about Some of My Whimsical Ideas.
-      </p>
-
+      <p data-fade class="mt-2 text-gray-300">Articles about Some of My Whimsical Ideas.</p>
       <div data-fade class="relative mt-6 sm:mt-8 w-full">
         <i class="iconfont icon-sousuo absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-        <input
-          v-model="searchTerm"
-          placeholder="Search..."
-          type="text"
-          class="w-full h-12 pl-10 pr-4 rounded-xl border-none
-                 backdrop-blur bg-white/10 placeholder-gray-500 text-white
-                 transition-shadow duration-300 focus:outline-none focus:shadow-[0_0_0_1px_#00e699]"
-        />
+        <input v-model="searchTerm" placeholder="Search..." type="text" class="w-full h-12 pl-10 pr-4 rounded-xl border-none backdrop-blur bg-white/10 placeholder-gray-500 text-white transition-shadow duration-300 focus:outline-none focus:shadow-[0_0_0_1px_#00e699]" />
       </div>
-
       <div data-fade class="mt-4 flex flex-wrap items-baseline justify-start gap-2 text-sm text-gray-400">
         <span class="font-medium">Tag:</span>
-        <button
-          v-for="tag in allTags"
-          :key="tag"
-          @click="toggleTag(tag)"
-          :class="{
-            'bg-white/20 text-white': selectedTag === tag,
-            'bg-white/10 text-white/80': selectedTag !== tag
-          }"
-          class="inline-block px-2 py-1 text-xs rounded-full bg-white/10 text-white/80 transition-colors cursor-pointer shadow-none border-none"
-        >
-          {{ tag }}
-        </button>
+        <button v-for="tag in allTags" :key="tag" @click="toggleTag(tag)" :class="{ 'bg-white/20 text-white': selectedTag === tag, 'bg-white/10 text-white/80': selectedTag !== tag }" class="inline-block px-2 py-1 text-xs rounded-full bg-white/10 text-white/80 transition-colors cursor-pointer shadow-none border-none">{{ tag }}</button>
       </div>
-
       <ul class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
-        <li
-          v-for="post in filteredPosts"
-          :key="post.slug + selectedTag + searchTerm"
-          data-fade
-          class="relative w-full h-160px rounded-xl list-none will-change-transform
-                 scale-100 hover:scale-[1.02] active:scale-[0.97]
-                 motion-safe:transform-gpu motion-reduce:hover:scale-100 transition duration-200
-                 animate-shadow backdrop-blur bg-white/10"
-        >
-          <div
-            class="block h-full rounded-md p-4 no-underline
-                   focus:outline-none focus-visible:ring focus-visible:ring-[#00e699]
-                   transition-transform duration-200 active:scale-95 cursor-pointer"
-            @click="delayedNavigate(`/posts/${post.slug}.html`)"
-          >
+        <li v-for="post in filteredPosts" :key="post.slug + selectedTag + searchTerm" data-fade @animationend="() => markRevealed(post.slug)" :class="'relative w-full h-160px rounded-xl list-none will-change-transform motion-safe:transform-gpu transition duration-200 animate-shadow backdrop-blur bg-white/10 ' + (revealedPosts.has(post.slug) ? 'hover:scale-[1.02] active:scale-[0.97] cursor-pointer' : '')">
+          <div class="block h-full rounded-md p-4 no-underline focus:outline-none focus-visible:ring focus-visible:ring-[#00e699] transition-transform duration-200 active:scale-95" @click="delayedNavigate(`/posts/${post.slug}.html`)">
             <h4 class="text-white text-xl">{{ post.title }}</h4>
             <p class="mt-1 text-gray-400 text-sm">{{ post.description }}</p>
-
             <div class="absolute left-4 bottom-4 text-sm text-gray-400 pointer-events-none flex items-center gap-2">
-              <svg
-                stroke="currentColor"
-                fill="none"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                class="inline-block text-base"
-                height="1em"
-                width="1em"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
-              <time :datetime="post.date !== '未知日期' ? post.date : null"
-                    class="bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent -webkit-bg-clip-text"
-              >
-                {{ formatDate(post.date) }}
-              </time>
+              <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true" class="inline-block text-base" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <time :datetime="post.date !== '未知日期' ? post.date : null" class="bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent -webkit-bg-clip-text">{{ formatDate(post.date) }}</time>
             </div>
             <div v-if="post.tags.length" class="absolute right-4 bottom-4 flex flex-wrap gap-1">
-              <span
-                v-for="tag in post.tags"
-                :key="tag"
-                class="px-2 py-1 text-xs rounded-full bg-white/10 text-white/80"
-              >
-                {{ tag }}
-              </span>
+              <span v-for="tag in post.tags" :key="tag" class="px-2 py-1 text-xs rounded-full bg-white/10 text-white/80">{{ tag }}</span>
             </div>
           </div>
         </li>
       </ul>
-
       <div data-fade class="mt-8 flex flex-row items-center justify-end gap-4">
-        <RouterLink
-          :key="$route.path + selectedTag + searchTerm"
-          to="/"
-          class="custom-gradient-link inline-flex relative font-medium
-                  bg-gradient-to-r from-[#00e699] to-[#00e2d8]
-                  bg-clip-text text-transparent -webkit-bg-clip-text
-                  no-underline"
-          data-fade
-        >
-          <span
-            class="dark:bg-gradient-to-tr dark:from-primary-300 dark:to-primary-400 dark:bg-clip-text dark:text-transparent">
-            ← Back to Home
-          </span>
+        <RouterLink :key="$route.path + selectedTag + searchTerm" to="/" class="custom-gradient-link inline-flex relative font-medium bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent -webkit-bg-clip-text no-underline" data-fade>
+          <span class="dark:bg-gradient-to-tr dark:from-primary-300 dark:to-primary-400 dark:bg-clip-text dark:text-transparent">← Back to Home</span>
         </RouterLink>
       </div>
     </section>
