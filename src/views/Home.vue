@@ -68,6 +68,7 @@
           src="/avatar.jpg"
           alt="Avatar"
           class="rounded-full w-full h-full object-cover"
+          draggable="false"
         />
       </div>
     </div>
