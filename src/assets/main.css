@@ -10,6 +10,19 @@ html, body {
   overflow-x: hidden;
   overflow: visible;
   scroll-behavior: smooth;
+  /* 禁止选中 */
+  -webkit-user-select: none; /* Chrome/Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE/Edge */
+  user-select: none;
+}
+
+/* 文章允许选择 */
+.article-content {
+  -webkit-user-select: text; /* Chrome/Safari */
+  -moz-user-select: text;    /* Firefox */
+  -ms-user-select: text;     /* IE/Edge */
+  user-select: text;
 }
 
 /* 滚动条样式 */
@@ -35,6 +48,10 @@ html, body {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: #777;
+}
+
+body::selection {
+   background-color: rgba(0, 230, 153, 0.3);
 }
 
 /* 移动端隐藏滚动条 */

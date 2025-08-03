@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect, computed, onMounted, watch } from 'vue'
+import { ref, watchEffect, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import matter from 'gray-matter'
 import { marked } from 'marked'
@@ -14,6 +14,9 @@ import 'katex/dist/katex.min.css'
 import Sidebar from '@/components/Sidebar.vue'
 import Title from '@/components/PageTitle.vue'
 import '@/assets/article-content.css'
+
+import { Fancybox } from '@fancyapps/ui/dist/fancybox/'
+import '@fancyapps/ui/dist/fancybox/fancybox.css'
 
 const route = useRoute()
 
@@ -85,6 +88,33 @@ function renderKatex(html) {
   return html
 }
 
+// 给所有单独的 <img> 包裹 <a href="图片地址" data-fancybox="gallery">
+function wrapImagesWithLinks(html) {
+  return html.replace(
+    /<p>(\s*<img[^>]+?>\s*)<\/p>/g,
+    (match, imgTag) => {
+      if (/^<a[^>]+>.*<\/a>$/.test(imgTag)) return match; // 已包裹的跳过
+
+      const srcMatch = imgTag.match(/src="([^"]+)"/)
+      if (!srcMatch) return match
+
+      const src = srcMatch[1]
+      return `<p><a href="${src}" data-fancybox="gallery">${imgTag}</a></p>`
+    }
+  )
+}
+
+// 给所有已经被 <a> 包裹的图片加 data-fancybox="gallery"
+function addFancyboxAttributesToAnchors(html) {
+  return html.replace(
+    /<a([^>]+?)>(\s*<img[^>]+?>\s*)<\/a>/g,
+    (match, aAttrs, imgTag) => {
+      if (/data-fancybox=/.test(aAttrs)) return match
+      return `<a${aAttrs} data-fancybox="gallery">${imgTag}</a>`
+    }
+  )
+}
+
 async function preloadSlugs() {
   const entries = Object.entries(postsRaw)
   const map = {}
@@ -115,6 +145,13 @@ async function loadPost(slug) {
 
     let html = marked.parse(mdContent)
 
+    // 先给单独图片包裹 <a>
+    html = wrapImagesWithLinks(html)
+
+    // 给已有包裹图片的 <a> 加上 data-fancybox
+    html = addFancyboxAttributesToAnchors(html)
+
+    // 生成目录
     const tocItems = []
     html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (match, tag, text) => {
       const id = text.toLowerCase()
@@ -131,6 +168,12 @@ async function loadPost(slug) {
     content.value = html
     frontmatter.value = data
     toc.value = tocItems
+
+    // 文章内容更新后，重新绑定 Fancybox
+    // 用下一事件循环保证 DOM 已渲染
+    setTimeout(() => {
+      Fancybox.bind('[data-fancybox="gallery"]')
+    }, 0)
   } catch (error) {
     content.value = `<h1>加载文章出错</h1><p>${error.message}</p>`
     frontmatter.value = {}
@@ -138,7 +181,7 @@ async function loadPost(slug) {
   }
 }
 
-//高亮函数
+// 高亮函数
 const HIGHLIGHT_DURATION = 3000
 function highlightHeading(rawId) {
   if (!rawId) return
@@ -172,12 +215,9 @@ onMounted(() => {
   window.addEventListener('hashchange', () => {
     highlightHeading(window.location.hash.slice(1))
   })
-})
 
-// 添加复制按钮功能
-onMounted(() => {
+  // 绑定复制按钮功能
   const timers = new WeakMap()
-
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.copy-btn')
     if (!btn) return
