@@ -50,10 +50,6 @@ html, body {
   background-color: #777;
 }
 
-body::selection {
-   background-color: rgba(0, 230, 153, 0.3);
-}
-
 /* 移动端隐藏滚动条 */
 @media (max-width: 768px) {
   * {
@@ -62,6 +58,10 @@ body::selection {
   *::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Edge */
   }
+}
+
+body::selection {
+   background-color: rgba(0, 230, 153, 0.3);
 }
 
 /* 浮现动画 */
