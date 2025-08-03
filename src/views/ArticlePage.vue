@@ -69,7 +69,6 @@ function highlightCodeBlocks(html) {
 
 // 渲染 KaTeX 公式
 function renderKatex(html) {
-  // $$...$$ 块级公式
   html = html.replace(/\$\$([^$]+?)\$\$/g, (_, expr) => {
     try {
       return katex.renderToString(expr, { displayMode: true, throwOnError: false })
@@ -77,7 +76,6 @@ function renderKatex(html) {
       return `<span class="katex-error">$$${expr}$$</span>`
     }
   })
-  // $...$ 行内公式
   html = html.replace(/\$(.+?)\$/g, (_, expr) => {
     try {
       return katex.renderToString(expr, { displayMode: false, throwOnError: false })
@@ -88,29 +86,29 @@ function renderKatex(html) {
   return html
 }
 
-// 给所有单独的 <img> 包裹 <a href="图片地址" data-fancybox="gallery">
 function wrapImagesWithLinks(html) {
   return html.replace(
     /<p>(\s*<img[^>]+?>\s*)<\/p>/g,
     (match, imgTag) => {
-      if (/^<a[^>]+>.*<\/a>$/.test(imgTag)) return match; // 已包裹的跳过
+      if (/^<a[^>]+>.*<\/a>$/.test(imgTag)) return match
 
       const srcMatch = imgTag.match(/src="([^"]+)"/)
       if (!srcMatch) return match
 
       const src = srcMatch[1]
-      return `<p><a href="${src}" data-fancybox="gallery">${imgTag}</a></p>`
+      const lazyImgTag = imgTag.replace('<img', '<img loading="lazy"')
+      return `<p><a href="${src}" data-fancybox="gallery">${lazyImgTag}</a></p>`
     }
   )
 }
 
-// 给所有已经被 <a> 包裹的图片加 data-fancybox="gallery"
 function addFancyboxAttributesToAnchors(html) {
   return html.replace(
     /<a([^>]+?)>(\s*<img[^>]+?>\s*)<\/a>/g,
     (match, aAttrs, imgTag) => {
       if (/data-fancybox=/.test(aAttrs)) return match
-      return `<a${aAttrs} data-fancybox="gallery">${imgTag}</a>`
+      const lazyImgTag = imgTag.replace('<img', '<img loading="lazy"')
+      return `<a${aAttrs} data-fancybox="gallery">${lazyImgTag}</a>`
     }
   )
 }
@@ -145,10 +143,7 @@ async function loadPost(slug) {
 
     let html = marked.parse(mdContent)
 
-    // 先给单独图片包裹 <a>
     html = wrapImagesWithLinks(html)
-
-    // 给已有包裹图片的 <a> 加上 data-fancybox
     html = addFancyboxAttributesToAnchors(html)
 
     // 生成目录
@@ -157,7 +152,6 @@ async function loadPost(slug) {
       const id = text.toLowerCase()
         .replace(/\s+/g, '-')
         .replace(/[^\w\- \u4e00-\u9fa5]/g, '')
-
       if (tag !== 'h1') tocItems.push({ id, text, tag: tag.toUpperCase() })
       return `<${tag} id="${id}" class="scroll-mt-40">${text}</${tag}>`
     })
@@ -169,8 +163,6 @@ async function loadPost(slug) {
     frontmatter.value = data
     toc.value = tocItems
 
-    // 文章内容更新后，重新绑定 Fancybox
-    // 用下一事件循环保证 DOM 已渲染
     setTimeout(() => {
       Fancybox.bind('[data-fancybox="gallery"]')
     }, 0)
@@ -188,7 +180,6 @@ function highlightHeading(rawId) {
   const id = decodeURIComponent(rawId)
   const el = document.getElementById(id)
   if (!el) return
-
   el.classList.add('highlighted')
   setTimeout(() => {
     el.classList.remove('highlighted')
