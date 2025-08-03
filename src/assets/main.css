@@ -82,3 +82,23 @@ body::selection {
     transform: none;
   }
 }
+
+/* 控制星轨背景显隐 */
+#star-canvas.hidden {
+  display: none !important;
+}
+
+/* 纯色背景 */
+body.pure-background {
+  background-color: #0e1111;
+}
+
+/* 背景切换动画 */
+#star-canvas {
+  transition: opacity 0.2s ease;
+  opacity: 1;
+}
+
+#star-canvas.fade-out {
+  opacity: 0;
+}
