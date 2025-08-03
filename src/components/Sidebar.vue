@@ -8,10 +8,10 @@
       >
         目录
       </div>
-      <div class="text-mx font-semibold mb-1">
+      <a href="#" class="text-mx font-semibold text-white no-underline before:hidden hover:text-gray-400" @click.prevent="scrollToTop">
         {{ title || '无标题文章' }}
-      </div>
-      <ul class="list-none p-0 m-0">
+      </a>
+      <ul class="list-none mt-1 p-0 m-0">
         <li v-for="(item, index) in toc" :key="index" class="mb-1">
           <a
             :href="`#${item.id}`"
@@ -43,6 +43,13 @@ defineProps({
     default: ''
   }
 })
+
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+}
 </script>
 
 <style scoped>
