@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect, computed, onMounted, watch } from 'vue'
+import { ref, watchEffect, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import matter from 'gray-matter'
 import { marked } from 'marked'
@@ -14,6 +14,9 @@ import 'katex/dist/katex.min.css'
 import Sidebar from '@/components/Sidebar.vue'
 import Title from '@/components/PageTitle.vue'
 import '@/assets/article-content.css'
+
+import { Fancybox } from '@fancyapps/ui/dist/fancybox/'
+import '@fancyapps/ui/dist/fancybox/fancybox.css'
 
 const route = useRoute()
 
@@ -66,7 +69,6 @@ function highlightCodeBlocks(html) {
 
 // 渲染 KaTeX 公式
 function renderKatex(html) {
-  // $$...$$ 块级公式
   html = html.replace(/\$\$([^$]+?)\$\$/g, (_, expr) => {
     try {
       return katex.renderToString(expr, { displayMode: true, throwOnError: false })
@@ -74,7 +76,6 @@ function renderKatex(html) {
       return `<span class="katex-error">$$${expr}$$</span>`
     }
   })
-  // $...$ 行内公式
   html = html.replace(/\$(.+?)\$/g, (_, expr) => {
     try {
       return katex.renderToString(expr, { displayMode: false, throwOnError: false })
@@ -83,6 +84,33 @@ function renderKatex(html) {
     }
   })
   return html
+}
+
+function wrapImagesWithLinks(html) {
+  return html.replace(
+    /<p>(\s*<img[^>]+?>\s*)<\/p>/g,
+    (match, imgTag) => {
+      if (/^<a[^>]+>.*<\/a>$/.test(imgTag)) return match
+
+      const srcMatch = imgTag.match(/src="([^"]+)"/)
+      if (!srcMatch) return match
+
+      const src = srcMatch[1]
+      const lazyImgTag = imgTag.replace('<img', '<img loading="lazy"')
+      return `<p><a href="${src}" data-fancybox="gallery">${lazyImgTag}</a></p>`
+    }
+  )
+}
+
+function addFancyboxAttributesToAnchors(html) {
+  return html.replace(
+    /<a([^>]+?)>(\s*<img[^>]+?>\s*)<\/a>/g,
+    (match, aAttrs, imgTag) => {
+      if (/data-fancybox=/.test(aAttrs)) return match
+      const lazyImgTag = imgTag.replace('<img', '<img loading="lazy"')
+      return `<a${aAttrs} data-fancybox="gallery">${lazyImgTag}</a>`
+    }
+  )
 }
 
 async function preloadSlugs() {
@@ -115,12 +143,15 @@ async function loadPost(slug) {
 
     let html = marked.parse(mdContent)
 
+    html = wrapImagesWithLinks(html)
+    html = addFancyboxAttributesToAnchors(html)
+
+    // 生成目录
     const tocItems = []
     html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (match, tag, text) => {
       const id = text.toLowerCase()
         .replace(/\s+/g, '-')
         .replace(/[^\w\- \u4e00-\u9fa5]/g, '')
-
       if (tag !== 'h1') tocItems.push({ id, text, tag: tag.toUpperCase() })
       return `<${tag} id="${id}" class="scroll-mt-40">${text}</${tag}>`
     })
@@ -131,6 +162,10 @@ async function loadPost(slug) {
     content.value = html
     frontmatter.value = data
     toc.value = tocItems
+
+    setTimeout(() => {
+      Fancybox.bind('[data-fancybox="gallery"]')
+    }, 0)
   } catch (error) {
     content.value = `<h1>加载文章出错</h1><p>${error.message}</p>`
     frontmatter.value = {}
@@ -138,14 +173,13 @@ async function loadPost(slug) {
   }
 }
 
-//高亮函数
+// 高亮函数
 const HIGHLIGHT_DURATION = 3000
 function highlightHeading(rawId) {
   if (!rawId) return
   const id = decodeURIComponent(rawId)
   const el = document.getElementById(id)
   if (!el) return
-
   el.classList.add('highlighted')
   setTimeout(() => {
     el.classList.remove('highlighted')
@@ -172,12 +206,9 @@ onMounted(() => {
   window.addEventListener('hashchange', () => {
     highlightHeading(window.location.hash.slice(1))
   })
-})
 
-// 添加复制按钮功能
-onMounted(() => {
+  // 绑定复制按钮功能
   const timers = new WeakMap()
-
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.copy-btn')
     if (!btn) return
