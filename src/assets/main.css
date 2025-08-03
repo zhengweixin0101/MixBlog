@@ -17,6 +17,11 @@ html, body {
   user-select: none;
 }
 
+html {
+  overflow-y: scroll; /* 始终保留垂直滚动条空间 */
+  scrollbar-gutter: stable; /* 如果浏览器支持，则更完美 */
+}
+
 /* 文章允许选择 */
 .article-content {
   -webkit-user-select: text; /* Chrome/Safari */
