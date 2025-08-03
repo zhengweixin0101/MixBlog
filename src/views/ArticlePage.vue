@@ -254,23 +254,21 @@ const formattedDate = computed(() => {
 
 <template>
   <main v-fade-in>
-    <div class="max-w-full sm:max-w-[90vw] md:max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw] mx-auto" style="position: relative;">
-      <div class="px-4 py-4">
-        <Title data-fade :text="frontmatter.title || '无标题文章'" />
-        <div data-fade class="text-sm text-gray-400 mt-2 pb-4 flex flex-col gap-2" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
-          <span>{{ formattedDate }}</span>
-          <div class="flex flex-wrap gap-2">
-            <span v-for="tag in frontmatter.tags || []" :key="tag" class="px-2 py-1 text-xs rounded-full bg-white/10 text-white/80">{{ tag }}</span>
-          </div>
+    <div class="py-4">
+      <Title data-fade :text="frontmatter.title || '无标题文章'" />
+      <div data-fade class="text-sm text-gray-400 mt-2 pb-4 flex flex-col gap-2" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
+        <span>{{ formattedDate }}</span>
+        <div class="flex flex-wrap gap-2">
+          <span v-for="tag in frontmatter.tags || []" :key="tag" class="px-2 py-1 text-xs rounded-full bg-white/10 text-white/80">{{ tag }}</span>
         </div>
       </div>
-      <div class="flex gap-8 flex-col md:flex-row max-w-full">
-        <section class="px-4 flex-1 min-w-0 max-w-full md:max-w-[calc(75vw-288px-32px)]">
-          <article data-fade v-html="content" class="article-content whitespace-normal break-words" />
-        </section>
-        <div data-fade class="sticky top-30 w-72 flex-shrink-0 mr-3 hidden md:block self-start">
-          <Sidebar :toc="toc" :title="frontmatter.title" />
-        </div>
+    </div>
+    <div class="flex gap-8 px-2 flex-col md:flex-row max-w-full">
+      <section class=" flex-1 min-w-0 max-w-full">
+        <article data-fade v-html="content" class="article-content whitespace-normal break-words" />
+      </section>
+      <div data-fade class="sticky top-30 flex-shrink-0 hidden md:block self-start">
+        <Sidebar :toc="toc" :title="frontmatter.title" />
       </div>
     </div>
   </main>

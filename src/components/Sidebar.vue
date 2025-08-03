@@ -1,17 +1,13 @@
 <template>
-  <aside
-    class="hidden md:block w-62 p-4 rounded-lg backdrop-blur-sm bg-white/10 self-start"
-  >
+  <aside class="hidden md:block md:w-60 p-4 rounded-lg backdrop-blur-sm bg-white/10">
     <section>
-      <div
-        class="text-xl font-bold mb-2 bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent"
-      >
+      <div class="text-xl font-bold mb-2 bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent">
         目录
       </div>
-      <a href="#" class="text-mx font-semibold text-white no-underline before:hidden hover:text-gray-400" @click.prevent="scrollToTop">
+      <div class="text-mx font-semibold mb-1">
         {{ title || '无标题文章' }}
-      </a>
-      <ul class="list-none mt-1 p-0 m-0">
+      </div>
+      <ul class="list-none p-0 m-0">
         <li v-for="(item, index) in toc" :key="index" class="mb-1">
           <a
             :href="`#${item.id}`"
@@ -43,13 +39,6 @@ defineProps({
     default: ''
   }
 })
-
-const scrollToTop = () => {
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  })
-}
 </script>
 
 <style scoped>
