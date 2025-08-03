@@ -3,7 +3,7 @@
     <nav
       class="fixed z-50 top-0 left-0 right-0
              px-4 py-2 w-full
-             bg-[#070808]
+             bg-[#0e1111]
              md:top-8 md:left-1/2 md:-translate-x-1/2 md:w-[90vw]
              md:bg-white/5 md:backdrop-blur
              md:rounded-2xl md:shadow-2xl

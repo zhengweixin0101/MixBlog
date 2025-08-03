@@ -78,7 +78,7 @@ function formatDate(date) {
         <button v-for="tag in allTags" :key="tag" @click="toggleTag(tag)" :class="{ 'bg-white/20 text-white': selectedTag === tag, 'bg-white/10 text-white/80': selectedTag !== tag }" class="inline-block px-2 py-1 text-xs rounded-full bg-white/10 text-white/80 transition-colors cursor-pointer shadow-none border-none">{{ tag }}</button>
       </div>
       <ul class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
-        <li v-for="post in filteredPosts" :key="post.slug + selectedTag + searchTerm" data-fade @animationend="() => markRevealed(post.slug)" :class="'relative w-full h-160px rounded-xl list-none will-change-transform motion-safe:transform-gpu transition duration-200 animate-shadow backdrop-blur bg-white/10 ' + (revealedPosts.has(post.slug) ? 'hover:scale-[1.02] active:scale-[0.97] cursor-pointer' : '')">
+        <li v-for="post in filteredPosts" :key="post.slug + selectedTag + searchTerm" data-fade @animationend="() => markRevealed(post.slug)" :class="'relative w-full h-160px rounded-xl list-none will-change-transform motion-safe:transform-gpu transition duration-200 animate-shadow backdrop-blur-2 bg-white/10 ' + (revealedPosts.has(post.slug) ? 'hover:scale-[1.02] active:scale-[0.97] cursor-pointer' : '')">
           <div class="block h-full rounded-md p-4 no-underline focus:outline-none focus-visible:ring focus-visible:ring-[#00e699] transition-transform duration-200 active:scale-95" @click="delayedNavigate(`/posts/${post.slug}.html`)">
             <h4 class="text-white text-xl">{{ post.title }}</h4>
             <p class="mt-1 text-gray-400 text-sm">{{ post.description }}</p>
