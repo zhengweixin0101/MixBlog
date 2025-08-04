@@ -4,10 +4,10 @@
       <div class="text-xl font-bold mb-2 bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent">
         目录
       </div>
-      <div class="text-mx font-semibold mb-1">
+      <a href="#" class="text-mx font-semibold text-white no-underline before:hidden hover:text-gray-400 transition-colors" @click.prevent="scrollToTop">
         {{ title || '无标题文章' }}
-      </div>
-      <ul class="list-none p-0 m-0">
+      </a>
+      <ul class="list-none p-0 m-0 mt-1">
         <li v-for="(item, index) in toc" :key="index" class="mb-1">
           <a
             :href="`#${item.id}`"
@@ -29,6 +29,13 @@
 </template>
 
 <script setup>
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+}
+
 defineProps({
   toc: {
     type: Array,
