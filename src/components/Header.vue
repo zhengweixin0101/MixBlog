@@ -1,32 +1,46 @@
 <template>
   <header>
     <nav
-      class="fixed z-50 top-0 left-0 right-0
-             px-4 py-2 w-full
-             bg-[#0e1111]
-             md:top-8 md:left-1/2 md:-translate-x-1/2 md:w-[90vw]
-             md:bg-white/5 md:backdrop-blur
-             md:rounded-2xl md:shadow-2xl
-             md:max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw]"
+      class="fixed top-0 left-0 right-0 z-50 w-full h-[68px] bg-[#f8f8f8] dark:bg-[#0e1111] transition-colors duration-300"
     >
-      <ul class="flex justify-center md:justify-start space-x-4 overflow-x-auto list-none p-0 m-0">
-        <li v-for="(item, index) in navItems" :key="index">
-          <router-link
-            :to="item.href"
-            class="flex items-center space-x-1 no-underline px-3 py-2 rounded font-bold whitespace-nowrap"
-            :class="{
-              'active-gradient-text animate-gradient-flow': (route.path === item.href || (item.href === '/posts.html' && route.path.startsWith('/posts/'))) && isRouteReady,
-              'text-white hover:brightness-75 cursor-pointer': route.path !== item.href || !isRouteReady
-            }"
-          >
-            <i
-              :class="['iconfont', item.icon]"
-              :style="route.path === item.href ? 'color: #00e699' : ''"
-            ></i>
-            <span>{{ item.label }}</span>
-          </router-link>
-        </li>
-      </ul>
+      <div
+        class="flex items-center justify-between h-full items-center
+               px-4 md:px-8
+               max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw]
+               mx-auto"
+      >
+        <ul class="flex justify-center md:justify-start space-x-4 overflow-x-auto list-none p-0 m-0 flex-1">
+          <li v-for="(item, index) in navItems" :key="index">
+            <router-link
+              :to="item.href"
+              class="flex items-center space-x-1 no-underline px-3 py-2 rounded font-bold whitespace-nowrap"
+              :class="{
+                'active-gradient-text animate-gradient-flow': (route.path === item.href || (item.href === '/posts.html' && route.path.startsWith('/posts/'))) && isRouteReady,
+                'text-#2f3f5b dark:text-white dark:hover:brightness-75 cursor-pointer': route.path !== item.href || !isRouteReady
+              }"
+            >
+              <i
+                :class="['iconfont', item.icon]"
+                :style="route.path === item.href ? 'color: #00e699' : ''"
+              ></i>
+              <span>{{ item.label }}</span>
+            </router-link>
+          </li>
+        </ul>
+
+        <!-- 主题切换按钮 -->
+        <button
+          @click="toggleTheme"
+          aria-label="切换主题"
+          class="ml-4 w-10 h-10 rounded-lg border-none
+              text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20
+              transition-colors duration-300 flex items-center justify-center select-none cursor-pointer"
+          type="button"
+        >
+          <i v-if="isDark" class="iconfont icon-a-Frame47 text-lg"></i>
+          <i v-else class="iconfont icon-a-Frame48 text-lg"></i>
+        </button>
+      </div>
     </nav>
   </header>
 </template>
@@ -37,16 +51,34 @@ import { ref, onMounted } from 'vue'
 
 const route = useRoute()
 const isRouteReady = ref(false)
-
 onMounted(() => {
   isRouteReady.value = true
 })
 
+// 导航菜单数据
 const navItems = [
   { label: 'Home', href: '/', icon: 'icon-house-chimney' },
   { label: 'Posts', href: '/posts.html', icon: 'icon-blog' },
   { label: 'About', href: '/about.html', icon: 'icon-about' },
 ]
+
+// 主题切换
+const isDark = ref(document.documentElement.classList.contains('dark'))
+
+function toggleTheme() {
+  const html = document.documentElement
+  if (html.classList.contains('dark')) {
+    html.classList.remove('dark')
+    html.style.colorScheme = 'light'
+    localStorage.setItem('theme', 'light')
+    isDark.value = false
+  } else {
+    html.classList.add('dark')
+    html.style.colorScheme = 'dark'
+    localStorage.setItem('theme', 'dark')
+    isDark.value = true
+  }
+}
 </script>
 
 <style scoped>
