@@ -16,7 +16,7 @@
               class="flex items-center space-x-1 no-underline px-3 py-2 rounded font-bold whitespace-nowrap"
               :class="{
                 'active-gradient-text animate-gradient-flow': (route.path === item.href || (item.href === '/posts.html' && route.path.startsWith('/posts/'))) && isRouteReady,
-                'text-#2f3f5b dark:text-white dark:hover:brightness-75 cursor-pointer': route.path !== item.href || !isRouteReady
+                'text-#2f3f5b dark:text-white hover:brightness-200 dark:hover:brightness-75 cursor-pointer transition-colors duration-500': route.path !== item.href || !isRouteReady
               }"
             >
               <i
