@@ -32,20 +32,13 @@
         <button
           @click="toggleTheme"
           aria-label="切换主题"
-          class="ml-4 p-2.5 rounded-lg border-none
+          class="ml-4 w-10 h-10 rounded-lg border-none
               text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20
-                transition-colors duration-300 flex items-center justify-center select-none cursor-pointer"
+              transition-colors duration-300 flex items-center justify-center select-none cursor-pointer"
           type="button"
         >
-          <svg v-if="isDark" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <!-- 太阳图标 -->
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 3v1m0 16v1m8.66-12.66l-.707.707M4.05 19.95l-.707-.707M21 12h-1M4 12H3m15.66 7.66l-.707-.707M4.05 4.05l-.707.707M12 5a7 7 0 100 14 7 7 0 000-14z" />
-          </svg>
-          <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <!-- 月亮图标 -->
-            <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 0010.01 9.79z" />
-          </svg>
+          <i v-if="isDark" class="iconfont icon-a-Frame47 text-lg"></i>
+          <i v-else class="iconfont icon-a-Frame48 text-lg"></i>
         </button>
       </div>
     </nav>
