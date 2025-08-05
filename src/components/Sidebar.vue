@@ -1,17 +1,17 @@
 <template>
-  <aside class="hidden md:block md:w-60 p-4 rounded-lg backdrop-blur-sm bg-white/10">
+  <aside class="hidden md:block md:w-60 p-4 rounded-lg backdrop-blur-sm bg-black/5 dark:bg-white/10">
     <section>
       <div class="text-xl font-bold mb-2 bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent">
         目录
       </div>
-      <a href="#" class="text-mx font-semibold text-white no-underline before:hidden hover:text-gray-400 transition-colors" @click.prevent="scrollToTop">
+      <a href="#" class="text-mx font-semibold text-#2f3f5b/80 dark:text-white no-underline before:hidden hover:text-#2f3f5b dark:hover:text-gray-400 transition-colors" @click.prevent="scrollToTop">
         {{ title || '无标题文章' }}
       </a>
       <ul class="list-none p-0 m-0 mt-1">
         <li v-for="(item, index) in toc" :key="index" class="mb-1">
           <a
             :href="`#${item.id}`"
-            class="block relative text-gray-400 no-underline hover:text-white transition-colors text-sm leading-tight"
+            class="block relative text-#2f3f5b dark:text-gray-400 no-underline hover:text-#2f3f5b/60 dark:hover:text-white transition-colors duration-500 text-sm leading-tight"
             :class="{
               'pl-4 before:left-0': item.tag === 'H2',
               'pl-6 before:left-2': item.tag === 'H3',

@@ -1,3 +1,12 @@
+const userTheme = localStorage.getItem('theme')
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+
+if (userTheme === 'dark' || (!userTheme && prefersDark)) {
+  document.documentElement.classList.add('dark')
+} else {
+  document.documentElement.classList.remove('dark')
+}
+
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'

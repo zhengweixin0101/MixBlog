@@ -18,52 +18,68 @@
 }
 
 .article-content {
-  color: #ccc;
+  color: #2f3f5b;
   line-height: 1.6;
   font-size: 16px;
   overflow-wrap: break-word;
   word-break: break-word;
+  transition: color 0.5s, background-color 0.5s, border-color 0.5s;
+}
+
+html.dark .article-content {
+  color: #CCC;
+}
+
+.article-content h1,
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
+.article-content h6 {
+  color: #2f3f5b;
+  font-weight: bold;
+  transition: color 0.5s, background-color 0.5s, border-color 0.5s;
+}
+
+html.dark .article-content h1,
+html.dark .article-content h1,
+html.dark .article-content h2,
+html.dark .article-content h3,
+html.dark .article-content h4,
+html.dark .article-content h5,
+html.dark .article-content h6 {
+  color: #ffffff;
+  transition: color 0.5s, background-color 0.5s, border-color 0.5s;
 }
 
 .article-content h1 {
   font-size: 1.75rem;
-  font-weight: bold;
-  color: #ffffff;
   margin: 2.5rem 0 1.8rem;
 }
 
 .article-content h2 {
   font-size: 1.5rem;
-  font-weight: bold;
-  color: #ffffff;
   margin: 2.2rem 0 1.5rem;
 }
 
 .article-content h3 {
   font-size: 1.25rem;
-  font-weight: bold;
-  color: #ffffff;
   margin: 1.8rem 0 1.3rem;
 }
 
 .article-content h4 {
   font-size: 1rem;
-  font-weight: bold;
-  color: #ffffff;
   margin: 1.5rem 0 1rem;
 }
 
 .article-content h5 {
   font-size: 0.875rem;
-  font-weight: bold;
-  color: #ffffff;
   margin: 1.2rem 0 0.9rem;
 }
 
 .article-content h6 {
   font-size: 0.75rem;
-  font-weight: bold;
-  color: #ffffff;
   margin: 1rem 0 0.8rem;
 }
 
