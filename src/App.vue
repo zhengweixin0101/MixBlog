@@ -5,7 +5,7 @@
       <div class="flex-1 w-full flex flex-col">
         <div class="w-full mx-auto flex-1 flex flex-col
                     max-w-full sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[75vw] 2xl:max-w-[60vw]">
-          <div class="flex-1 relative z-10 px-10">
+          <div class="flex-1 relative z-10 px-3">
             <RouterView />
           </div>
           <Footer />
