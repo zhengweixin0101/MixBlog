@@ -5,11 +5,7 @@
             bg-white/60 dark:bg-[#0e1111]/60 backdrop-blur-md
             transition-colors duration-300 border-b border-white/10 dark:border-white/10"
     >
-      <div class="flex items-center justify-between h-full
-               px-4 md:px-8
-               max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw]
-               mx-auto"
-      >
+      <div class="flex items-center justify-between h-full max-w-[90vw] lg:max-w-[75vw] 2xl:max-w-[60vw] mx-auto" >
         <!-- 桌面导航 -->
         <ul class="hidden md:flex justify-start space-x-4 list-none p-0 m-0 flex-1" >
           <li v-for="(item, index) in navItems" :key="index">
