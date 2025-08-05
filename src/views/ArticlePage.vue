@@ -1,12 +1,11 @@
 <script setup>
-import { ref, watchEffect, computed, onMounted } from 'vue'
+import { ref, watchEffect, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import matter from 'gray-matter'
 import { marked } from 'marked'
 import dayjs from 'dayjs'
 
 import hljs from 'highlight.js'
-import 'highlight.js/styles/vs2015.css'
 
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
@@ -54,7 +53,7 @@ function highlightCodeBlocks(html) {
       return `
         <div class="code-block-wrapper group relative">
           <button
-            class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded-lg bg-white/10 text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
+            class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded-lg bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
             style="outline:none; border:none; box-shadow:none; -webkit-appearance:none; -moz-appearance:none; appearance:none; background-clip: padding-box;"
             data-code="${encodeHTMLEntities(decoded)}"
           >
@@ -186,23 +185,41 @@ function highlightHeading(rawId) {
   }, HIGHLIGHT_DURATION)
 }
 
-watchEffect(async () => {
-  const slug = route.params.slug
-  if (!slug) return
+// 记录当前是否暗色模式
+const isDark = ref(document.documentElement.classList.contains('dark'))
 
-  if (Object.keys(slugMap.value).length === 0) {
-    await preloadSlugs()
-  }
+function loadHighlightStyle(darkMode) {
+  const prevLink = document.getElementById('hljs-theme')
+  if (prevLink) prevLink.remove()
 
-  await loadPost(slug)
+  const link = document.createElement('link')
+  link.id = 'hljs-theme'
+  link.rel = 'stylesheet'
+  link.href = darkMode
+    ? 'https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/vs2015.min.css' // 代码高亮 暗色主题
+    : 'https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github.min.css' // 代码高亮 亮色主题
 
-  setTimeout(() => {
-    highlightHeading(window.location.hash.slice(1))
-  }, 300)
-})
+  document.head.appendChild(link)
+}
+
+// 监听 html class 切换
+let observer = null
 
 onMounted(() => {
+  loadHighlightStyle(isDark.value)
+
+  observer = new MutationObserver(() => {
+    const darkNow = document.documentElement.classList.contains('dark')
+    if (darkNow !== isDark.value) {
+      isDark.value = darkNow
+      loadHighlightStyle(darkNow)
+    }
+  })
+
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+
   highlightHeading(window.location.hash.slice(1))
+
   window.addEventListener('hashchange', () => {
     highlightHeading(window.location.hash.slice(1))
   })
@@ -244,6 +261,25 @@ onMounted(() => {
       timers.set(btn, timerId)
     })
   })
+})
+
+onBeforeUnmount(() => {
+  if (observer) observer.disconnect()
+})
+
+watchEffect(async () => {
+  const slug = route.params.slug
+  if (!slug) return
+
+  if (Object.keys(slugMap.value).length === 0) {
+    await preloadSlugs()
+  }
+
+  await loadPost(slug)
+
+  setTimeout(() => {
+    highlightHeading(window.location.hash.slice(1))
+  }, 300)
 })
 
 const formattedDate = computed(() => {
