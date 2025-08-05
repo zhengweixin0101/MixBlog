@@ -11,6 +11,8 @@ html, body {
   overflow-x: hidden;
   overflow: visible;
   scroll-behavior: smooth;
+  color-scheme: light dark;
+  forced-color-adjust: none; 
   /* 禁止选中 */
   -webkit-user-select: none; /* Chrome/Safari */
   -moz-user-select: none;    /* Firefox */
