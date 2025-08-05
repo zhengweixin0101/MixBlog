@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-cn">
+<html lang="zh-cn" class="dark" style="color-scheme: dark;">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
@@ -7,15 +7,18 @@
     <meta name="robots" content="follow, index" />
     <meta content="ShinX的个人博客" name="description" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-    <meta name="color-scheme" content="light dark">
     <meta name="theme-color" content="#070808">
     <script>
       const theme = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (theme === 'dark' || (!theme && prefersDark)) {
-        document.documentElement.classList.add('dark');
+      const html = document.documentElement;
+
+      if (theme === 'dark' || theme === null) {
+        html.classList.add('dark');
+        html.style.colorScheme = 'dark'; 
+        if (!theme) localStorage.setItem('theme', 'dark');
       } else {
-        document.documentElement.classList.remove('dark');
+        html.classList.remove('dark');
+        html.style.colorScheme = 'light'; 
       }
     </script>
     <link rel="icon" href="/favicon.ico" />

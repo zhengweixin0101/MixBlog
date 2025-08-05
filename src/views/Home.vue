@@ -9,7 +9,7 @@
         <h1 data-fade class="mt-2 text-5xl sm:text-6xl leading-tight break-words">
           I'm <span class="bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent -webkit-bg-clip-text">ShinX</span>
         </h1>
-        <p data-fade class="mt-5 max-w-xl text-#2f3f5b dark:text-#e4e7eb transition-colors text-base sm:text-lg mx-auto md:mx-0" >
+        <p data-fade class="mt-5 max-w-xl text-#2f3f5b dark:text-#e4e7eb transition-colors duration-500 text-base sm:text-lg mx-auto md:mx-0" >
           A 📕Student and 🎮Gamer
         </p>
         <div data-fade class="flex flex-wrap gap-4 mt-10 justify-center md:justify-start" >
@@ -17,8 +17,8 @@
              class="inline-flex items-center justify-center 
                     px-4 py-2 rounded border border-white 
                     font-bold text-#2f3f5b dark:text-white transition-colors bg-transparent no-underline 
-                    hover:scale-105 transition-transform
-                    shadow-[0_0_10px_rgba(47,63,91,1)] dark:shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                    hover:scale-105 transition-transform transition-shadow duration-500
+                    shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]"
           >
             My Blog
           </a>
@@ -27,20 +27,20 @@
              class="inline-flex items-center justify-center 
                     px-4 py-2 rounded border border-white 
                     font-bold text-#2f3f5b dark:text-white transition-colors bg-transparent no-underline 
-                    hover:scale-105 transition-transform
-                    shadow-[0_0_10px_rgba(47,63,91,1)] dark:shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                    hover:scale-105 transition-transform transition-shadow duration-500
+                    shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]"
           >
             About Me
           </a>
         </div>
         <div data-fade class="mt-6 flex flex-wrap justify-center md:justify-start gap-4 text-sm" >
-          <a href="/app.html" class="text-gray-400 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white no-underline">
+          <a href="/app.html" class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline">
             <i class="iconfont icon-shapes"></i> Apps
           </a>
-          <a href="mailto:zhengweixin0101@outlook.com" class="text-gray-400 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white no-underline">
+          <a href="mailto:zhengweixin0101@outlook.com" class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline">
             <i class="iconfont icon-envelope"></i> Mail
           </a>
-          <a target="_blank" href="https://github.com/zhengweixin0101" class="text-gray-400 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white no-underline">
+          <a target="_blank" href="https://github.com/zhengweixin0101" class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline">
             <i class="iconfont icon-github"></i> Github
           </a>
         </div>
@@ -50,7 +50,7 @@
         <img
           src="/avatar.jpg"
           alt="Avatar"
-          class="rounded-full w-full h-full object-cover transition-transform duration-600 hover:rotate-360"
+          class="rounded-full w-full h-full object-cover transition-transform duration-300 hover:rotate-360"
           draggable="false"
         />
       </div>

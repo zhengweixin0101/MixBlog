@@ -16,7 +16,7 @@
               class="flex items-center space-x-1 no-underline px-3 py-2 rounded font-bold whitespace-nowrap"
               :class="{
                 'active-gradient-text animate-gradient-flow': (route.path === item.href || (item.href === '/posts.html' && route.path.startsWith('/posts/'))) && isRouteReady,
-                'text-#2f3f5b dark:text-white hover:brightness-75 cursor-pointer transition-colors duration-500': route.path !== item.href || !isRouteReady
+                'text-#2f3f5b dark:text-white hover:brightness-200 dark:hover:brightness-75 cursor-pointer transition-colors duration-500': route.path !== item.href || !isRouteReady
               }"
             >
               <i
@@ -31,13 +31,21 @@
         <!-- 主题切换按钮 -->
         <button
           @click="toggleTheme"
-          :aria-label="isDark ? '切换到亮色模式' : '切换到暗色模式'"
-          class="ml-4 px-3 py-1 rounded bg-white/10 hover:bg-white/20 text-white transition flex items-center space-x-1 select-none"
+          aria-label="切换主题"
+          class="ml-4 p-2.5 rounded-lg border-none
+              text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20
+                transition-colors duration-500 flex items-center justify-center select-none cursor-pointer"
           type="button"
         >
-          <span v-if="isDark" class="iconfont icon-sun" style="font-size: 18px;"></span>
-          <span v-else class="iconfont icon-moon" style="font-size: 18px;"></span>
-          <span>{{ isDark ? '亮色' : '暗色' }}</span>
+          <svg v-if="isDark" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <!-- 太阳图标 -->
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 3v1m0 16v1m8.66-12.66l-.707.707M4.05 19.95l-.707-.707M21 12h-1M4 12H3m15.66 7.66l-.707-.707M4.05 4.05l-.707.707M12 5a7 7 0 100 14 7 7 0 000-14z" />
+          </svg>
+          <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <!-- 月亮图标 -->
+            <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 0010.01 9.79z" />
+          </svg>
         </button>
       </div>
     </nav>
@@ -61,36 +69,27 @@ const navItems = [
   { label: 'About', href: '/about.html', icon: 'icon-about' },
 ]
 
-// 主题切换相关
+// 主题切换
 const isDark = ref(false)
 
-// 初始化主题状态
 onMounted(() => {
-  const saved = localStorage.getItem('theme')
-  if (saved === 'dark') {
-    isDark.value = true
-    document.documentElement.classList.add('dark')
-  } else if (saved === 'light') {
-    isDark.value = false
-    document.documentElement.classList.remove('dark')
-  } else {
-    // 没保存则按系统偏好
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    isDark.value = prefersDark
-    if (prefersDark) document.documentElement.classList.add('dark')
-    else document.documentElement.classList.remove('dark')
-  }
+  const html = document.documentElement
+  isDark.value = html.classList.contains('dark')
+  html.style.colorScheme = isDark.value ? 'dark' : 'light'
 })
 
-// 切换函数
 function toggleTheme() {
-  isDark.value = !isDark.value
-  if (isDark.value) {
-    document.documentElement.classList.add('dark')
-    localStorage.setItem('theme', 'dark')
-  } else {
-    document.documentElement.classList.remove('dark')
+  const html = document.documentElement
+  if (html.classList.contains('dark')) {
+    html.classList.remove('dark')
+    html.style.colorScheme = 'light'
     localStorage.setItem('theme', 'light')
+    isDark.value = false
+  } else {
+    html.classList.add('dark')
+    html.style.colorScheme = 'dark'
+    localStorage.setItem('theme', 'dark')
+    isDark.value = true
   }
 }
 </script>
