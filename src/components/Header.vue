@@ -1,7 +1,7 @@
 <template>
   <header>
     <nav
-      class="fixed top-0 left-0 right-0 z-50 w-full h-[68px] bg-[#f8f8f8] dark:bg-[#0e1111] transition-colors duration-500"
+      class="fixed top-0 left-0 right-0 z-50 w-full h-[68px] bg-[#f8f8f8] dark:bg-[#0e1111] transition-colors duration-300"
     >
       <div
         class="flex items-center justify-between h-full items-center
@@ -34,7 +34,7 @@
           aria-label="切换主题"
           class="ml-4 p-2.5 rounded-lg border-none
               text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20
-                transition-colors duration-500 flex items-center justify-center select-none cursor-pointer"
+                transition-colors duration-300 flex items-center justify-center select-none cursor-pointer"
           type="button"
         >
           <svg v-if="isDark" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -70,13 +70,7 @@ const navItems = [
 ]
 
 // 主题切换
-const isDark = ref(false)
-
-onMounted(() => {
-  const html = document.documentElement
-  isDark.value = html.classList.contains('dark')
-  html.style.colorScheme = isDark.value ? 'dark' : 'light'
-})
+const isDark = ref(document.documentElement.classList.contains('dark'))
 
 function toggleTheme() {
   const html = document.documentElement

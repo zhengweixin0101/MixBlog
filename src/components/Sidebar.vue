@@ -11,7 +11,7 @@
         <li v-for="(item, index) in toc" :key="index" class="mb-1">
           <a
             :href="`#${item.id}`"
-            class="block relative text-#2f3f5b dark:text-gray-400 no-underline hover:text-#2f3f5b/60 dark:hover:text-white transition-colors duration-500 text-sm leading-tight"
+            class="block relative text-#2f3f5b dark:text-gray-400 no-underline hover:text-#2f3f5b/60 dark:hover:text-white transition-colors duration-300 text-sm leading-tight"
             :class="{
               'pl-4 before:left-0': item.tag === 'H2',
               'pl-6 before:left-2': item.tag === 'H3',

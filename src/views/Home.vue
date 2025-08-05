@@ -7,9 +7,26 @@
           Hi!<span id="wave-hand">👋</span>
         </p>
         <h1 data-fade class="mt-2 text-5xl sm:text-6xl leading-tight break-words">
-          I'm <span class="bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent -webkit-bg-clip-text">ShinX</span>
+          I'm
+          <span class="relative inline-block ml-2">
+            <span
+              class="transition-colors duration-300
+                    text-[#2f3f5b]
+                    dark:text-transparent
+                    dark:bg-gradient-to-r dark:from-[#00e699] dark:to-[#00e2d8]
+                    dark:bg-clip-text dark:-webkit-bg-clip-text
+                    dark:-webkit-text-fill-color-transparent"
+            >
+              ShinX
+            </span>
+            <span
+              class="absolute inset-0 -z-10
+                    bg-gradient-to-r from-[#00e69980] to-[#00e2d850]
+                    dark:hidden"
+            ></span>
+          </span>
         </h1>
-        <p data-fade class="mt-5 max-w-xl text-#2f3f5b dark:text-#e4e7eb transition-colors duration-500 text-base sm:text-lg mx-auto md:mx-0" >
+        <p data-fade class="mt-5 max-w-xl text-#2f3f5b dark:text-#e4e7eb transition-colors duration-300 text-base sm:text-lg mx-auto md:mx-0" >
           A 📕Student and 🎮Gamer
         </p>
         <div data-fade class="flex flex-wrap gap-4 mt-10 justify-center md:justify-start" >
@@ -17,7 +34,7 @@
              class="inline-flex items-center justify-center 
                     px-4 py-2 rounded border border-white 
                     font-bold text-#2f3f5b dark:text-white transition-colors bg-transparent no-underline 
-                    hover:scale-105 transition-transform transition-shadow duration-500
+                    hover:scale-105 transition-transform transition-shadow duration-300
                     shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]"
           >
             My Blog
@@ -27,7 +44,7 @@
              class="inline-flex items-center justify-center 
                     px-4 py-2 rounded border border-white 
                     font-bold text-#2f3f5b dark:text-white transition-colors bg-transparent no-underline 
-                    hover:scale-105 transition-transform transition-shadow duration-500
+                    hover:scale-105 transition-transform transition-shadow duration-300
                     shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]"
           >
             About Me

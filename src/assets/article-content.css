@@ -23,7 +23,7 @@
   font-size: 16px;
   overflow-wrap: break-word;
   word-break: break-word;
-  transition: color 0.5s, background-color 0.5s, border-color 0.5s;
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
 }
 
 html.dark .article-content {
@@ -39,7 +39,7 @@ html.dark .article-content {
 .article-content h6 {
   color: #2f3f5b;
   font-weight: bold;
-  transition: color 0.5s, background-color 0.5s, border-color 0.5s;
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
 }
 
 html.dark .article-content h1,
@@ -50,7 +50,7 @@ html.dark .article-content h4,
 html.dark .article-content h5,
 html.dark .article-content h6 {
   color: #ffffff;
-  transition: color 0.5s, background-color 0.5s, border-color 0.5s;
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
 }
 
 .article-content h1 {

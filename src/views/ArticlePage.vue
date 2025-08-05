@@ -256,10 +256,10 @@ const formattedDate = computed(() => {
   <main v-fade-in>
     <div class="py-6">
       <Title data-fade :text="frontmatter.title || '无标题文章'" />
-      <div data-fade class="text-sm text-#2f3f5b dark:text-gray-400 mt-2 pb-4 flex flex-col gap-2 transition-colors duration-500" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
+      <div data-fade class="text-sm text-#2f3f5b dark:text-gray-400 mt-2 pb-4 flex flex-col gap-2 transition-colors duration-300" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
         <span>{{ formattedDate }}</span>
         <div class="flex flex-wrap gap-2">
-          <span v-for="tag in frontmatter.tags || []" :key="tag" class="px-2 py-1 text-xs rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-500">{{ tag }}</span>
+          <span v-for="tag in frontmatter.tags || []" :key="tag" class="px-2 py-1 text-xs rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">{{ tag }}</span>
         </div>
       </div>
     </div>

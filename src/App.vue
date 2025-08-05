@@ -1,5 +1,5 @@
 <template>
-  <div class="relative min-h-screen flex flex-col text-#2f3f5b dark:text-white transition-colors duration-500">
+  <div class="relative min-h-screen flex flex-col text-#2f3f5b dark:text-white transition-colors duration-300">
     <Header />
     <div class="flex flex-1">
       <div class="flex-1 w-full flex flex-col px-4">
