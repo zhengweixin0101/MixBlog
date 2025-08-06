@@ -3,7 +3,7 @@ import path from 'path'
 import matter from 'gray-matter'
 
 const SITE_URL = 'https://zhengweixin.top'
-const RSS_PATH = './public/rss.xml'
+const RSS_PATH = 'public/rss.xml'
 const POSTS_PATH = './src/posts'
 function escapeHtml(str) {
   return str.replace(/&/g, '&amp;')
@@ -72,9 +72,9 @@ async function generateRSS() {
     await fs.mkdir(path.dirname(RSS_PATH), { recursive: true })
     await fs.writeFile(RSS_PATH, rss.trim())
 
-    console.log(`✅ RSS 生成在 ${RSS_PATH}`)
+    console.log(`✅ RSS 生成成功：${RSS_PATH}`)
   } catch (error) {
-    console.error('❌ RSS 生成失败:', error)
+    console.error('❌ RSS 生成失败', error)
   }
 }
 
