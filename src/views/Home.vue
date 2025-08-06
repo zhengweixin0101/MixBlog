@@ -1,6 +1,14 @@
+<script setup>
+import Head from '@/components/Head.vue'
+</script>
+
 <template>
+  <Head
+    title="主页 | ShinX’s Blog"
+    description="This is ShinX’s blog, created by a student and a gamer"
+  />
   <main v-fade-in class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center py-12 max-w-7xl">
-    <div class="flex flex-col-reverse md:flex-row items-center justify-between w-full gap-10">
+    <div class="flex flex-col-reverse md:flex-row items-center justify-between w-full gap-10 mt--10">
       <!-- 左侧 -->
       <div class="text-center md:text-left">
         <p data-fade class="text-4xl sm:text-5xl font-bold">
@@ -30,7 +38,7 @@
           A 📕Student and 🎮Gamer
         </p>
         <div data-fade class="flex flex-wrap gap-4 mt-10 justify-center md:justify-start" >
-          <a href="/posts.html" 
+          <router-link to="/posts.html" 
              class="inline-flex items-center justify-center 
                     px-4 py-2 rounded border border-white 
                     font-bold text-#2f3f5b dark:text-white transition-colors bg-transparent no-underline 
@@ -38,9 +46,9 @@
                     shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]"
           >
             My Blog
-          </a>
-          <a
-            href="/about.html"
+          </router-link>
+          <router-link
+            to="/about.html"
              class="inline-flex items-center justify-center 
                     px-4 py-2 rounded border border-white 
                     font-bold text-#2f3f5b dark:text-white transition-colors bg-transparent no-underline 
@@ -48,7 +56,7 @@
                     shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]"
           >
             About Me
-          </a>
+          </router-link>
         </div>
         <div data-fade class="mt-6 flex flex-wrap justify-center md:justify-start gap-4 text-sm" >
           <a href="/app.html" class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline">
