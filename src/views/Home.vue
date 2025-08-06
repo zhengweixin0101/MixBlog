@@ -1,4 +1,12 @@
+<script setup>
+import Head from '@/components/Head.vue'
+</script>
+
 <template>
+  <Head
+    title="个人主页 | ShinX’s Blog"
+    description="`I am ShinX,a Student and a Gamer.`"
+  />
   <main v-fade-in class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center py-12 max-w-7xl">
     <div class="flex flex-col-reverse md:flex-row items-center justify-between w-full gap-10 mt--10">
       <!-- 左侧 -->

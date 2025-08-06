@@ -1,5 +1,6 @@
 <script setup>
 import Title from '@/components/PageTitle.vue'
+import Head from '@/components/Head.vue'
 import { ref, computed } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import matter from 'gray-matter'
@@ -62,9 +63,17 @@ function formatDate(date) {
   if (!date || date === '未知日期') return '未知日期'
   return dayjs(date).format('YYYY-MM-DD')
 }
+
+const allTagsString = computed(() => allTags.value.join(','))
 </script>
 
 <template>
+  <Head
+    title="文章列表 | ShinX’s Blog"
+    description="ShinX的个人博客文章列表。"
+    :keywords="`ShinX,zhengweixin,blog,ShinX的个人主页,${allTagsString}`"
+  />
+
   <main v-fade-in>
     <section class="py-12 w-full max-w-screen-xl mx-auto">
       <Title data-fade text="Posts" />

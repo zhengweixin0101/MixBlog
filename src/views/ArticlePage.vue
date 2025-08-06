@@ -1,4 +1,6 @@
 <script setup>
+import Head from '@/components/Head.vue'
+
 import { ref, watchEffect, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import matter from 'gray-matter'
@@ -289,8 +291,14 @@ const formattedDate = computed(() => {
 </script>
 
 <template>
+  <Head v-if="frontmatter.title"
+    :title="`${frontmatter.title} | ShinX’s Blog`"
+    :description="frontmatter.description"
+    :keywords="(frontmatter.tags || []).join(',')"
+  />
+
   <main v-fade-in>
-    <div class="py-6">
+    <div v-if="frontmatter.title" class="py-6">
       <Title data-fade :text="frontmatter.title || '无标题文章'" />
       <div data-fade class="text-sm text-#2f3f5b dark:text-gray-400 mt-2 pb-4 flex flex-col gap-2 transition-colors duration-300" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
         <span>{{ formattedDate }}</span>
