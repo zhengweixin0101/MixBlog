@@ -1,7 +1,7 @@
 <template>
   <header>
     <nav
-      class="fixed top-0 left-0 right-0 z-50 w-full h-20
+      class="fixed top-0 left-0 right-0 z-50 w-full h-[68px]
             bg-#f8f8f8 dark:bg-[#0e1111]/60 backdrop-blur-md
             transition-colors duration-300 border-b border-white/10 dark:border-white/10"
     >
