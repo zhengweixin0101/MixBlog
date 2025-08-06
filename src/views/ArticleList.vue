@@ -63,15 +63,13 @@ function formatDate(date) {
   if (!date || date === '未知日期') return '未知日期'
   return dayjs(date).format('YYYY-MM-DD')
 }
-
-const allTagsString = computed(() => allTags.value.join(','))
 </script>
 
 <template>
   <Head
     title="文章列表 | ShinX’s Blog"
     description="ShinX的个人博客文章列表。"
-    :keywords="`ShinX,zhengweixin,blog,ShinX的个人主页,${allTagsString}`"
+    :keywords="`${allTagsString}`"
   />
 
   <main v-fade-in>
