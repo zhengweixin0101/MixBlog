@@ -58,13 +58,14 @@ async function generateRSS() {
       </item>
     `).join('\n')
 
-    const rss = `<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0">
+const rss = `<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>ShinX's Blog</title>
     <link>${SITE_URL}</link>
     <description>博客更新订阅</description>
     <language>zh-cn</language>
+    <atom:link href="${SITE_URL}/rss.xml" rel="self" type="application/rss+xml" />
     ${itemsXml}
   </channel>
 </rss>`
