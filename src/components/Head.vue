@@ -32,13 +32,13 @@ const resolvedKeywords = computed(() => {
 useHead({
   title: props.title || 'ShinX',
   meta: [
-    { name: 'description', content: props.description || 'ShinX的个人博客。' },
+    { name: 'description', content: props.description || 'This is ShinX’s blog, created by a student and a gamer' },
     { name: 'keywords', content: resolvedKeywords.value },
     { property: 'og:title', content: props.title || 'ShinX' },
-    { property: 'og:description', content: props.description || 'ShinX的个人博客。' },
+    { property: 'og:description', content: props.description || 'This is ShinX’s blog, created by a student and a gamer' },
     { property: 'og:url', content: currentUrl.value },
     { name: 'twitter:title', content: props.title || 'ShinX' },
-    { name: 'twitter:description', content: props.description || 'ShinX的个人博客。' },
+    { name: 'twitter:description', content: props.description || 'This is ShinX’s blog, created by a student and a gamer' },
     { name: 'twitter:card', content: 'summary' },
   ],
 })
