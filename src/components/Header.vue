@@ -10,6 +10,7 @@
         <ul class="hidden md:flex justify-start space-x-4 list-none p-0 m-0 flex-1" >
           <li v-for="(item, index) in navItems" :key="index">
             <router-link
+              draggable="false"
               :to="item.href"
               class="flex items-center space-x-1 no-underline px-3 py-2 rounded font-bold whitespace-nowrap"
               :class="{
@@ -71,6 +72,7 @@
             @click="isMenuOpen = false"
           >
             <router-link
+              draggable="false"
               :to="item.href"
               class="flex items-center px-4 py-3 text-sm font-medium no-underline
                     text-#2f3f5b dark:text-white hover:bg-black/10 dark:hover:bg-white/10
