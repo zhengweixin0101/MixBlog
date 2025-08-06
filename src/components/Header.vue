@@ -37,7 +37,7 @@
                 select-none cursor-pointer"
           type="button"
         >
-          <i class="iconfont icon-caidan text-lg"></i>
+          <i :class="isMenuOpen ? 'iconfont icon-guanbi text-lg' : 'iconfont icon-caidan text-lg'"></i>
         </button>
 
         <!-- 主题切换按钮 -->
