@@ -3,10 +3,12 @@
     <Header />
     <div class="flex flex-1">
       <div class="flex-1 w-full flex flex-col">
-        <div class="w-full mx-auto flex-1 flex flex-col
-                    max-w-full sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[65vw] 2xl:max-w-[55vw]">
+        <div
+          class="w-full mx-auto flex-1 flex flex-col
+                 max-w-full sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[65vw] 2xl:max-w-[55vw]"
+        >
           <div class="flex-1 relative z-10 px-3">
-            <RouterView />
+            <NuxtPage />
           </div>
           <Footer />
         </div>
@@ -15,9 +17,3 @@
   </div>
   <Background />
 </template>
-
-<script setup>
-import Background from '@/components/Background.vue'
-import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.vue'
-</script>

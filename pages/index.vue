@@ -1,12 +1,4 @@
-<script setup>
-import Head from '@/components/Head.vue'
-</script>
-
 <template>
-  <Head
-    title="主页 | ShinX’s Blog"
-    description="This is ShinX’s blog, created by a student and a gamer"
-  />
   <main v-fade-in class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center py-12 max-w-7xl">
     <div class="flex flex-col-reverse md:flex-row items-center justify-between w-full gap-10 mt--10">
       <!-- 左侧 -->
@@ -34,38 +26,52 @@ import Head from '@/components/Head.vue'
             ></span>
           </span>
         </h1>
-        <p data-fade class="mt-5 max-w-xl text-#2f3f5b dark:text-#e4e7eb transition-colors duration-300 text-base sm:text-lg mx-auto md:mx-0" >
+        <p
+          data-fade
+          class="mt-5 max-w-xl text-[#2f3f5b] dark:text-[#e4e7eb] transition-colors duration-300 text-base sm:text-lg mx-auto md:mx-0"
+        >
           A 📕Student and 🎮Gamer
         </p>
-        <div data-fade class="flex flex-wrap gap-4 mt-10 justify-center md:justify-start" >
-          <router-link to="/posts.html" 
-             class="inline-flex items-center justify-center 
-                    px-4 py-2 rounded border border-white 
-                    font-bold text-#2f3f5b dark:text-white transition-colors bg-transparent no-underline 
-                    hover:scale-105 transition-transform transition-shadow duration-300
-                    shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]"
+        <div data-fade class="flex flex-wrap gap-4 mt-10 justify-center md:justify-start">
+          <NuxtLink
+            to="/posts"
+            class="inline-flex items-center justify-center
+                   px-4 py-2 rounded border border-white
+                   font-bold text-[#2f3f5b] dark:text-white transition-colors bg-transparent no-underline
+                   hover:scale-105 transition-transform transition-shadow duration-300
+                   shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]"
           >
             My Blog
-          </router-link>
-          <router-link
-            to="/about.html"
-             class="inline-flex items-center justify-center 
-                    px-4 py-2 rounded border border-white 
-                    font-bold text-#2f3f5b dark:text-white transition-colors bg-transparent no-underline 
-                    hover:scale-105 transition-transform transition-shadow duration-300
-                    shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]"
+          </NuxtLink>
+          <NuxtLink
+            to="/about"
+            class="inline-flex items-center justify-center
+                   px-4 py-2 rounded border border-white
+                   font-bold text-[#2f3f5b] dark:text-white transition-colors bg-transparent no-underline
+                   hover:scale-105 transition-transform transition-shadow duration-300
+                   shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]"
           >
             About Me
-          </router-link>
+          </NuxtLink>
         </div>
-        <div data-fade class="mt-6 flex flex-wrap justify-center md:justify-start gap-4 text-sm" >
-          <a href="/app.html" class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline">
+        <div data-fade class="mt-6 flex flex-wrap justify-center md:justify-start gap-4 text-sm">
+          <a
+            href="/"
+            class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline"
+          >
             <i class="iconfont icon-shapes"></i> Apps
           </a>
-          <a href="mailto:zhengweixin0101@outlook.com" class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline">
+          <a
+            href="mailto:zhengweixin0101@outlook.com"
+            class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline"
+          >
             <i class="iconfont icon-envelope"></i> Mail
           </a>
-          <a target="_blank" href="https://github.com/zhengweixin0101" class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline">
+          <a
+            target="_blank"
+            href="https://github.com/zhengweixin0101"
+            class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline"
+          >
             <i class="iconfont icon-github"></i> Github
           </a>
         </div>

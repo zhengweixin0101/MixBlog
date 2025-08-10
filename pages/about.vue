@@ -1,3 +1,3 @@
 <template>
-还没写
+  <noscript />
 </template>

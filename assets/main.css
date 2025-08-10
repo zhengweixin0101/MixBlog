@@ -5,26 +5,41 @@
   scrollbar-width: thin;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   min-height: 100%;
   overflow-x: hidden;
   overflow: visible;
   scroll-behavior: smooth;
   color-scheme: light dark;
-  forced-color-adjust: none; 
+  forced-color-adjust: none;
   /* 禁止选中 */
-  -webkit-user-select: none; /* Chrome/Safari */
-  -moz-user-select: none;    /* Firefox */
-  -ms-user-select: none;     /* IE/Edge */
+  -webkit-user-select: none;
+  /* Chrome/Safari */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* IE/Edge */
   user-select: none;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.light {
+  color-scheme: light;
 }
 
 /* 文章允许选择 */
 .article-content {
-  -webkit-user-select: text; /* Chrome/Safari */
-  -moz-user-select: text;    /* Firefox */
-  -ms-user-select: text;     /* IE/Edge */
+  -webkit-user-select: text;
+  /* Chrome/Safari */
+  -moz-user-select: text;
+  /* Firefox */
+  -ms-user-select: text;
+  /* IE/Edge */
   user-select: text;
 }
 
