@@ -6,7 +6,10 @@ export default defineNuxtConfig({
       const posts = await res.json()
       nitro.options.prerender.routes = posts.map(post => `/posts/${post.slug}`)
       console.log('Prerender routes:', nitro.options.prerender.routes)
-    }
+    },
+  },
+  experimental: {
+    payloadExtraction: false
   },
   modules: [
     '@nuxtjs/color-mode',

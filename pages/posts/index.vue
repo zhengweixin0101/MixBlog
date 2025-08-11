@@ -8,7 +8,7 @@ const searchTerm = ref('')
 const selectedTag = ref('')
 const revealedPosts = ref(new Set())
 
-// 调用 API
+// 调用API获取Posts数据
 const { data: postsRaw } = await useAsyncData('post', () =>
   $fetch('https://blog-backend.zhengweixin0101.workers.dev/posts-list'
 ))
