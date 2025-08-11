@@ -165,7 +165,7 @@ async function loadPost(slug) {
     return
   }
   try {
-    const res = await fetch(`/api/posts/${slug}`)
+    const res = await fetch(`https://blog-backend.zhengweixin0101.workers.dev/posts/${slug}`)
     if (!res.ok) {
       post.value = { content: '<h1>文章未找到</h1>', frontmatter: {}, toc: [] }
       return
