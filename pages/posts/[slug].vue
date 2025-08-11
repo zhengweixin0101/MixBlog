@@ -158,7 +158,7 @@ const post = ref({
   toc: []
 })
 
-// 通过 slug 调用接口加载文章
+// 通过调用接口加载文章
 async function loadPost(slug) {
   if (!slug) {
     post.value = { content: '<h1>文章未找到</h1>', frontmatter: {}, toc: [] }
@@ -274,8 +274,8 @@ const formattedDate = computed(() => {
       </div>
     </div>
     <div class="flex gap-8 px-2 flex-col md:flex-row max-w-full">
-      <section class=" flex-1 min-w-0 max-w-full">
-        <article data-fade v-html="post.content" class="article-content whitespace-normal break-words" />
+      <section data-fade class=" flex-1 min-w-0 max-w-full">
+        <article v-html="post.content" class="article-content whitespace-normal break-words" />
       </section>
       <div data-fade class="sticky top-30 flex-shrink-0 hidden md:block self-start">
         <Sidebar :toc="post.toc" :title="post.frontmatter.title" />
