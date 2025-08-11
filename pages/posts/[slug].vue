@@ -247,8 +247,8 @@ const formattedDate = computed(() => {
 </script>
 
 <template>
-  <main v-fade-in>
-    <div v-if="post?.frontmatter?.title" class="py-6">
+  <main v-if="post?.frontmatter?.title"  v-fade-in>
+    <div class="py-6">
       <h1 data-fade class="text-3xl mt-40">
         <span
           class="relative inline-block transition-colors duration-300
