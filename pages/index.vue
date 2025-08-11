@@ -81,7 +81,7 @@
         <img
           src="/avatar.jpg"
           alt="Avatar"
-          class="rounded-full w-full h-full object-cover transition-transform duration-300 md:hover:rotate-360"
+          class="rounded-full w-full h-full object-cover transition-transform duration-300 hover:rotate-360"
           draggable="false"
         />
       </div>
