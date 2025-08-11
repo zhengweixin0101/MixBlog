@@ -9,7 +9,9 @@ const selectedTag = ref('')
 const revealedPosts = ref(new Set())
 
 // 调用 API
-const { data: postsRaw } = await useFetch('https://blog-backend.zhengweixin0101.workers.dev/posts-list')
+const { data: postsRaw } = await useAsyncData('post', () =>
+  $fetch('https://blog-backend.zhengweixin0101.workers.dev/posts-list'
+))
 
 const posts = computed(() => postsRaw.value || [])
 

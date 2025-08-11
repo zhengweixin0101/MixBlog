@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
-import { useRoute } from '#imports'
+import { ref, computed, watch } from 'vue'
+import { useRoute, useAsyncData } from '#imports'
 import { marked } from 'marked'
 import dayjs from 'dayjs'
 import hljs from 'highlight.js'
@@ -11,10 +11,8 @@ import { Fancybox } from '@fancyapps/ui/dist/fancybox/'
 import '@fancyapps/ui/dist/fancybox/fancybox.css'
 
 import Sidebar from '@/components/Sidebar.vue'
-
 import '@/assets/article-content.css'
 
-// route
 const route = useRoute()
 
 // HTML 实体解析
@@ -26,10 +24,10 @@ function decodeHTMLEntities(str) {
 }
 function encodeHTMLEntities(str) {
   return str.replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
 }
 
 // 代码高亮处理
@@ -152,72 +150,41 @@ function onCopyBtnClick(e) {
   })
 }
 
-const post = ref({
-  content: '',
-  frontmatter: {},
-  toc: []
+//服务器端预取文章数据
+const { data: rawPostData, error, refresh } = await useAsyncData(
+  () => `post-${route.params.slug}`,
+  () => $fetch(`https://blog-backend.zhengweixin0101.workers.dev/posts/${route.params.slug}`),
+  { immediate: true }
+)
+
+const post = computed(() => {
+  if (error.value || !rawPostData.value) {
+    return { content: '<h1>文章未找到</h1>', frontmatter: {}, toc: [] }
+  }
+  // 解析 markdown
+  let html = marked.parse(rawPostData.value.content)
+  html = wrapImagesWithLinks(html)
+  html = addFancyboxAttributesToAnchors(html)
+
+  const tocItems = []
+  html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (m, tag, text) => {
+    const id = text.toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w\- \u4e00-\u9fa5]/g, '')
+    if (tag !== 'h1') tocItems.push({ id, text, tag: tag.toUpperCase() })
+    return `<${tag} id="${id}" class="scroll-mt-40">${text}</${tag}>`
+  })
+
+  html = renderKatex(html)
+  html = highlightCodeBlocks(html)
+
+  return { content: html, frontmatter: rawPostData.value.frontmatter, toc: tocItems }
 })
 
-// 通过调用接口加载文章
-async function loadPost(slug) {
-  if (!slug) {
-    post.value = { content: '<h1>文章未找到</h1>', frontmatter: {}, toc: [] }
-    return
-  }
-  try {
-    const res = await fetch(`https://blog-backend.zhengweixin0101.workers.dev/posts/${slug}`)
-    if (!res.ok) {
-      post.value = { content: '<h1>文章未找到</h1>', frontmatter: {}, toc: [] }
-      return
-    }
-    const data = await res.json()
-
-    let html = marked.parse(data.content)
-    html = wrapImagesWithLinks(html)
-    html = addFancyboxAttributesToAnchors(html)
-
-    const tocItems = []
-    html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (m, tag, text) => {
-      const id = text.toLowerCase()
-        .replace(/\s+/g, '-')
-        .replace(/[^\w\- \u4e00-\u9fa5]/g, '')
-      if (tag !== 'h1') tocItems.push({ id, text, tag: tag.toUpperCase() })
-      return `<${tag} id="${id}" class="scroll-mt-40">${text}</${tag}>`
-    })
-
-    html = renderKatex(html)
-    html = highlightCodeBlocks(html)
-
-    post.value = { content: html, frontmatter: data.frontmatter, toc: tocItems }
-
-    if (typeof window !== 'undefined') {
-      setTimeout(() => {
-        Fancybox.bind('[data-fancybox="gallery"]')
-      }, 0)
-    }
-  } catch (err) {
-    post.value = { content: `<h1>加载文章出错</h1><p>${err.message}</p>`, frontmatter: {}, toc: [] }
-  }
-}
-
-watch(() => route.params.slug, async (slug) => {
-  await loadPost(slug)
-  if (typeof window !== 'undefined') {
-    setTimeout(() => {
-      highlightHeading(window.location.hash.slice(1))
-    }, 300)
-  }
-}, { immediate: true })
-
-const isMountedFlag = ref(false)
-function onHashChange() {
-  if (typeof window !== 'undefined') {
-    highlightHeading(window.location.hash.slice(1))
-  }
-}
+// 页面高亮和灯箱初始化
+import { onMounted, onBeforeUnmount } from 'vue'
 
 onMounted(() => {
-  isMountedFlag.value = true
   isDark.value = document.documentElement.classList.contains('dark')
   loadHighlightStyle(isDark.value)
 
@@ -230,21 +197,34 @@ onMounted(() => {
   })
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 
-  window.addEventListener('hashchange', onHashChange)
+  Fancybox.bind('[data-fancybox="gallery"]')
+
+  window.addEventListener('hashchange', () => {
+    highlightHeading(window.location.hash.slice(1))
+  })
+
   document.addEventListener('click', onCopyBtnClick)
 
   onBeforeUnmount(() => {
     observer.disconnect()
-    window.removeEventListener('hashchange', onHashChange)
+    window.removeEventListener('hashchange', () => {
+      highlightHeading(window.location.hash.slice(1))
+    })
     document.removeEventListener('click', onCopyBtnClick)
   })
 })
+
+// 路由 hash 对应标题高亮
+watch(() => route.hash, (hash) => {
+  highlightHeading(hash.slice(1))
+}, { immediate: true })
 
 const formattedDate = computed(() => {
   if (!post.value.frontmatter.date) return ''
   return `ShinX 发布于 ${dayjs(post.value.frontmatter.date).format('YYYY-MM-DD')}`
 })
 </script>
+
 
 <template>
   <main v-if="post?.frontmatter?.title"  v-fade-in>

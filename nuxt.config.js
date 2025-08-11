@@ -1,14 +1,11 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   hooks: {
-    'nitro:config'(nitroConfig) {
-      nitroConfig.prerender.routes = []
-    },
     'nitro:build:before': async (nitro) => {
       const res = await fetch('https://raw.githubusercontent.com/zhengweixin0101/Blog-Posts/main/posts-list.json')
       const posts = await res.json()
       nitro.options.prerender.routes = posts.map(post => `/posts/${post.slug}`)
+      console.log('Prerender routes:', nitro.options.prerender.routes)
     }
   },
   modules: [
