@@ -10,16 +10,12 @@ const selectedTag = ref('')
 const revealedPosts = ref({})
 
 // 调用API获取Posts数据
-const config = useRuntimeConfig()
-
-const postsUrl = config.public.useRemoteApi
-  ? 'https://blog-backend.zhengweixin0101.workers.dev/posts-list'
-  : '/data/posts-list.json' // 构建时保存到 public/data
-
-const { data: postsRaw } = await useAsyncData(
-  'posts-list',
-  () => $fetch(postsUrl),
-  { server: true }
+const { data: postsRaw } = await useAsyncData('posts-list', () =>
+  $fetch('/data/posts-list.json'),
+  {
+    server: true,
+    lazy: true,
+  }
 )
 
 const posts = computed(() => postsRaw.value || [])
