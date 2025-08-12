@@ -7,16 +7,17 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
 const postsDir = path.resolve(__dirname, '../posts');
 const outDir = path.resolve(__dirname, '../public/data/posts');
 const listFile = path.resolve(__dirname, '../public/data/posts-list.json');
+const mdFileListFile = path.resolve(__dirname, '../public/data/md-file.json');
 
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
 const files = fs.readdirSync(postsDir).filter(f => f.endsWith('.md'));
 
 const postList = [];
+const mdFileList = [];
 
 files.forEach(filename => {
     const slugFromFile = filename.replace(/\.md$/, '');
@@ -43,13 +44,6 @@ files.forEach(filename => {
     // 优先用 frontmatter.slug，没有则用文件名
     const slugUsed = frontmatter.slug ? frontmatter.slug.trim() : slugFromFile;
 
-    // 格式化日期为 YYYY-MM-DD
-    const formatDate = dateStr => {
-        if (!dateStr) return '';
-        const d = dayjs(dateStr);
-        return d.isValid() ? d.format('YYYY-MM-DD') : '';
-    };
-
     // 文章列表
     postList.push({
         slug: slugUsed,
@@ -71,15 +65,30 @@ files.forEach(filename => {
         content,
     };
 
-    // 输出文章
+    // 输出 /posts/{slug}.json
     fs.writeFileSync(
         path.join(outDir, `${slugUsed}.json`),
         JSON.stringify(postData, null, 2),
         'utf-8'
     );
+
+    mdFileList.push({
+        filename,
+        slug: slugUsed
+    });
 });
 
-// 输出文章列表
+// 格式化日期
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const d = dayjs(dateStr);
+    return d.isValid() ? d.format('YYYY-MM-DD') : '';
+}
+
+// 输出posts-list.json
 fs.writeFileSync(listFile, JSON.stringify(postList, null, 2), 'utf-8');
 
-console.log('✅ 文章数据生成完毕！');
+// 输出md-file.json
+fs.writeFileSync(mdFileListFile, JSON.stringify(mdFileList, null, 2), 'utf-8');
+
+console.log('✅ 文章数据生成完毕 ');

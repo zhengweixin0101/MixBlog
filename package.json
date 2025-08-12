@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npm run generate-post-json && nuxt build",
     "dev": "npm run generate-post-json && nuxt dev",
-    "generate": "nuxt generate",
+    "generate": "npm run generate-post-json && nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "generate-post-json": "node scripts/generate-post-json.js"
