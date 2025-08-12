@@ -154,7 +154,7 @@ function onCopyBtnClick(e) {
 const { data: rawPostData, error } = await useAsyncData(
   () => `post-${route.params.slug}`,
   () => $fetch(`https://blog-backend.zhengweixin0101.workers.dev/posts/${route.params.slug}`),
-  { server: true, lazy: false }
+  { server: true, immediate: false }
 )
 
 const post = computed(() => {
