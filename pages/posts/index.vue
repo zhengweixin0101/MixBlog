@@ -11,7 +11,7 @@ const revealedPosts = ref({})
 
 // 读取文章列表
 const { data: postsRaw } = await useAsyncData('posts-list', () =>
-  $fetch('/data/posts-list.json'),
+  $fetch('https://blog-zwx.netlify.app/data/posts-list.json'),
   { server: false }
 )
 

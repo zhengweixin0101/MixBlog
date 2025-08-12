@@ -153,7 +153,7 @@ function onCopyBtnClick(e) {
 //读取文章内容
 const { data: rawPostData, error } = await useAsyncData(
   `post-${route.params.slug}`,
-  () => $fetch(`/data/posts/${route.params.slug}.json`),
+  () => $fetch(`https://blog-zwx.netlify.app/data/posts/${route.params.slug}.json`),
   { server: false }
 )
 
