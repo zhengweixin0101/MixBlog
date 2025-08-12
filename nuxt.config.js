@@ -1,7 +1,7 @@
 export default defineNuxtConfig({
   hooks: {
     'nitro:build:before': async (nitro) => {
-      const res = await fetch('https://raw.githubusercontent.com/zhengweixin0101/blog/refs/heads/beta/public/data/md-file.json')
+      const res = await fetch('https://raw.githubusercontent.com/zhengweixin0101/Blog/beta/public/data/md-file.json')
       const posts = await res.json()
       nitro.options.prerender.routes = posts.map(post => `/posts/${post.slug}`)
       console.log('Prerender routes:', nitro.options.prerender.routes)
