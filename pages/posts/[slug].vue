@@ -151,17 +151,13 @@ function onCopyBtnClick(e) {
 }
 
 //构建时获取取文章数据
-const route = useRoute()
-const config = useRuntimeConfig()
-
-const postUrl = config.public.useRemoteApi
-  ? `https://blog-backend.zhengweixin0101.workers.dev/posts/${route.params.slug}`
-  : `/data/posts/${route.params.slug}.json` //构建时保存到 public/data
-
 const { data: rawPostData, error } = await useAsyncData(
   `post-${route.params.slug}`,
-  () => $fetch(postUrl),
-  { server: true }
+  () => $fetch(`https://blog-backend.zhengweixin0101.workers.dev/posts/${route.params.slug}`),
+  {
+    server: true,
+    lazy: true,
+  }
 )
 
 const post = computed(() => {
