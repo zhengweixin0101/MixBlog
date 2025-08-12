@@ -9,13 +9,10 @@ const searchTerm = ref('')
 const selectedTag = ref('')
 const revealedPosts = ref({})
 
-// 调用API获取Posts数据
+// 读取文章列表
 const { data: postsRaw } = await useAsyncData('posts-list', () =>
-  $fetch('https://blog-backend.zhengweixin0101.workers.dev/posts-list'),
-  {
-    server: true,
-    lazy: true,
-  }
+  $fetch('/data/posts-list.json'),
+  { method: 'GET' }
 )
 
 const posts = computed(() => postsRaw.value || [])

@@ -3,11 +3,12 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
+    "build": "npm run generate-post-json && nuxt build",
+    "dev": "npm run generate-post-json && nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "generate-post-json": "node scripts/generate-post-json.js"
   },
   "dependencies": {
     "@fancyapps/ui": "^6.0.22",

@@ -150,10 +150,10 @@ function onCopyBtnClick(e) {
   })
 }
 
-//构建时获取取文章数据
+//读取文章内容
 const { data: rawPostData, error } = await useAsyncData(
   `post-${route.params.slug}`,
-  () => $fetch(`https://blog-backend.zhengweixin0101.workers.dev/posts/${route.params.slug}`),
+  () => $fetch(`/data/posts/${route.params.slug}.json`),
   {
     server: true,
     lazy: true,
