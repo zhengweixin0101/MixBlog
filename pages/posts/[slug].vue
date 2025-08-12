@@ -13,8 +13,6 @@ import '@fancyapps/ui/dist/fancybox/fancybox.css'
 import Sidebar from '@/components/Sidebar.vue'
 import '@/assets/article-content.css'
 
-const route = useRoute()
-
 // HTML 实体解析
 function decodeHTMLEntities(str) {
   if (typeof document === 'undefined') return str
