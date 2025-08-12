@@ -1,12 +1,14 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
 // 搜索和筛选相关状态
 const searchTerm = ref('')
 const selectedTag = ref('')
-const revealedPosts = ref(new Set())
+// 改用对象记录 revealed 状态，避免 Set 触发性能问题
+const revealedPosts = ref({})
 
 // 调用API获取Posts数据
 const { data: postsRaw } = await useAsyncData('post', () =>
@@ -28,8 +30,11 @@ function toggleTag(tag) {
   selectedTag.value = selectedTag.value === tag ? '' : tag
 }
 
+// 标记已动画完成的文章
 function markRevealed(slug) {
-  revealedPosts.value.add(slug)
+  if (!revealedPosts.value[slug]) {
+    revealedPosts.value[slug] = true
+  }
 }
 
 const filteredPosts = computed(() => {
@@ -48,9 +53,6 @@ function delayedNavigate(path) {
     router.push(path)
   }, 200)
 }
-
-const allTagsString = computed(() => allTags.value.join(', '))
-
 </script>
 
 <template>
@@ -115,11 +117,11 @@ const allTagsString = computed(() => allTags.value.join(', '))
           @animationend="() => markRevealed(post.slug)"
           :class="[
             'relative w-full h-160px rounded-xl list-none will-change-transform motion-safe:transform-gpu transition duration-300 animate-shadow',
-            revealedPosts.has(post.slug)
+            revealedPosts[post.slug]
               ? 'hover:shadow-[0_0_0_1px_#00e699] hover:scale-[1.02] active:scale-[0.97] cursor-pointer'
               : 'pointer-events-none opacity-80'
           ].join(' ')"
-          @click="revealedPosts.has(post.slug) && delayedNavigate(`/posts/${post.slug}`)"
+          @click="revealedPosts[post.slug] && delayedNavigate(`/posts/${post.slug}`)"
         >
           <div data-fade
             class="bg-black/3 dark:bg-white/10 block h-full rounded-xl p-4 no-underline focus:outline-none focus-visible:ring focus-visible:ring-[#00e699] transition-transform duration-300 active:scale-95 hover:scale-102"
