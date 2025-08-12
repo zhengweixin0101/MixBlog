@@ -66,11 +66,19 @@ files.forEach(filename => {
     };
 
     // 输出 /posts/{slug}.json
-    fs.writeFileSync(
-        path.join(outDir, `${slugUsed}.json`),
-        JSON.stringify(postData, null, 2),
-        'utf-8'
-    );
+    const outFile = path.join(outDir, `${slugUsed}.json`);
+    const newContent = JSON.stringify(postData, null, 2);
+
+    let needWrite = true;
+    if (fs.existsSync(outFile)) {
+        const oldContent = fs.readFileSync(outFile, 'utf-8');
+        if (oldContent === newContent) {
+            needWrite = false; // 内容没变，跳过写入
+        }
+    }
+    if (needWrite) {
+        fs.writeFileSync(outFile, newContent, 'utf-8');
+    }
 
     mdFileList.push({
         filename,
@@ -86,9 +94,29 @@ function formatDate(dateStr) {
 }
 
 // 输出posts-list.json
-fs.writeFileSync(listFile, JSON.stringify(postList, null, 2), 'utf-8');
+const postListContent = JSON.stringify(postList, null, 2);
+let needWriteList = true;
+if (fs.existsSync(listFile)) {
+    const oldList = fs.readFileSync(listFile, 'utf-8');
+    if (oldList === postListContent) {
+        needWriteList = false;
+    }
+}
+if (needWriteList) {
+    fs.writeFileSync(listFile, postListContent, 'utf-8');
+}
 
 // 输出md-file.json
-fs.writeFileSync(mdFileListFile, JSON.stringify(mdFileList, null, 2), 'utf-8');
+const mdFileListContent = JSON.stringify(mdFileList, null, 2);
+let needWriteMdFile = true;
+if (fs.existsSync(mdFileListFile)) {
+    const oldMdFile = fs.readFileSync(mdFileListFile, 'utf-8');
+    if (oldMdFile === mdFileListContent) {
+        needWriteMdFile = false;
+    }
+}
+if (needWriteMdFile) {
+    fs.writeFileSync(mdFileListFile, mdFileListContent, 'utf-8');
+}
 
 console.log('✅ 文章数据生成完毕 ');
