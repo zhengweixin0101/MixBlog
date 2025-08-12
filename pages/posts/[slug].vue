@@ -154,7 +154,7 @@ const config = useRuntimeConfig()
 
 const postUrl = config.public.useRemoteApi
   ? `https://blog-backend.zhengweixin0101.workers.dev/posts/${route.params.slug}`
-  : `/data/posts-${route.params.slug}.json` //构建时保存到 public/data
+  : `/data/posts/${route.params.slug}.json` //构建时保存到 public/data
 
 const { data: rawPostData, error } = await useAsyncData(
   `post-${route.params.slug}`,
