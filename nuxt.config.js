@@ -18,10 +18,14 @@ export default defineNuxtConfig({
   css: ['@/assets/main.css'],
   plugins: ['@/plugins/directives.js'],
 
+  runtimeConfig: {
+    public: {
+      useRemoteApi: process.env.USE_REMOTE_API === 'true',
+    }
+  },
   experimental: {
     payloadExtraction: false
   },
-
   hooks: {
     // 构建前拉取数据到 public/data
     'nitro:build:before': async () => {
