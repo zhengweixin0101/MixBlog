@@ -1,3 +1,10 @@
 [build]
   command = "pnpm run generate"
   publish = "/dist/"
+
+[[headers]]
+for = "/*"
+[headers.values]
+  Access-Control-Allow-Origin = "http://localhost"
+  Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+  Access-Control-Allow-Headers = "Content-Type, Authorization"
