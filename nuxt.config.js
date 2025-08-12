@@ -47,7 +47,7 @@ export default defineNuxtConfig({
           }
           const detail = await detailRes.json()
           writeFileSync(
-            resolve(dataDir, `post/${post.slug}.json`),
+            resolve(dataDir, `post-${post.slug}.json`),
             JSON.stringify(detail, null, 2)
           )
         } catch (e) {
