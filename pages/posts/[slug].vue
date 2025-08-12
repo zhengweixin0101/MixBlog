@@ -151,10 +151,10 @@ function onCopyBtnClick(e) {
 }
 
 //服务器端预取文章数据
-const { data: rawPostData, error, refresh } = await useAsyncData(
+const { data: rawPostData, error } = await useAsyncData(
   () => `post-${route.params.slug}`,
   () => $fetch(`https://blog-backend.zhengweixin0101.workers.dev/posts/${route.params.slug}`),
-  { immediate: true }
+  { server: true }
 )
 
 const post = computed(() => {

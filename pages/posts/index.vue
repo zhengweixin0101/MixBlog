@@ -10,8 +10,9 @@ const revealedPosts = ref(new Set())
 
 // 调用API获取Posts数据
 const { data: postsRaw } = await useAsyncData('post', () =>
-  $fetch('https://blog-backend.zhengweixin0101.workers.dev/posts-list'
-))
+  $fetch('https://blog-backend.zhengweixin0101.workers.dev/posts-list'),
+  { server: true }
+)
 
 const posts = computed(() => postsRaw.value || [])
 
