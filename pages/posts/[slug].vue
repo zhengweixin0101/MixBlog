@@ -154,7 +154,6 @@ function onCopyBtnClick(e) {
 const { data: rawPostData, error } = await useAsyncData(
   `post-${route.params.slug}`,
   () => $fetch(`https://blog-zwx.netlify.app/data/posts/${route.params.slug}.json`),
-  { server: false }
 )
 
 const post = computed(() => {
