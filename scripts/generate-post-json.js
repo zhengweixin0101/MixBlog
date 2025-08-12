@@ -82,4 +82,4 @@ files.forEach(filename => {
 // 输出文章列表
 fs.writeFileSync(listFile, JSON.stringify(postList, null, 2), 'utf-8');
 
-console.log('✅ 文章数据，生成完毕！');
+console.log('✅ 文章数据生成完毕！');
