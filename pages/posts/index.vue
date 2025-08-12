@@ -7,7 +7,6 @@ const router = useRouter()
 // 搜索和筛选相关状态
 const searchTerm = ref('')
 const selectedTag = ref('')
-// 改用对象记录 revealed 状态，避免 Set 触发性能问题
 const revealedPosts = ref({})
 
 // 调用API获取Posts数据
@@ -30,7 +29,7 @@ function toggleTag(tag) {
   selectedTag.value = selectedTag.value === tag ? '' : tag
 }
 
-// 标记已动画完成的文章
+// 标记动画完成的文章
 function markRevealed(slug) {
   if (!revealedPosts.value[slug]) {
     revealedPosts.value[slug] = true
