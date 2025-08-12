@@ -23,6 +23,9 @@ export default defineNuxtConfig({
       useRemoteApi: process.env.USE_REMOTE_API === 'true',
     }
   },
+  experimental: {
+    payloadExtraction: false
+  },
   hooks: {
     // 构建前拉取数据到 public/data
     'nitro:build:before': async () => {
