@@ -21,21 +21,22 @@ export default defineNuxtConfig({
   experimental: {
     payloadExtraction: false
   },
+
   hooks: {
-    'nitro:build:before': async (nitro) => {
+    // 构建前拉取数据到 public/data
+    'nitro:build:before': async () => {
       console.log('开始构建，拉取博客数据...')
 
-      // 先拉取文章列表
       const listRes = await fetch('https://blog-backend.zhengweixin0101.workers.dev/posts-list')
       if (!listRes.ok) throw new Error('获取文章列表失败')
       const postsList = await listRes.json()
 
-      // 写入文章列表文件
+      // 写入文章列表
       const dataDir = resolve(process.cwd(), 'public/data')
       mkdirSync(dataDir, { recursive: true })
       writeFileSync(resolve(dataDir, 'posts-list.json'), JSON.stringify(postsList, null, 2))
 
-      // 拉取所有文章详情，写入文件
+      // 获取所有文章详情
       for (const post of postsList) {
         try {
           const detailRes = await fetch(`https://blog-backend.zhengweixin0101.workers.dev/posts/${post.slug}`)
@@ -52,9 +53,6 @@ export default defineNuxtConfig({
           console.warn(`请求文章详情异常: ${post.slug}`, e)
         }
       }
-
-      nitro.options.prerender.routes = postsList.map(post => `/posts/${post.slug}`)
-      console.log('Prerender routes:', nitro.options.prerender.routes)
 
       console.log('博客数据拉取并保存完毕！')
     }
