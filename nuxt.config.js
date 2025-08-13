@@ -20,5 +20,8 @@ export default defineNuxtConfig({
     classSuffix: '',
   },
   css: ['@/assets/main.css'],
-  plugins: ['@/plugins/directives.js'],
+  plugins: [
+    '@/plugins/directives.js',
+    '@/plugins/nprogress.client.js',
+  ],
 })

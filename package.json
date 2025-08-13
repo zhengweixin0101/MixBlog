@@ -18,6 +18,7 @@
     "highlight.js": "^11.11.1",
     "katex": "^0.16.22",
     "marked": "^16.1.2",
+    "nprogress": "^0.2.0",
     "nuxt": "^4.0.3",
     "vue": "^3.5.18",
     "vue-router": "^4.5.1"
