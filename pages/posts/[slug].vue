@@ -283,7 +283,7 @@ useHead(() => {
         </div>
       </div>
     </div>
-    <div class="flex gap-8 px-2 flex-col md:flex-row max-w-full">
+    <div class="flex lg:gap-8 px-2 flex-col md:flex-row max-w-full">
       <section data-fade class=" flex-1 min-w-0 max-w-full">
         <article v-html="post.content" class="article-content whitespace-normal break-words" />
       </section>
