@@ -2,12 +2,6 @@
   command = "pnpm run generate"
   publish = "/dist/"
 
-[[redirects]]
-  from = "/*"
-  to = "/:splat"
-  status = 200
-  force = true
-
 [[headers]]
 for = "/*"
   [headers.values]
