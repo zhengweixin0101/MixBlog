@@ -1,6 +1,21 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useHead } from '#imports'
+
+//head
+useHead({
+  titleTemplate: "Posts | ShinX' Blog",
+  meta: [
+    { name: 'description', content: "This is the posts list page of ShinX's blog." },
+    { name: 'keywords', content: 'ShinX,zhengweixin,blog,ShinX的个人主页,ShinX的个人网站,ShinX的博客,文章列表,posts,list' },
+    { property: 'og:title', content: "Posts | ShinX' Blog" },
+    { property: 'og:description', content: "This is the posts list page of ShinX's blog." },
+    { property: 'og:url', content: 'https://zhengweixin.top/posts' },
+    { name: 'twitter:title', content: "Posts | ShinX' Blog" },
+    { name: 'twitter:description', content: "This is the posts list page of ShinX's blog." },
+  ],
+})
 
 const router = useRouter()
 

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useRoute, useAsyncData } from '#imports'
+import { useHead, useRoute, useAsyncData } from '#imports'
 import { marked } from 'marked'
 import dayjs from 'dayjs'
 import hljs from 'highlight.js'
@@ -221,6 +221,37 @@ watch(() => route.hash, (hash) => {
 const formattedDate = computed(() => {
   if (!post.value.frontmatter.date) return ''
   return `ShinX 发布于 ${dayjs(post.value.frontmatter.date).format('YYYY-MM-DD')}`
+})
+
+//head
+useHead(() => {
+  const title = post.value.frontmatter.title || '无标题文章'
+  const description = post.value.frontmatter.description || 'ShinX 的文章'
+  const Keywords = computed(() => {
+    const baseKeywords = ['文章', 'Posts', 'Article', 'ShinX', 'zhengweixin', 'blog', 'ShinX的个人主页']
+    const tags = post.value.frontmatter.tags
+
+    if (Array.isArray(tags) && tags.length) {
+      return [...tags, ...baseKeywords].join(', ')
+    } else if (typeof tags === 'string' && tags.trim() !== '') {
+      return [tags, ...baseKeywords].join(', ')
+    } else {
+      return baseKeywords.join(', ')
+    }
+  })
+
+  return {
+    title: `${title} | ShinX' Blog`,
+    meta: [
+      { name: 'description', content: description },
+      { name: 'keywords', content: Keywords },
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: description },
+      { property: 'og:url', content: `https://zhengweixin.top/posts/${route.params.slug}` },
+      { name: 'twitter:title', content: title },
+      { name: 'twitter:description', content: description },
+    ]
+  }
 })
 </script>
 

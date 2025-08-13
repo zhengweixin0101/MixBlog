@@ -15,7 +15,7 @@ useHead({
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     { name: 'description', content: "This is ShinX’s blog, created by a student and a gamer." },
     { name: 'author', content: 'ShinX' },
-    { name: 'keywords', content: 'ShinX,zhengweixin,blog,ShinX的个人主页' },
+    { name: 'keywords', content: 'ShinX,zhengweixin,blog,ShinX的个人主页,ShinX的个人网站,ShinX的博客' },
 
     { name: 'color-scheme', content: 'only light' },
     { name: 'theme-color', content: '#f8f8f8', media: '(prefers-color-scheme: light)' },
