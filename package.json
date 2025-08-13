@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npm run generate-all && nuxt build",
     "dev": "npm run generate-all && nuxt dev",
-    "generate": "npm run generate-all && nuxt generate",
+    "generate": "npm run generate-all && nuxt generate && node scripts/flatten-html.js",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "generate-post-json": "node scripts/generate-post-json.js",
