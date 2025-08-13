@@ -1,14 +1,15 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import matter from 'gray-matter'
 
 const baseUrl = 'https://zhengweixin.top'
 
 // 路由到 Vue 页面文件的映射
 const pageFilesMap = {
-  '/': 'src/views/Home.vue',
-  '/posts.html': 'src/views/ArticleList.vue',
-  '/about.html': 'src/views/About.vue',
+  '/': '/pages/index.vue',
+  '/posts': '/pages/posts/index.vue',
+  '/about': '/pages/about.vue',
 }
 
 // 获取文件最后修改时间
@@ -32,14 +33,16 @@ for (const [route, filepath] of Object.entries(pageFilesMap)) {
 }
 
 // 处理 Markdown 文件
-const postsDir = path.resolve('src/posts')
+const postsDir = path.resolve('./posts')
 if (fs.existsSync(postsDir)) {
   const postFiles = fs.readdirSync(postsDir).filter(f => f.endsWith('.md'))
   postFiles.forEach(filename => {
     const filePath = path.join(postsDir, filename)
     const lastmod = getLastMod(filePath)
-    const slug = filename.replace(/\.md$/, '')
-    const route = `/posts/${slug}.html`
+    const fileContent = fs.readFileSync(filePath, 'utf-8')
+    const { data: frontmatter } = matter(fileContent)
+    const slug = frontmatter.slug || filename.replace(/\.md$/, '')
+    const route = `/posts/${slug}`
     routes.push({ url: route, lastmod })
   })
 }
@@ -69,7 +72,7 @@ const relativePath = path.relative(process.cwd(), sitemapPath)
 try {
   const sitemapContent = generateSitemap(routes)
   fs.writeFileSync(sitemapPath, sitemapContent, 'utf-8')
-  console.log(`✅ sitemap 生成成功：${relativePath}`)
+  console.log(`✅ sitemap 生成成功`)
 } catch (error) {
   console.error(`❌ sitemap 生成失败：`)
   console.error(error)
