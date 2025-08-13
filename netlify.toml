@@ -1,7 +1,6 @@
 [build]
   command = "pnpm run generate"
   publish = "/dist/"
-  trailing_slash = "never"
 
 [[headers]]
 for = "/*"
