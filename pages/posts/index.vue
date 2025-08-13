@@ -45,12 +45,6 @@ const filteredPosts = computed(() => {
     })
     .sort((a, b) => new Date(b.date) - new Date(a.date))
 })
-
-function delayedNavigate(path) {
-  setTimeout(() => {
-    router.push(path)
-  }, 200)
-}
 </script>
 
 <template>
@@ -116,49 +110,59 @@ function delayedNavigate(path) {
           :class="[
             'relative w-full h-160px rounded-xl list-none will-change-transform motion-safe:transform-gpu transition duration-300 animate-shadow',
             revealedPosts[post.slug]
-              ? 'hover:shadow-[0_0_0_1px_#00e699] hover:scale-[1.02] active:scale-[0.97] cursor-pointer'
-              : 'pointer-events-none opacity-80'
+              ? 'hover:shadow-[0_0_0_1px_#00e699] hover:scale-[1.02] active:scale-[0.97]'
+              : 'opacity-80'
           ].join(' ')"
-          @click="revealedPosts[post.slug] && delayedNavigate(`/posts/${post.slug}`)"
         >
-          <div data-fade
-            class="bg-black/3 dark:bg-white/10 block h-full rounded-xl p-4 no-underline focus:outline-none focus-visible:ring focus-visible:ring-[#00e699] transition-transform duration-300 active:scale-95 hover:scale-102"
+          <NuxtLink
+            :to="`/posts/${post.slug}`"
+            :class="[
+              'block h-full rounded-xl no-underline focus:outline-none',
+              revealedPosts[post.slug] ? 'cursor-pointer' : 'pointer-events-none'
+            ]"
           >
-            <h4 class="text-#2f3f5b dark:text-white text-xl transition-colors duration-300">{{ post.title }}</h4>
-            <p class="mt-1 text-#2f3f5b dark:text-gray-400 text-sm transition-colors duration-300">{{ post.description || '暂无描述' }}</p>
             <div
-              class="absolute left-4 bottom-4 text-sm text-gray-400 pointer-events-none flex items-center gap-2"
+              data-fade
+              class="bg-black/3 dark:bg-white/10 h-full rounded-xl p-4 no-underline focus:outline-none focus-visible:ring focus-visible:ring-[#00e699] transition-transform duration-300 active:scale-95 hover:scale-102"
             >
-              <svg
-                stroke="currentColor"
-                fill="none"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                class="inline-block text-base"
-                height="1em"
-                width="1em"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <time
-                :datetime="post.date !== '' ? post.date : null"
-                class="text-#2f3f5b dark:bg-gradient-to-r dark:from-[#00e699] dark:to-[#00e2d8] dark:bg-clip-text dark:text-transparent dark:-webkit-bg-clip-text"
-              >
-                {{ post.date || '未知日期' }}
-              </time>
+              <h4 class="text-#2f3f5b dark:text-white text-xl transition-colors duration-300">{{ post.title }}</h4>
+              <p class="mt-1 text-#2f3f5b dark:text-gray-400 text-sm transition-colors duration-300">
+                {{ post.description || '暂无描述' }}
+              </p>
+
+              <div class="absolute left-4 bottom-4 text-sm text-gray-400 pointer-events-none flex items-center gap-2">
+                <svg
+                  stroke="currentColor"
+                  fill="none"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  class="inline-block text-base"
+                  height="1em"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <time
+                  :datetime="post.date !== '' ? post.date : null"
+                  class="text-#2f3f5b dark:bg-gradient-to-r dark:from-[#00e699] dark:to-[#00e2d8] dark:bg-clip-text dark:text-transparent dark:-webkit-bg-clip-text"
+                >
+                  {{ post.date || '未知日期' }}
+                </time>
+              </div>
+
+              <div v-if="post.tags?.length" class="absolute right-4 bottom-4 flex flex-wrap gap-1">
+                <span
+                  v-for="tag in post.tags"
+                  :key="tag"
+                  class="px-2 py-1 text-xs rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300"
+                >
+                  {{ tag }}
+                </span>
+              </div>
             </div>
-            <div v-if="post.tags?.length" class="absolute right-4 bottom-4 flex flex-wrap gap-1">
-              <span
-                v-for="tag in post.tags"
-                :key="tag"
-                class="px-2 py-1 text-xs rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300"
-              >
-                {{ tag }}
-              </span>
-            </div>
-          </div>
+          </NuxtLink>
         </li>
       </ul>
 
