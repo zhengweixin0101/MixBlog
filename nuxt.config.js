@@ -8,9 +8,6 @@ export default defineNuxtConfig({
       console.log('Prerender routes:', nitro.options.prerender.routes)
     },
   },
-  experimental: {
-    payloadExtraction: false
-  },
   modules: [
     '@nuxtjs/color-mode',
     '@unocss/nuxt',
