@@ -4,13 +4,13 @@ import matter from 'gray-matter'
 
 const SITE_URL = 'https://zhengweixin.top'
 const RSS_PATH = 'public/rss.xml'
-const POSTS_PATH = './src/posts'
+const POSTS_PATH = './posts'
 function escapeHtml(str) {
   return str.replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&apos;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
 }
 
 // 格式化日期
@@ -38,8 +38,8 @@ async function generateRSS() {
 
       items.push({
         title: escapeHtml(title),
-        link: `${SITE_URL}/posts/${slug}.html`,
-        guid: `${SITE_URL}/posts/${slug}.html`,
+        link: `${SITE_URL}/posts/${slug}`,
+        guid: `${SITE_URL}/posts/${slug}`,
         pubDate: formatDate(date),
         description,
         rawDescription: description
@@ -58,7 +58,7 @@ async function generateRSS() {
       </item>
     `).join('\n')
 
-const rss = `<?xml version="1.0" encoding="UTF-8" ?>
+    const rss = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>ShinX's Blog</title>
@@ -73,7 +73,7 @@ const rss = `<?xml version="1.0" encoding="UTF-8" ?>
     await fs.mkdir(path.dirname(RSS_PATH), { recursive: true })
     await fs.writeFile(RSS_PATH, rss.trim())
 
-    console.log(`✅ RSS 生成成功：${RSS_PATH}`)
+    console.log(`✅ RSS 生成成功`)
   } catch (error) {
     console.error('❌ RSS 生成失败', error)
   }
@@ -81,7 +81,6 @@ const rss = `<?xml version="1.0" encoding="UTF-8" ?>
 
 export default generateRSS
 
-// 如果直接运行此脚本，可以调用生成函数
 if (process.argv[1].endsWith('generate-rss.js')) {
   generateRSS()
 }

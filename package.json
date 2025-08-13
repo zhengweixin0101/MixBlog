@@ -8,7 +8,9 @@
     "generate": "npm run generate-post-json && nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "generate-post-json": "node scripts/generate-post-json.js"
+    "generate-post-json": "node scripts/generate-post-json.js",
+    "generate-sitemap": "node scripts/generate-sitemap.js",
+    "generate-rss": "node scripts/generate-rss.js"
   },
   "dependencies": {
     "@fancyapps/ui": "^6.0.22",

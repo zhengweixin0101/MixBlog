@@ -3,61 +3,61 @@
   
   <url>
     <loc>https://zhengweixin.top/</loc>
-    <lastmod>2025-08-06</lastmod>
+    <lastmod>2025-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zhengweixin.top/posts.html</loc>
-    <lastmod>2025-08-06</lastmod>
+    <loc>https://zhengweixin.top/posts</loc>
+    <lastmod>2025-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zhengweixin.top/about.html</loc>
-    <lastmod>2025-08-04</lastmod>
+    <loc>https://zhengweixin.top/about</loc>
+    <lastmod>2025-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zhengweixin.top/posts/Latex Example.html</loc>
-    <lastmod>2025-07-25</lastmod>
+    <loc>https://zhengweixin.top/posts/latex-example</loc>
+    <lastmod>2025-08-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zhengweixin.top/posts/Markdown Example.html</loc>
-    <lastmod>2025-07-25</lastmod>
+    <loc>https://zhengweixin.top/posts/markdown-example</loc>
+    <lastmod>2025-08-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zhengweixin.top/posts/The Unbearable Lightness of Being.html</loc>
-    <lastmod>2025-07-25</lastmod>
+    <loc>https://zhengweixin.top/posts/the-unbearable-lightness-of-being</loc>
+    <lastmod>2025-08-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zhengweixin.top/posts/容忍与自由.html</loc>
-    <lastmod>2025-07-25</lastmod>
+    <loc>https://zhengweixin.top/posts/tolerance-and-freedom</loc>
+    <lastmod>2025-08-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zhengweixin.top/posts/故乡.html</loc>
-    <lastmod>2025-07-25</lastmod>
+    <loc>https://zhengweixin.top/posts/hometown</loc>
+    <lastmod>2025-08-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zhengweixin.top/posts/测试文章.html</loc>
-    <lastmod>2025-08-06</lastmod>
+    <loc>https://zhengweixin.top/posts/test-post</loc>
+    <lastmod>2025-08-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zhengweixin.top/posts/羅生門.html</loc>
-    <lastmod>2025-07-25</lastmod>
+    <loc>https://zhengweixin.top/posts/rashomon</loc>
+    <lastmod>2025-08-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
