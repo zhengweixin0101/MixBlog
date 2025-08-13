@@ -1,10 +1,5 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  nitro: {
-    prerender: {
-      trailingSlash: false,
-    }
-  },
   hooks: {
     'nitro:build:before': async (nitro) => {
       const res = await fetch('https://blog-zwx.netlify.app/data/md-file.json')
