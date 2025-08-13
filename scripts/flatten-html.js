@@ -2,16 +2,19 @@ import fs from 'fs'
 import path from 'path'
 
 const postsDir = path.resolve('./dist/posts')
-const slugs = fs.readdirSync(postsDir)
+fs.readdirSync(postsDir).forEach(item => {
+    const itemPath = path.join(postsDir, item)
+    const stat = fs.statSync(itemPath)
 
-slugs.forEach(slug => {
-    const postPath = path.join(postsDir, slug)
-    const indexPath = path.join(postPath, 'index.html')
-    const newPath = path.join(postsDir, `${slug}.html`)
-
-    if (fs.existsSync(indexPath)) {
-        fs.renameSync(indexPath, newPath)
-        fs.rmSync(postPath, { recursive: true, force: true })
+    if (stat.isDirectory()) {
+        const indexHtml = path.join(itemPath, 'index.html')
+        const newHtml = path.join(postsDir, `${item}.html`)
+        if (fs.existsSync(indexHtml)) {
+            fs.renameSync(indexHtml, newHtml)
+        }
+    } else if (item === 'index.html') {
+        const newHtml = path.resolve('./dist/posts.html')
+        fs.renameSync(itemPath, newHtml)
     }
 })
 
