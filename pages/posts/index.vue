@@ -102,27 +102,20 @@ const filteredPosts = computed(() => {
         </button>
       </div>
 
-      <ul class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
+      <ul data-fade class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
         <li
           v-for="post in filteredPosts"
           :key="post.slug + selectedTag + searchTerm"
-          @animationend="() => markRevealed(post.slug)"
           :class="[
             'relative w-full h-160px rounded-xl list-none will-change-transform motion-safe:transform-gpu transition duration-300 animate-shadow',
-            revealedPosts[post.slug]
-              ? 'hover:shadow-[0_0_0_1px_#00e699] hover:scale-[1.02] active:scale-[0.97]'
-              : 'opacity-80'
+            'hover:shadow-[0_0_0_1px_#00e699] hover:scale-[1.02] active:scale-[0.97]'
           ].join(' ')"
         >
           <NuxtLink
             :to="`/posts/${post.slug}`"
-            :class="[
-              'block h-full rounded-xl no-underline focus:outline-none',
-              revealedPosts[post.slug] ? 'cursor-pointer' : 'pointer-events-none'
-            ]"
+            class="block h-full rounded-xl no-underline focus:outline-none cursor-pointer"
           >
             <div
-              data-fade
               class="bg-black/3 dark:bg-white/10 h-full rounded-xl p-4 no-underline focus:outline-none focus-visible:ring focus-visible:ring-[#00e699] transition-transform duration-300 active:scale-95 hover:scale-102"
             >
               <h4 class="text-#2f3f5b dark:text-white text-xl transition-colors duration-300">{{ post.title }}</h4>

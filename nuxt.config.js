@@ -21,7 +21,7 @@ export default defineNuxtConfig({
   },
   css: ['@/assets/main.css'],
   plugins: [
-    '@/plugins/directives.js',
+    '@/plugins/fade-in.js',
     '@/plugins/nprogress.client.js',
   ],
 })
