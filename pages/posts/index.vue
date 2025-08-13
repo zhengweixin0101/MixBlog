@@ -102,7 +102,7 @@ const filteredPosts = computed(() => {
         </button>
       </div>
 
-      <ul data-fade class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
+      <ul data-fade :key="selectedTag + '-' + searchTerm" class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
         <li
           v-for="post in filteredPosts"
           :key="post.slug + selectedTag + searchTerm"
