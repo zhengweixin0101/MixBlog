@@ -1,4 +1,4 @@
-import siteConfig from "./site.config.js"
+import { siteConfig } from './site.config.js'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
