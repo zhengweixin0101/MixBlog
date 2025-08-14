@@ -1,5 +1,4 @@
 <template>
-  <!-- 404 页面 -->
   <section v-fade-in class="min-h-screen flex flex-col items-center justify-center text-center text-white px-6">
     <div class="min-h-screen flex flex-col items-center justify-center text-center text-white px-6">
       <div data-fade>
@@ -49,6 +48,14 @@ import { siteConfig } from '@/site.config.js'
 //head
 useHead({
   titleTemplate: `Not Found | ${siteConfig.title}`,
+  meta: [
+    { name: 'description', content: `该页面不存在或已被删除。` },
+    { name: 'keywords', content: `Not Found,404,不存在,${siteConfig.keywords}` },
+    { property: 'og:title', content: `Not Found | ${siteConfig.title}` },
+    { property: 'og:description', content: `该页面不存在或已被删除。` },
+    { name: 'twitter:title', content: `Not Found | ${siteConfig.title}` },
+    { name: 'twitter:description', content: `该页面不存在或已被删除。` },
+  ],
 })
 </script>
 

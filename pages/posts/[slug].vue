@@ -152,7 +152,15 @@ const notFound = computed(() => error.value || !rawPostData.value)
 // 解析文章
 watch([rawPostData, error], () => {
   if (notFound.value) {
-    post.value = { content: '', frontmatter: {}, toc: [] }
+    post.value = {
+      content: '',
+      frontmatter: {
+        title: '文章未找到',
+        description: '该文章不存在或已被删除。',
+        tags: ['不存在', 'Not Found', '404']
+      },
+      toc: []
+    }
   } else {
     let html = marked.parse(rawPostData.value.content)
     html = wrapImagesWithLinks(html)
@@ -167,7 +175,11 @@ watch([rawPostData, error], () => {
       return `<${tag} id="${id}" class="scroll-mt-40">${text}</${tag}>`
     })
 
-    post.value = { content: html, frontmatter: rawPostData.value.frontmatter, toc: tocItems }
+    post.value = {
+      content: html,
+      frontmatter: rawPostData.value.frontmatter,
+      toc: tocItems
+    }
   }
 }, { immediate: true })
 
