@@ -303,3 +303,19 @@ const formattedDate = computed(() => {
     </div>
   </main>
 </template>
+
+<style>
+/* 闪烁动画 */
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 22%, 24%, 55% { opacity: 0.4; }
+}
+.animate-flicker {
+  animation: flicker 1.5s infinite;
+}
+
+/* 阴影光晕 */
+.drop-shadow-glow {
+  filter: drop-shadow(0 0 10px #facc15);
+}
+</style>
