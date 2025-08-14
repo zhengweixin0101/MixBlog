@@ -1,23 +1,21 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { useHead } from '#imports'
+import { siteConfig } from '@/site.config.js'
 
 //head
 useHead({
-  titleTemplate: "Posts | ShinX' Blog",
+  titleTemplate: `Posts | ${siteConfig.title}`,
   meta: [
-    { name: 'description', content: "This is the posts list page of ShinX's blog." },
-    { name: 'keywords', content: 'ShinX,zhengweixin,blog,ShinX的个人主页,ShinX的个人网站,ShinX的博客,文章列表,posts,list' },
-    { property: 'og:title', content: "Posts | ShinX' Blog" },
-    { property: 'og:description', content: "This is the posts list page of ShinX's blog." },
-    { property: 'og:url', content: 'https://zhengweixin.top/posts' },
-    { name: 'twitter:title', content: "Posts | ShinX' Blog" },
-    { name: 'twitter:description', content: "This is the posts list page of ShinX's blog." },
+    { name: 'description', content: `This is the posts list page of ${siteConfig.title}.` },
+    { name: 'keywords', content: `${siteConfig.keywords},文章列表,posts,list` },
+    { property: 'og:title', content: `Posts | ${siteConfig.title}` },
+    { property: 'og:description', content: `This is the posts list page of ${siteConfig.title}.` },
+    { property: 'og:url', content: `${siteConfig.url}/posts` },
+    { name: 'twitter:title', content: `Posts | ${siteConfig.title}` },
+    { name: 'twitter:description', content: `This is the posts list page of ${siteConfig.title}.` },
   ],
 })
-
-const router = useRouter()
 
 // 搜索和筛选相关状态
 const searchTerm = ref('')
@@ -26,7 +24,7 @@ const revealedPosts = ref({})
 
 // 读取文章列表
 const { data: postsRaw } = await useAsyncData('posts-list', () =>
-  $fetch('https://blog-zwx.netlify.app/data/posts-list.json'),
+  $fetch( siteConfig.postsData.postsList ),
 )
 
 const posts = computed(() => postsRaw.value || [])
@@ -41,13 +39,6 @@ const allTags = computed(() => {
 
 function toggleTag(tag) {
   selectedTag.value = selectedTag.value === tag ? '' : tag
-}
-
-// 标记动画完成的文章
-function markRevealed(slug) {
-  if (!revealedPosts.value[slug]) {
-    revealedPosts.value[slug] = true
-  }
 }
 
 const filteredPosts = computed(() => {
@@ -68,17 +59,13 @@ const filteredPosts = computed(() => {
       <h1 data-fade class="text-3xl mt-40">
         <span
           class="relative inline-block transition-colors duration-300
-                text-#2f3f5b
-                dark:text-transparent
-                dark:bg-gradient-to-r dark:from-[#00e699] dark:to-[#00e2d8]
-                dark:bg-clip-text dark:-webkit-bg-clip-text
-                dark:-webkit-text-fill-color-transparent"
+                text-#2f3f5b dark:text-gradient"
         >
           Posts
           <span
             class="absolute inset-0 -z-10
-                  bg-gradient-to-r from-[#00e69980] to-[#00e2d850]
-                  dark:hidden"
+                  bg-gradient-to-r from-#00e699/50 to-#00e2d8/50
+                  dark:hidden transition-colors duration-300"
           />
         </span>
       </h1>
@@ -93,11 +80,11 @@ const filteredPosts = computed(() => {
           placeholder="Search..."
           type="text"
           id="search"
-          class="w-full h-12 pl-10 pr-4 rounded-xl border-none backdrop-blur
+          class="w-full h-12 pl-10 pr-4 rounded-xl border-none
                 bg-gray-200/50 text-#2f3f5b placeholder-gray-500
                 dark:bg-white/10 dark:text-white dark:placeholder-gray-500
                 transition-colors transition-shadow duration-300 
-                focus:outline-none shadow-[0_0_0_0.5px_#00e699] dark:shadow-none focus:shadow-[0_0_0_1.5px_#00e699] dark:focus:shadow-[0_0_0_1px_#00e699]"
+                focus:outline-none shadow-[0_0_0_0.5px_#00e699] dark:shadow-none focus:shadow-[0_0_0_1px_#00e699]"
         />
       </div>
 
@@ -154,7 +141,7 @@ const filteredPosts = computed(() => {
                 </svg>
                 <time
                   :datetime="post.date !== '' ? post.date : null"
-                  class="text-#2f3f5b dark:bg-gradient-to-r dark:from-[#00e699] dark:to-[#00e2d8] dark:bg-clip-text dark:text-transparent dark:-webkit-bg-clip-text"
+                  class="text-#2f3f5b dark:bg-gradient-to-r dark:text-gradient"
                 >
                   {{ post.date || '未知日期' }}
                 </time>
@@ -181,9 +168,14 @@ const filteredPosts = computed(() => {
           class="custom-gradient-link inline-flex relative font-medium text-#2f3f5b dark:bg-gradient-to-r dark:from-[#00e699] dark:to-[#00e2d8] dark:bg-clip-text dark:text-transparent dark:-webkit-bg-clip-text no-underline"
           data-fade
         >
-          <span class="dark:bg-gradient-to-tr dark:from-primary-300 dark:to-primary-400 dark:bg-clip-text dark:text-transparent"
+          <span class="dark:text-gradient"
             >← Back to Home</span
           >
+          <span
+            class="absolute inset-0 -z-10
+                  bg-gradient-to-r from-#00e699/30 to-#00e2d8/30
+                  dark:hidden transition-colors duration-300"
+          />
         </NuxtLink>
       </div>
     </section>

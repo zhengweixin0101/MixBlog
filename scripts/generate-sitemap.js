@@ -2,12 +2,13 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import matter from 'gray-matter'
+import { siteConfig } from '../site.config.js'
 
-const baseUrl = 'https://zhengweixin.top'
+const baseUrl = siteConfig.url
 
 // 路由到 Vue 页面文件的映射
 const pageFilesMap = {
-  '/': '/pages/index.vue',
+  '': '/pages/index.vue',
   '/posts': '/pages/posts/index.vue',
   '/about': '/pages/about.vue',
 }
@@ -67,13 +68,12 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const sitemapPath = path.resolve(__dirname, '../public/sitemap.xml')
-const relativePath = path.relative(process.cwd(), sitemapPath)
 
 try {
   const sitemapContent = generateSitemap(routes)
   fs.writeFileSync(sitemapPath, sitemapContent, 'utf-8')
   console.log(`✅ sitemap 生成成功`)
 } catch (error) {
-  console.error(`❌ sitemap 生成失败：`)
+  console.error(`❌ sitemap 生成失败`)
   console.error(error)
 }

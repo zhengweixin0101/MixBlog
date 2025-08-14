@@ -1,3 +1,7 @@
+<script setup>
+import { siteConfig } from '@/site.config.js'
+</script>
+
 <template>
   <main v-fade-in class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center py-12 max-w-7xl">
     <div class="flex flex-col-reverse md:flex-row items-center justify-between w-full gap-10 mt--10">
@@ -9,28 +13,21 @@
         <h1 data-fade class="mt-2 text-5xl sm:text-6xl leading-tight break-words">
           I'm
           <span class="relative inline-block ml-2">
-            <span
-              class="transition-colors duration-300
-                    text-[#2f3f5b]
-                    dark:text-transparent
-                    dark:bg-gradient-to-r dark:from-[#00e699] dark:to-[#00e2d8]
-                    dark:bg-clip-text dark:-webkit-bg-clip-text
-                    dark:-webkit-text-fill-color-transparent"
-            >
-              ShinX
+            <span class="text-#2f3f5b dark:text-gradient">
+              {{ siteConfig.author.name }}
             </span>
             <span
               class="absolute inset-0 -z-10
-                    bg-gradient-to-r from-[#00e69980] to-[#00e2d850]
-                    dark:hidden"
-            ></span>
+                    bg-gradient-to-r from-#00e699/50 to-#00e2d8/50
+                    dark:hidden transition-colors duration-300"
+            />
           </span>
         </h1>
         <p
           data-fade
           class="mt-5 max-w-xl text-[#2f3f5b] dark:text-[#e4e7eb] transition-colors duration-300 text-base sm:text-lg mx-auto md:mx-0"
         >
-          A 📕Student and 🎮Gamer
+          {{ siteConfig.author.description }}
         </p>
         <div data-fade class="flex flex-wrap gap-4 mt-10 justify-center md:justify-start">
           <NuxtLink
@@ -54,32 +51,22 @@
             About Me
           </NuxtLink>
         </div>
-        <div data-fade class="mt-6 flex flex-wrap justify-center md:justify-start gap-4 text-sm">
-          <a
-            href="/"
-            class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline"
-          >
-            <i class="iconfont icon-shapes"></i> Apps
-          </a>
-          <a
-            href="mailto:zhengweixin0101@outlook.com"
-            class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline"
-          >
-            <i class="iconfont icon-envelope"></i> Mail
-          </a>
-          <a
-            target="_blank"
-            href="https://github.com/zhengweixin0101"
-            class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline"
-          >
-            <i class="iconfont icon-github"></i> Github
-          </a>
-        </div>
+          <div data-fade class="mt-6 flex flex-wrap justify-center md:justify-start gap-4 text-sm">
+            <a
+              v-for="item in siteConfig.socialLinks"
+              :key="item.href"
+              :href="item.href"
+              :target="item.external ? '_blank' : undefined"
+              class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline"
+            >
+              <i class="iconfont" :class="item.icon"></i> {{ item.text }}
+            </a>
+          </div>
       </div>
       <!-- 头像 -->
       <div data-fade="3" class="w-40 h-40 sm:w-56 sm:h-56 md:w-70 md:h-70 rounded-full shadow-[0_0_20px_rgba(0,0,0,0.3)]">
         <img
-          src="/avatar.jpg"
+          :src="siteConfig.author.avatar"
           alt="Avatar"
           class="rounded-full w-full h-full object-cover transition-transform duration-300 md:hover:rotate-360"
           draggable="false"

@@ -1,8 +1,10 @@
 import fs from 'fs/promises'
 import path from 'path'
 import matter from 'gray-matter'
+import { siteConfig } from '../site.config.js'
 
-const SITE_URL = 'https://zhengweixin.top'
+const TITLE = siteConfig.title
+const SITE_URL = siteConfig.url
 const RSS_PATH = 'public/rss.xml'
 const POSTS_PATH = './posts'
 function escapeHtml(str) {
@@ -61,7 +63,7 @@ async function generateRSS() {
     const rss = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>ShinX's Blog</title>
+    <title>${TITLE}</title>
     <link>${SITE_URL}</link>
     <description>博客更新订阅</description>
     <language>zh-cn</language>
