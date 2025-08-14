@@ -26,7 +26,7 @@ function isActive(item) {
 <template>
   <header>
     <nav class="fixed top-0 left-0 right-0 z-50 w-full h-[68px] bg-#f8f8f8/50 dark:bg-[#0e1111]/50 backdrop-blur-md transition-colors duration-300 border-b border-white/10 dark:border-white/10">
-      <div class="flex items-center justify-between h-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[90vw] xl:max-w-[85vw] 2xl:max-w-[60vw] mx-auto">
+      <div class="flex items-center justify-between h-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[90vw] xl:max-w-[80vw] 2xl:max-w-[55vw] mx-auto">
         <ul class="hidden md:flex justify-start space-x-4 list-none p-0 m-0 flex-1">
           <li v-for="(item, index) in siteConfig.navItems" :key="'main-' + index" class="relative">
             <span
