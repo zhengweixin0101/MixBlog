@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 const postsDir = path.resolve(__dirname, '../posts');
 const outDir = path.resolve(__dirname, '../public/data/posts');
 const listFile = path.resolve(__dirname, '../public/data/posts-list.json');
-const mdFileListFile = path.resolve(__dirname, '../public/data/md-file.json');
+const mdFileListFile = path.resolve(__dirname, '../public/data/md-list.json');
 
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 

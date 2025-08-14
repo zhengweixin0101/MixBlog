@@ -5,7 +5,7 @@ export const siteConfig = {
     url: "https://zhengweixin.top",
     author: {
         name: "ShinX",
-        avatar: "https://blog-zwx.netlify.app/avatar.jpg",
+        avatar: "https://zhengweixin.top/avatar.jpg",
         description: "A 📕Student and 🎮Gamer",
     },
     socialLinks: [
@@ -19,8 +19,9 @@ export const siteConfig = {
         { label: 'About', href: '/about', icon: 'icon-about1' },
     ],
     postsData: {
-        postsList: "https://blog-zwx.netlify.app/data/posts-list.json",
-        postContent: "https://blog-zwx.netlify.app/data/posts"
+        postsList: "https://zhengweixin.top/data/posts-list.json",
+        postContent: "https://zhengweixin.top/data/posts",
+        mdList: 'https://zhengweixin.top/data/md-list.json',
     },
 
     thirdParty: {
