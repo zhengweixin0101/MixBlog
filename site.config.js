@@ -21,7 +21,7 @@ export const siteConfig = {
     postsData: {
         postsList: "https://zhengweixin.top/data/posts-list.json",
         postContent: "https://zhengweixin.top/data/posts",
-        mdList: 'https://zhengweixin.top/data/md-file.json',
+        mdList: 'https://zhengweixin.top/data/md-list.json',
     },
 
     thirdParty: {
