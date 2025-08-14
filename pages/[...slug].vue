@@ -29,17 +29,12 @@
       <div data-fade class="mt-10 flex flex-row items-center justify-end gap-4">
         <NuxtLink
           to="/"
-          class="custom-gradient-link inline-flex relative font-medium text-#2f3f5b dark:bg-gradient-to-r dark:from-[#00e699] dark:to-[#00e2d8] dark:bg-clip-text dark:text-transparent dark:-webkit-bg-clip-text no-underline"
+          class="custom-gradient-link inline-flex relative font-medium no-underline"
           data-fade
         >
-          <span class="dark:text-gradient"
+          <span class="text-gradient"
             >← Back to Home</span
           >
-          <span
-            class="absolute inset-0 -z-10
-                  bg-gradient-to-r from-#00e699/30 to-#00e2d8/30
-                  dark:hidden transition-colors duration-300"
-          />
         </NuxtLink>
       </div>
   </section>
@@ -71,7 +66,7 @@ useHead({
 
 /* 阴影光晕 */
 .drop-shadow-glow {
-  filter: drop-shadow(0 0 6px #facc15);
+  filter: drop-shadow(0 0 10px #facc15);
 }
 
 /* 下划线动画 */
