@@ -5,6 +5,10 @@
 [[headers]]
 for = "/*"
   [headers.values]
-    Access-Control-Allow-Origin = "http://localhost:3000"
+    Access-Control-Allow-Origin = "http://localhost:3000 https://blog-zwx.netlify.app"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
+
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Cache-Control = "public, max-age=0, must-revalidate"
