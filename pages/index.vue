@@ -13,21 +13,14 @@ import { siteConfig } from '@/site.config.js'
         <h1 data-fade class="mt-2 text-5xl sm:text-6xl leading-tight break-words">
           I'm
           <span class="relative inline-block ml-2">
-            <span
-              class="transition-colors duration-300
-                    text-[#2f3f5b]
-                    dark:text-transparent
-                    dark:bg-gradient-to-r dark:from-[#00e699] dark:to-[#00e2d8]
-                    dark:bg-clip-text dark:-webkit-bg-clip-text
-                    dark:-webkit-text-fill-color-transparent"
-            >
+            <span class="text-#2f3f5b dark:text-gradient">
               {{ siteConfig.author.name }}
             </span>
             <span
               class="absolute inset-0 -z-10
-                    bg-gradient-to-r from-[#00e69980] to-[#00e2d850]
-                    dark:hidden"
-            ></span>
+                    bg-gradient-to-r from-#00e699/50 to-#00e2d8/50
+                    dark:hidden transition-colors duration-300"
+            />
           </span>
         </h1>
         <p

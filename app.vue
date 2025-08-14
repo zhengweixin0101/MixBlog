@@ -40,7 +40,7 @@ link: [
   { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
 
   { rel: 'alternate', type: 'application/rss+xml', title: "ShinX's Blog RSS", href: '/rss.xml' },
-  { rel: 'stylesheet', href: '//at.alicdn.com/t/c/font_4401174_c72513gwuso.css' }
+  { rel: 'stylesheet', href: siteConfig.thirdParty.iconfont },
 ]
 })
 </script>

@@ -59,17 +59,13 @@ const filteredPosts = computed(() => {
       <h1 data-fade class="text-3xl mt-40">
         <span
           class="relative inline-block transition-colors duration-300
-                text-#2f3f5b
-                dark:text-transparent
-                dark:bg-gradient-to-r dark:from-[#00e699] dark:to-[#00e2d8]
-                dark:bg-clip-text dark:-webkit-bg-clip-text
-                dark:-webkit-text-fill-color-transparent"
+                text-#2f3f5b dark:text-gradient"
         >
           Posts
           <span
             class="absolute inset-0 -z-10
-                  bg-gradient-to-r from-[#00e69980] to-[#00e2d850]
-                  dark:hidden"
+                  bg-gradient-to-r from-#00e699/50 to-#00e2d8/50
+                  dark:hidden transition-colors duration-300"
           />
         </span>
       </h1>
@@ -88,7 +84,7 @@ const filteredPosts = computed(() => {
                 bg-gray-200/50 text-#2f3f5b placeholder-gray-500
                 dark:bg-white/10 dark:text-white dark:placeholder-gray-500
                 transition-colors transition-shadow duration-300 
-                focus:outline-none shadow-[0_0_0_0.5px_#00e699] dark:shadow-none focus:shadow-[0_0_0_1.5px_#00e699] dark:focus:shadow-[0_0_0_1px_#00e699]"
+                focus:outline-none shadow-[0_0_0_0.5px_#00e699] dark:shadow-none focus:shadow-[0_0_0_1px_#00e699]"
         />
       </div>
 
@@ -145,7 +141,7 @@ const filteredPosts = computed(() => {
                 </svg>
                 <time
                   :datetime="post.date !== '' ? post.date : null"
-                  class="text-#2f3f5b dark:bg-gradient-to-r dark:from-[#00e699] dark:to-[#00e2d8] dark:bg-clip-text dark:text-transparent dark:-webkit-bg-clip-text"
+                  class="text-#2f3f5b dark:bg-gradient-to-r dark:text-gradient"
                 >
                   {{ post.date || '未知日期' }}
                 </time>
@@ -172,9 +168,14 @@ const filteredPosts = computed(() => {
           class="custom-gradient-link inline-flex relative font-medium text-#2f3f5b dark:bg-gradient-to-r dark:from-[#00e699] dark:to-[#00e2d8] dark:bg-clip-text dark:text-transparent dark:-webkit-bg-clip-text no-underline"
           data-fade
         >
-          <span class="dark:bg-gradient-to-tr dark:from-primary-300 dark:to-primary-400 dark:bg-clip-text dark:text-transparent"
+          <span class="dark:text-gradient"
             >← Back to Home</span
           >
+          <span
+            class="absolute inset-0 -z-10
+                  bg-gradient-to-r from-#00e699/30 to-#00e2d8/30
+                  dark:hidden transition-colors duration-300"
+          />
         </NuxtLink>
       </div>
     </section>

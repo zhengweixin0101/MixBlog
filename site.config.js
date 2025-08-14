@@ -14,12 +14,16 @@ export const siteConfig = {
         { icon: 'icon-github', text: 'Github', href: 'https://github.com/zhengweixin0101', external: true, },
     ],
     navItems: [
-        { label: 'Home', href: '/', icon: 'icon-house-chimney' },
-        { label: 'Posts', href: '/posts', icon: 'icon-blog' },
-        { label: 'About', href: '/about', icon: 'icon-about' },
+        { label: 'Home', href: '/', icon: 'icon-portalIndex' },
+        { label: 'Posts', href: '/posts', icon: 'icon-Pen' },
+        { label: 'About', href: '/about', icon: 'icon-about1' },
     ],
     postsData: {
         postsList: "https://blog-zwx.netlify.app/data/posts-list.json",
         postContent: "https://blog-zwx.netlify.app/data/posts"
+    },
+
+    thirdParty: {
+        iconfont: '//at.alicdn.com/t/c/font_4401174_umvp1qw3wc.css',
     },
 }
