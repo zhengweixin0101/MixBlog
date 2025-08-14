@@ -6,16 +6,18 @@
 
 <script setup>
 import { useHead } from '#imports'
+import { siteConfig } from '@/site.config.js'
 
 useHead({
-  titleTemplate: "ShinX' Blog",
+  titleTemplate: siteConfig.title,
   meta: [
     { charset: 'utf-8' },
     { name: 'robots', content: 'follow, index' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-    { name: 'description', content: "This is ShinX’s blog, created by a student and a gamer." },
-    { name: 'author', content: 'ShinX' },
-    { name: 'keywords', content: 'ShinX,zhengweixin,blog,ShinX的个人主页,ShinX的个人网站,ShinX的博客' },
+
+    { name: 'description', content: siteConfig.description },
+    { name: 'author', content: siteConfig.author.name },
+    { name: 'keywords', content: siteConfig.keywords },
 
     { name: 'color-scheme', content: 'only light' },
     { name: 'theme-color', content: '#f8f8f8', media: '(prefers-color-scheme: light)' },
@@ -23,12 +25,12 @@ useHead({
     { name: 'apple-mobile-web-app-title', content: 'ShinX' },
     { name: 'autmobile-web-app-capablehor', content: 'yes' },
 
-    { property: 'og:title', content: "ShinX' Blog" },
-    { property: 'og:description', content: "This is ShinX’s blog, created by a student and a gamer." },
+    { property: 'og:title', content: siteConfig.title },
+    { property: 'og:description', content: siteConfig.description },
     { property: 'og:type', content: 'website' },
-    { property: 'og:url', content: 'https://zhengweixin.top' },
-    { name: 'twitter:title', content: "ShinX' Blog" },
-    { name: 'twitter:description', content: 'This is ShinX’s blog, created by a student and a gamer.' },
+    { property: 'og:url', content: siteConfig.url },
+    { name: 'twitter:title', content: siteConfig.title },
+    { name: 'twitter:description', content: siteConfig.description },
     { name: 'twitter:card', content: 'summary' }
   ],
 link: [

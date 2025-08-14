@@ -1,23 +1,21 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { useHead } from '#imports'
+import { siteConfig } from '@/site.config.js'
 
 //head
 useHead({
-  titleTemplate: "Posts | ShinX' Blog",
+  titleTemplate: `Posts | ${siteConfig.title}`,
   meta: [
-    { name: 'description', content: "This is the posts list page of ShinX's blog." },
-    { name: 'keywords', content: 'ShinX,zhengweixin,blog,ShinX的个人主页,ShinX的个人网站,ShinX的博客,文章列表,posts,list' },
-    { property: 'og:title', content: "Posts | ShinX' Blog" },
-    { property: 'og:description', content: "This is the posts list page of ShinX's blog." },
-    { property: 'og:url', content: 'https://zhengweixin.top/posts' },
-    { name: 'twitter:title', content: "Posts | ShinX' Blog" },
-    { name: 'twitter:description', content: "This is the posts list page of ShinX's blog." },
+    { name: 'description', content: `This is the posts list page of ${siteConfig.title}.` },
+    { name: 'keywords', content: `${siteConfig.keywords},文章列表,posts,list` },
+    { property: 'og:title', content: `Posts | ${siteConfig.title}` },
+    { property: 'og:description', content: `This is the posts list page of ${siteConfig.title}.` },
+    { property: 'og:url', content: `${siteConfig.url}/posts` },
+    { name: 'twitter:title', content: `Posts | ${siteConfig.title}` },
+    { name: 'twitter:description', content: `This is the posts list page of ${siteConfig.title}.` },
   ],
 })
-
-const router = useRouter()
 
 // 搜索和筛选相关状态
 const searchTerm = ref('')
@@ -26,7 +24,7 @@ const revealedPosts = ref({})
 
 // 读取文章列表
 const { data: postsRaw } = await useAsyncData('posts-list', () =>
-  $fetch('https://blog-zwx.netlify.app/data/posts-list.json'),
+  $fetch( siteConfig.postsData.postsList ),
 )
 
 const posts = computed(() => postsRaw.value || [])
@@ -41,13 +39,6 @@ const allTags = computed(() => {
 
 function toggleTag(tag) {
   selectedTag.value = selectedTag.value === tag ? '' : tag
-}
-
-// 标记动画完成的文章
-function markRevealed(slug) {
-  if (!revealedPosts.value[slug]) {
-    revealedPosts.value[slug] = true
-  }
 }
 
 const filteredPosts = computed(() => {

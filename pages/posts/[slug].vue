@@ -13,6 +13,8 @@ import '@fancyapps/ui/dist/fancybox/fancybox.css'
 import Sidebar from '@/components/Sidebar.vue'
 import '@/assets/article-content.css'
 
+import { siteConfig } from '@/site.config.js'
+
 const route = useRoute()
 
 // HTML 实体解析
@@ -100,7 +102,7 @@ function addFancyboxAttributesToAnchors(html) {
   )
 }
 
-// 高亮标题元素（hash）
+// 高亮标题
 const HIGHLIGHT_DURATION = 3000
 function highlightHeading(rawId) {
   if (typeof document === 'undefined' || !rawId) return
@@ -113,7 +115,7 @@ function highlightHeading(rawId) {
   }, HIGHLIGHT_DURATION)
 }
 
-// 代码高亮样式动态加载
+// 代码高亮样式
 const isDark = ref(false)
 function loadHighlightStyle(darkMode) {
   if (typeof document === 'undefined') return
@@ -128,7 +130,7 @@ function loadHighlightStyle(darkMode) {
   document.head.appendChild(link)
 }
 
-// 复制按钮事件
+// 复制按钮
 function onCopyBtnClick(e) {
   const btn = e.target.closest('.copy-btn')
   if (!btn) return
@@ -153,7 +155,7 @@ function onCopyBtnClick(e) {
 //读取文章内容
 const { data: rawPostData, error } = await useAsyncData(
   `post-${route.params.slug}`,
-  () => $fetch(`https://blog-zwx.netlify.app/data/posts/${route.params.slug}.json`),
+  () => $fetch(`${siteConfig.postsData.postContent}/${route.params.slug}.json`),
 )
 
 const post = computed(() => {
@@ -220,35 +222,33 @@ watch(() => route.hash, (hash) => {
 
 const formattedDate = computed(() => {
   if (!post.value.frontmatter.date) return ''
-  return `ShinX 发布于 ${dayjs(post.value.frontmatter.date).format('YYYY-MM-DD')}`
+  return `${siteConfig.author.name} 发布于 ${dayjs(post.value.frontmatter.date).format('YYYY-MM-DD')}`
 })
 
 //head
 useHead(() => {
   const title = post.value.frontmatter.title || '无标题文章'
-  const description = post.value.frontmatter.description || 'ShinX 的文章'
-  const Keywords = computed(() => {
-    const baseKeywords = ['文章', 'Posts', 'Article', 'ShinX', 'zhengweixin', 'blog', 'ShinX的个人主页']
-    const tags = post.value.frontmatter.tags
+  const description = post.value.frontmatter.description || `${siteConfig.author.name} 的文章`
 
-    if (Array.isArray(tags) && tags.length) {
-      return [...tags, ...baseKeywords].join(', ')
-    } else if (typeof tags === 'string' && tags.trim() !== '') {
-      return [tags, ...baseKeywords].join(', ')
-    } else {
-      return baseKeywords.join(', ')
+  const Keywords = computed(() => {
+    const tags = post.value?.frontmatter?.tags
+    if (Array.isArray(tags)) {
+      return tags.join(',')
+    } else if (typeof tags === 'string') {
+      return tags
     }
+    return ''
   })
 
   return {
-    title: `${title} | ShinX' Blog`,
+    titleTemplate: `${title} | ${siteConfig.title}`,
     meta: [
       { name: 'description', content: description },
-      { name: 'keywords', content: Keywords },
-      { property: 'og:title', content: title },
+      { name: 'keywords', content: `${Keywords.value},${siteConfig.keywords}` },
+      { property: 'og:title', content: `${title} | ${siteConfig.title}` },
       { property: 'og:description', content: description },
-      { property: 'og:url', content: `https://zhengweixin.top/posts/${route.params.slug}` },
-      { name: 'twitter:title', content: title },
+      { property: 'og:url', content: `${siteConfig.url}/${route.params.slug}` },
+      { name: 'twitter:title', content: `${title} | ${siteConfig.title}` },
       { name: 'twitter:description', content: description },
     ]
   }

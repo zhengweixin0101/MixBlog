@@ -1,13 +1,8 @@
 <script setup>
 import { useRoute, useColorMode } from '#imports'
+import { siteConfig } from '@/site.config.js'
 
 const route = useRoute()
-
-const navItems = [
-  { label: 'Home', href: '/', icon: 'icon-house-chimney' },
-  { label: 'Posts', href: '/posts', icon: 'icon-blog' },
-  { label: 'About', href: '/about', icon: 'icon-about' },
-]
 
 const colorMode = useColorMode()
 
@@ -33,7 +28,7 @@ function isActive(item) {
     <nav class="fixed top-0 left-0 right-0 z-50 w-full h-[68px] bg-#f8f8f8/50 dark:bg-[#0e1111]/50 backdrop-blur-md transition-colors duration-300 border-b border-white/10 dark:border-white/10">
       <div class="flex items-center justify-between h-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[90vw] xl:max-w-[85vw] 2xl:max-w-[60vw] mx-auto">
         <ul class="hidden md:flex justify-start space-x-4 list-none p-0 m-0 flex-1">
-          <li v-for="(item, index) in navItems" :key="index">
+          <li v-for="(item, index) in siteConfig.navItems" :key="'main-' + index">
             <NuxtLink
               :to="item.href"
               class="flex items-center space-x-1 no-underline px-3 py-2 rounded font-bold whitespace-nowrap"
@@ -75,7 +70,7 @@ function isActive(item) {
         class="md:hidden fixed top-[68px] left-4 w-1/4 min-w-[160px] mt-1 rounded-xl shadow-xl border border-white/10 backdrop-blur-md bg-white/60 dark:bg-[#1a1a1a]/60 z-40 overflow-hidden"
       >
         <ul class="flex flex-col divide-y divide-white/10 dark:divide-white/10">
-          <li v-for="(item, index) in navItems" :key="'mobile-' + index" @click="isMenuOpen = false">
+          <li v-for="(item, index) in siteConfig.navItems" :key="'mobile-' + index" @click="isMenuOpen = false">
             <NuxtLink
               draggable="false"
               :to="item.href"
