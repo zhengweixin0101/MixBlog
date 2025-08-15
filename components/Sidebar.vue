@@ -1,5 +1,5 @@
 <template>
-  <aside class="hidden lg:block w-60 p-4 rounded-lg bg-black/5 dark:bg-white/10 transition-colors duration-300">
+  <aside class="hidden lg:block w-60 p-4 rounded-lg bg-#fefefe dark:bg-white/10 transition-colors duration-300">
     <section>
       <div class="text-xl font-bold mb-2 bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent">
         目录

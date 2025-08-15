@@ -18,6 +18,7 @@
     "@nuxtjs/color-mode": "^3.5.2",
     "dayjs": "^1.11.13",
     "gray-matter": "^4.0.3",
+    "gsap": "^3.13.0",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.22",
     "marked": "^16.1.2",
