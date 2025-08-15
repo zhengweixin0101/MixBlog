@@ -6,7 +6,7 @@
 
 <script setup>
 import { useHead } from '#imports'
-import { siteConfig } from '@/site.config.js'
+import { siteConfig } from '@/siteConfig/main.js'
 
 useHead({
   titleTemplate: siteConfig.title,

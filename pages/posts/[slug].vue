@@ -13,7 +13,7 @@ import '@fancyapps/ui/dist/fancybox/fancybox.css'
 import Sidebar from '@/components/Sidebar.vue'
 import '@/assets/article-content.css'
 
-import { siteConfig } from '@/site.config.js'
+import { siteConfig } from '@/siteConfig/main.js'
 
 const route = useRoute()
 const loading = ref(true)

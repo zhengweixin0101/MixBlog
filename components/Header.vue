@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute, useColorMode } from '#imports'
-import { siteConfig } from '@/site.config.js'
+import { siteConfig } from '@/siteConfig/main.js'
 
 const route = useRoute()
 

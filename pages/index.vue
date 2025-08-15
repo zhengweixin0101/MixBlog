@@ -1,5 +1,5 @@
 <script setup>
-import { siteConfig } from '@/site.config.js'
+import { siteConfig } from '@/siteConfig/main.js'
 </script>
 
 <template>

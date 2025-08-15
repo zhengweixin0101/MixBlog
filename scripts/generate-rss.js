@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
 import matter from 'gray-matter'
-import { siteConfig } from '../site.config.js'
+import { siteConfig } from '../siteConfig/main.js'
 
 const TITLE = siteConfig.title
 const SITE_URL = siteConfig.url

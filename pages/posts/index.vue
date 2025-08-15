@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useHead } from '#imports'
-import { siteConfig } from '@/site.config.js'
+import { siteConfig } from '@/siteConfig/main.js'
 
 //head
 useHead({
@@ -20,7 +20,6 @@ useHead({
 // 搜索和筛选相关状态
 const searchTerm = ref('')
 const selectedTag = ref('')
-const revealedPosts = ref({})
 
 // 读取文章列表
 const { data: postsRaw } = await useAsyncData('posts-list', () =>
