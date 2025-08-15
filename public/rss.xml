@@ -8,11 +8,11 @@
     <atom:link href="https://zhengweixin.top/rss.xml" rel="self" type="application/rss+xml" />
     
       <item>
-        <title>免信用卡为Cloudflare添加付款方式</title>
-        <link>https://zhengweixin.top/posts/免信用卡为cloudflare添加付款方式</link>
-        <guid isPermaLink="true">https://zhengweixin.top/posts/免信用卡为cloudflare添加付款方式</guid>
-        <pubDate>Sat, 26 Jul 2025 00:00:00 GMT</pubDate>
-        <description><![CDATA[免信用卡为cloudflare添加付款方式]]></description>
+        <title>免信用卡为 Cloudflare 添加付款方式</title>
+        <link>https://zhengweixin.top/posts/cf-no-credit</link>
+        <guid isPermaLink="true">https://zhengweixin.top/posts/cf-no-credit</guid>
+        <pubDate>Fri, 15 Aug 2025 00:00:00 GMT</pubDate>
+        <description><![CDATA[Cloudflare 的部分服务需要添加付款方式才能使用。本文分享一种无需绑定真实信用卡就能完成绑定的方法。]]></description>
       </item>
     
 
@@ -22,64 +22,6 @@
         <guid isPermaLink="true">https://zhengweixin.top/posts/test-post</guid>
         <pubDate>Sat, 26 Jul 2025 00:00:00 GMT</pubDate>
         <description><![CDATA[这是一篇测试文章，用于测试文章的生成和页面效果。]]></description>
-      </item>
-    
-
-      <item>
-        <title>Latex Example</title>
-        <link>https://zhengweixin.top/posts/latex-example</link>
-        <guid isPermaLink="true">https://zhengweixin.top/posts/latex-example</guid>
-        <pubDate>Sun, 01 Oct 2023 00:00:00 GMT</pubDate>
-        <description><![CDATA[Here is a sample of some basic Latex syntax that can be used when writing Latex content in Astro.]]></description>
-      </item>
-    
-
-      <item>
-        <title>The Unbearable Lightness of Being</title>
-        <link>https://zhengweixin.top/posts/the-unbearable-lightness-of-being</link>
-        <guid isPermaLink="true">https://zhengweixin.top/posts/the-unbearable-lightness-of-being</guid>
-        <pubDate>Tue, 24 Jan 1984 00:00:00 GMT</pubDate>
-        <description><![CDATA[The idea of eternal return is a mysterious one, and Nietzsche has often perplexed other philosophers]]></description>
-      </item>
-    
-
-      <item>
-        <title>羅生門</title>
-        <link>https://zhengweixin.top/posts/rashomon</link>
-        <guid isPermaLink="true">https://zhengweixin.top/posts/rashomon</guid>
-        <pubDate>Fri, 05 Mar 1971 00:00:00 GMT</pubDate>
-        <description><![CDATA[ある日の暮方の事である。一人の下人げにんが、羅生門らしょうもんの下で雨やみを待っていた。
-
-広い門の下には、この男のほかに誰もいない。ただ、所々丹塗にぬりの剥はげた、大きな円柱まるばしらに、蟋蟀き]]></description>
-      </item>
-    
-
-      <item>
-        <title>容忍与自由</title>
-        <link>https://zhengweixin.top/posts/tolerance-and-freedom</link>
-        <guid isPermaLink="true">https://zhengweixin.top/posts/tolerance-and-freedom</guid>
-        <pubDate>Mon, 16 Mar 1959 00:00:00 GMT</pubDate>
-        <description><![CDATA[十七八年前，我最后一次会见我的母校康耐儿大学的史学大师布尔先生（George Lincoln Burr）。我们谈到英国史学大师阿克顿（Lord Acton）一生准备要著作一部《自由之史》，没有写成他就]]></description>
-      </item>
-    
-
-      <item>
-        <title>Markdown Example</title>
-        <link>https://zhengweixin.top/posts/markdown-example</link>
-        <guid isPermaLink="true">https://zhengweixin.top/posts/markdown-example</guid>
-        <pubDate>Mon, 10 Jan 1921 00:00:00 GMT</pubDate>
-        <description><![CDATA[Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.]]></description>
-      </item>
-    
-
-      <item>
-        <title>故鄉</title>
-        <link>https://zhengweixin.top/posts/hometown</link>
-        <guid isPermaLink="true">https://zhengweixin.top/posts/hometown</guid>
-        <pubDate>Mon, 10 Jan 1921 00:00:00 GMT</pubDate>
-        <description><![CDATA[我冒了嚴寒，回到相隔二千餘里，別了二十餘年的故鄉去。
-
-時候既然是深冬；漸近故鄉時，天氣又陰晦了，冷風吹進船艙中，嗚嗚的響，從蓬隙向外一望，蒼黃的天底下，遠近橫著幾個蕭索的荒村，沒有一些活氣。我的]]></description>
       </item>
     
   </channel>

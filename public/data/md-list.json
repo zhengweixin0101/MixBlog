@@ -1,34 +1,10 @@
 [
   {
-    "filename": "Latex Example.md",
-    "slug": "latex-example"
-  },
-  {
-    "filename": "Markdown Example.md",
-    "slug": "markdown-example"
-  },
-  {
-    "filename": "The Unbearable Lightness of Being.md",
-    "slug": "the-unbearable-lightness-of-being"
-  },
-  {
     "filename": "免信用卡为cloudflare添加付款方式.md",
-    "slug": "免信用卡为cloudflare添加付款方式"
-  },
-  {
-    "filename": "容忍与自由.md",
-    "slug": "tolerance-and-freedom"
-  },
-  {
-    "filename": "故乡.md",
-    "slug": "hometown"
+    "slug": "cf-no-credit"
   },
   {
     "filename": "测试文章.md",
     "slug": "test-post"
-  },
-  {
-    "filename": "羅生門.md",
-    "slug": "rashomon"
   }
 ]
