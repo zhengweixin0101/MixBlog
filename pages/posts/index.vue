@@ -119,7 +119,7 @@ const filteredPosts = computed(() => {
             <div
               class="bg-#fefefe dark:bg-white/10 h-full rounded-xl p-4 no-underline focus:outline-none focus-visible:ring focus-visible:ring-[#00e699] transition-transform duration-300 active:scale-95 hover:scale-102"
             >
-              <h4 class="text-#2f3f5b dark:text-white text-xl transition-colors duration-300">{{ post.title }}</h4>
+              <h4 class="text-#2f3f5b dark:text-white text-lg transition-colors duration-300">{{ post.title }}</h4>
               <p class="mt-1 text-#2f3f5b dark:text-gray-400 text-sm transition-colors duration-300">
                 {{ post.description || '暂无描述' }}
               </p>

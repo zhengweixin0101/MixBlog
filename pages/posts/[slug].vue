@@ -16,7 +16,6 @@ import '@/assets/article-content.css'
 import { siteConfig } from '@/siteConfig/main.js'
 
 const route = useRoute()
-const loading = ref(true)
 
 // HTML实体解析
 function decodeHTMLEntities(str) {
