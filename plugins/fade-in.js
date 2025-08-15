@@ -1,52 +1,59 @@
 import { defineNuxtPlugin } from '#app'
 
+function parseIndex(raw) {
+  if (raw == null) return NaN
+  const cleaned = String(raw).normalize('NFKC').replace(/[^\d]/g, '')
+  if (!cleaned) return NaN
+  const n = parseInt(cleaned, 10)
+  return n > 0 ? n : NaN
+}
+
 export default defineNuxtPlugin((nuxtApp) => {
   const fadeIn = {
-    mounted(el) {
-      const elements = Array.from(el.querySelectorAll('[data-fade]'))
+    mounted(root) {
+      const items = Array.from(root.querySelectorAll('[data-fade]'))
+      const N = items.length
+      const final = new Array(N).fill(null)
 
-      const positioned = []
-      const unpositioned = []
-
-      elements.forEach((el) => {
-        const attr = el.getAttribute('data-fade')
-        const index = parseInt(attr, 10)
-        if (!isNaN(index)) {
-          positioned[index - 1] = el
-        } else {
-          unpositioned.push(el)
+      items.forEach((el) => {
+        const idx = parseIndex(el.getAttribute('data-fade'))
+        if (!Number.isNaN(idx)) {
+          let pos = Math.min(idx - 1, N - 1)
+          while (pos < N && final[pos]) pos++
+          if (pos >= N) {
+            for (let i = N - 1; i >= 0; i--) {
+              if (!final[i]) { final[i] = el; break }
+            }
+          } else {
+            final[pos] = el
+          }
+          el.__fadePlaced = true
         }
       })
 
-      const final = []
-      let upIndex = 0
-      for (let i = 0; i < elements.length; i++) {
-        if (positioned[i]) {
-          final.push(positioned[i])
-        } else if (upIndex < unpositioned.length) {
-          final.push(unpositioned[upIndex++])
+      let cursor = 0
+      items.forEach((el) => {
+        if (!el.__fadePlaced) {
+          while (cursor < N && final[cursor]) cursor++
+          if (cursor < N) final[cursor++] = el
         }
-      }
-
-      while (upIndex < unpositioned.length) {
-        final.push(unpositioned[upIndex++])
-      }
+        delete el.__fadePlaced
+      })
 
       final.forEach((el, i) => {
-        el.style.animationDelay = `${(i + 1) * 0.05}s`
+        if (el) el.style.animationDelay = `${(i + 1) * 0.05}s`
       })
 
-      const observer = new IntersectionObserver(
+      const io = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
-            el.classList.add('fade-in-start')
-            observer.unobserve(el)
+            root.classList.add('fade-in-start')
+            io.unobserve(root)
           }
         },
         { threshold: 0.05 }
       )
-
-      observer.observe(el)
+      io.observe(root)
     }
   }
 
