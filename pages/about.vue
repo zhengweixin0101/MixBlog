@@ -106,7 +106,7 @@ onBeforeUnmount(() => {
       <!-- 中间头像 -->
       <div data-fade class="w-35 h-35 md:w-40 md:h-40 rounded-full shadow-[0_0_20px_rgba(0,0,0,0.3)]">
         <img
-          src="https://npm.elemecdn.com/anzhiyu-blog-static@1.0.4/img/avatar.jpg"
+          :src="siteConfig.author.avatar"
           alt="Avatar"
           class="rounded-full w-full h-full object-cover transition-transform duration-300 md:hover:rotate-360"
           draggable="false"
