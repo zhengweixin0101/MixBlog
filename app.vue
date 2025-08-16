@@ -33,10 +33,19 @@ useHead({
     { name: 'twitter:description', content: siteConfig.description },
     { name: 'twitter:card', content: 'summary' }
   ],
-link: [
-    ...siteConfig.icons,
-  { rel: 'alternate', type: 'application/rss+xml', title: `${siteConfig.title} RSS`, href: '/rss.xml' },
-  { rel: 'stylesheet', href: siteConfig.thirdParty.iconfont },
-]
+
+  link: [
+      ...siteConfig.icons,
+    { rel: 'alternate', type: 'application/rss+xml', title: `${siteConfig.title} RSS`, href: '/rss.xml' },
+    { rel: 'stylesheet', href: siteConfig.thirdParty.iconfont },
+  ],
+
+  script: [
+    {
+      innerHTML: `!function(p){!function(t){var s=window,e=document,i=p,c="".concat("https:"===e.location.protocol?"https://":"http://","sdk.51.la/js-sdk-pro.min.js"),n=e.createElement("script"),r=e.getElementsByTagName("script")[0];n.type="text/javascript",n.setAttribute("charset","UTF-8"),n.async=!0,n.src=c,n.id="LA_COLLECT",i.d=n;var o=function(){s.LA.ids.push(i)};s.LA?s.LA.ids&&o():(s.LA=p,s.LA.ids=[],o()),r.parentNode.insertBefore(n,r)}()}({id:"${siteConfig.thirdParty.s51LA.id}",ck:"${siteConfig.thirdParty.s51LA.ck}",autoTrack:true,hashMode:true,screenRecord:true});`,
+      type: "text/javascript"
+    }
+  ],
+  __dangerouslyDisableSanitizers: ['script']
 })
 </script>
