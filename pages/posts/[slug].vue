@@ -10,6 +10,7 @@ import 'katex/dist/katex.min.css'
 import { Fancybox } from '@fancyapps/ui/dist/fancybox/'
 import '@fancyapps/ui/dist/fancybox/fancybox.css'
 
+import Comment from '@/components/Comment.vue'
 import Sidebar from '@/components/Sidebar.vue'
 import '@/assets/article-content.css'
 
@@ -311,6 +312,7 @@ const formattedDate = computed(() => {
           <Sidebar :toc="post.toc" :title="post.frontmatter.title" />
         </div>
       </div>
+      <Comment />
     </div>
   </main>
 </template>
