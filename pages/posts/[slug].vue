@@ -162,26 +162,11 @@ watch([rawPostData, error], () => {
       toc: []
     }
   } else {
-    let html = marked(rawPostData.value.content)
+    let html = marked.parse(rawPostData.value.content)
     html = wrapImagesWithLinks(html)
     html = addFancyboxAttributesToAnchors(html)
     html = renderKatex(html)
     html = highlightCodeBlocks(html)
-
-    const currentDomain = window.location.hostname
-
-    // 外部链接添加 target="_blank"
-    html = html.replace(/<a href="([^"]+)"/g, (match, href) => {
-      try {
-        const link = new URL(href)
-        if (link.hostname !== currentDomain) {
-          return match.replace('<a', '<a target="_blank"')
-        }
-      } catch (e) {
-        return match
-      }
-      return match
-    })
 
     const tocItems = []
     html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (m, tag, text) => {
