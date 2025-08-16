@@ -20,12 +20,12 @@ Cloudflare 有一些服务（如 **R2**、**Zero Trust**）必须添加付款方
 其实方法非常简单：  
 在 **[中国银联开放平台](https://open.unionpay.com/tjweb/support/faq/mchlist?id=4)** 的 FAQ 中，提供了多个 **测试环境的银联信用卡号**。
 
-![中国银联开放平台](https://cdn.zhengweixin.top/blog/posts/cf-no-credit/202309.jpg)
+![中国银联开放平台](https://cdn.zhengweixin.top/blog/posts/59a8f5d9b2254d5cb02f6b332c2f73cf.jpg)
 
 而 Cloudflare 恰好支持银联卡绑定。  
 抱着试一试的心态输入测试卡信息，结果真的成功绑定了付款方式。
 
-![Cloudflare免信用卡订阅](https://cdn.zhengweixin.top/blog/posts/cf-no-credit/202856.jpg)
+![Cloudflare免信用卡订阅](https://cdn.zhengweixin.top/blog/posts/3fd6087e207545ab83900f947c627035.jpg)
 
 ## 结语
 
