@@ -3,9 +3,15 @@ export const siteConfig = {
     description: "This is ShinX’s blog, created by a student and a gamer.",
     keywords: "ShinX,zhengweixin,blog,ShinX的个人主页,ShinX的个人网站,ShinX的博客",
     url: "https://zhengweixin.top",
+    icons: [
+        { rel: 'icon', type: 'image/png', href: 'https://cdn.zhengweixin.top/favicon/favicon-96x96.png', sizes: '96x96' },
+        { rel: 'icon', type: 'image/svg+xml', href: 'https://cdn.zhengweixin.top/favicon/favicon.svg' },
+        { rel: 'shortcut icon', href: 'https://cdn.zhengweixin.top/favicon/favicon.ico' },
+        { rel: 'apple-touch-icon', href: 'https://cdn.zhengweixin.top/favicon/apple-touch-icon.png', sizes: '180x180' },
+    ],
     author: {
         name: "ShinX",
-        avatar: "https://zhengweixin.top/avatar.jpg",
+        avatar: "https://cdn.zhengweixin.top/avatar.jpg",
         description: "A 📕Student and 🎮Gamer",
     },
     socialLinks: [

@@ -34,12 +34,8 @@ useHead({
     { name: 'twitter:card', content: 'summary' }
   ],
 link: [
-  { rel: 'icon', type: 'image/png', href: '/favicon-96x96.png', sizes: '96x96' },
-  { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-  { rel: 'shortcut icon', href: '/favicon.ico' },
-  { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
-
-  { rel: 'alternate', type: 'application/rss+xml', title: "ShinX's Blog RSS", href: '/rss.xml' },
+    ...siteConfig.icons,
+  { rel: 'alternate', type: 'application/rss+xml', title: `${siteConfig.title} RSS`, href: '/rss.xml' },
   { rel: 'stylesheet', href: siteConfig.thirdParty.iconfont },
 ]
 })
