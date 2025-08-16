@@ -325,6 +325,7 @@ const formattedDate = computed(() => {
         </section>
         <div data-fade class="sticky top-30 flex-shrink-0 hidden md:block self-start">
           <Sidebar :toc="post.toc" :title="post.frontmatter.title" />
+          <div class="flex items-center justify-center py-20"></div>
         </div>
       </div>
       <Comment />
