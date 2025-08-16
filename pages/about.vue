@@ -145,7 +145,7 @@ onBeforeUnmount(() => {
         <div class="text-sm opacity-90">{{ aboutConfig.author.description }}</div>
       </div>
 
-      <div class="flex-1 md:flex-[2_2_0%] bg-white dark:bg-white/10 p-5 rounded-2xl shadow min-w-full md:min-w-[200px] aboutsiteTips relative transition-colors duration-300">
+      <div class="flex-1 md:flex-[2_2_0%] bg-white dark:bg-white/10 p-5 rounded-2xl shadow-[0_0_2px_rgba(0,0,0,0.2)] min-w-full md:min-w-[200px] aboutsiteTips relative transition-colors duration-300">
         <div class="author-content-item-tips text-xs absolute text-gray-400">追求</div>
         <h2 class="text-3xl font-bold mt-5">
           源于<br>
@@ -166,7 +166,7 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- 欢迎卡片 -->
-    <div data-fade ref="helloAboutEl" class="hidden md:block relative overflow-hidden select-none rounded-2xl auto shadow">
+    <div data-fade ref="helloAboutEl" class="hidden md:block relative overflow-hidden select-none rounded-2xl auto shadow-[0_0_2px_rgba(0,0,0,0.2)]">
       <!-- 小圆点 -->
       <div ref="cursorEl" class="absolute w-5 h-5 rounded-full bg-#70a1d7 pointer-events-none z-10"></div>
 
