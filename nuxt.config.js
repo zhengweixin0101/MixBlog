@@ -20,8 +20,4 @@ export default defineNuxtConfig({
     classSuffix: '',
   },
   css: ['@/assets/main.css'],
-  plugins: [
-    '@/plugins/fade-in.js',
-    '@/plugins/nprogress.client.js',
-  ],
 })
