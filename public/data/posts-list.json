@@ -10,6 +10,16 @@
     ]
   },
   {
+    "slug": "use-umami-api-on-nuxt",
+    "title": "在博客中添加 Umami 访问统计数据",
+    "date": "2025-08-17",
+    "description": "使用 Umami API 在 Nuxt 博客中展示访问统计数据。",
+    "tags": [
+      "前端",
+      "实用教程"
+    ]
+  },
+  {
     "slug": "test-post",
     "title": "测试文章",
     "date": "2025-07-26",

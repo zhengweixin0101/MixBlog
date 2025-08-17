@@ -36,11 +36,15 @@ export const siteConfig = {
     },
 
     thirdParty: {
-        iconfont: '//at.alicdn.com/t/c/font_4401174_umvp1qw3wc.css',
+        iconfont: '//at.alicdn.com/t/c/font_4401174_hr55rf9i4b.css',
         twikooEnvId: "https://twikoo.api.zhengweixin.top/",
         s51LA: {
             id: '3N8p2Z9QLWC0NK4B',
             ck: '3N8p2Z9QLWC0NK4B',
         },
+        umami: {
+            js: 'https://statistics.zhengweixin.top/script.js',
+            siteID: '7441ce23-3587-41b6-8919-e42932fc65d7',
+        }
     },
 }

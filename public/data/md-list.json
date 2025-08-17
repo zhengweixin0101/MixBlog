@@ -4,6 +4,10 @@
     "slug": "cf-no-credit"
   },
   {
+    "filename": "在博客添加Umami统计数据.md",
+    "slug": "use-umami-api-on-nuxt"
+  },
+  {
     "filename": "测试文章.md",
     "slug": "test-post"
   }
