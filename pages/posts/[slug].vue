@@ -190,13 +190,20 @@ watch([rawPostData, error], () => {
 
     if (process.client) {
       const currentDomain = window.location.hostname
-
-      //为外部链接添加 target="_blank"
+      // 为外部链接添加 target="_blank" 和 rel="nofollow"
       html = html.replace(/<a href="([^"]+)"/g, (match, href) => {
         try {
           const link = new URL(href)
           if (link.hostname !== currentDomain) {
-            return match.replace('<a', '<a target="_blank"')
+            // 添加 target="_blank" 和 rel="nofollow noopener noreferrer"
+            let result = match
+            if (!/target=/.test(result)) {
+              result = result.replace('<a', '<a target="_blank"')
+            }
+            if (!/rel=/.test(result)) {
+              result = result.replace('<a', '<a rel="nofollow noopener noreferrer"')
+            }
+            return result
           }
         } catch (e) {
           return match
