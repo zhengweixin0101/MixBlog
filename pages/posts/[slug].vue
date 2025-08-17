@@ -47,8 +47,11 @@ function highlightCodeBlocks(html) {
         <div class="code-block-wrapper group relative">
           <button
             class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded-lg bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
+            style="outline:none; border:none; box-shadow:none; -webkit-appearance:none; -moz-appearance:none; appearance:none; background-clip: padding-box;"
             data-code="${encodeHTMLEntities(decoded)}"
-          >复制</button>
+          >
+            复制
+          </button>
           <pre><code class="hljs">${highlighted}</code></pre>
         </div>
       `
@@ -58,39 +61,16 @@ function highlightCodeBlocks(html) {
 
 // KaTeX 渲染
 function renderKatex(html) {
-  // 使用 DOMParser 解析 HTML
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(html, 'text/html')
-
-  // 遍历文本节点，忽略 <pre><code> 内的内容
-  const walker = document.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, null)
-  const nodes = []
-
-  while (walker.nextNode()) {
-    const node = walker.currentNode
-    if (!node.parentNode.closest('pre, code')) {
-      nodes.push(node)
-    }
-  }
-
-  nodes.forEach(node => {
-    let text = node.textContent
-    text = text.replace(/\$\$([^$]+?)\$\$/g, (_, expr) => {
-      try { return katex.renderToString(expr, { displayMode: true, throwOnError: false }) } 
-      catch { return `<span class="katex-error">$$${expr}$$</span>` }
-    })
-    text = text.replace(/\$(.+?)\$/g, (_, expr) => {
-      try { return katex.renderToString(expr, { displayMode: false, throwOnError: false }) } 
-      catch { return `<span class="katex-error">$${expr}$</span>` }
-    })
-    const span = document.createElement('span')
-    span.innerHTML = text
-    node.replaceWith(span)
+  html = html.replace(/\$\$([^$]+?)\$\$/g, (_, expr) => {
+    try { return katex.renderToString(expr, { displayMode: true, throwOnError: false }) } 
+    catch { return `<span class="katex-error">$$${expr}$$</span>` }
   })
-
-  return doc.body.innerHTML
+  html = html.replace(/\$(.+?)\$/g, (_, expr) => {
+    try { return katex.renderToString(expr, { displayMode: false, throwOnError: false }) } 
+    catch { return `<span class="katex-error">$${expr}$</span>` }
+  })
+  return html
 }
-
 
 // 图片包裹 fancybox 链接
 function wrapImagesWithLinks(html) {
@@ -206,12 +186,10 @@ watch([rawPostData, error], () => {
     })
 
     const tocItems = []
-    html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (m, tag, innerHTML) => {
-      // 去掉 HTML 标签，取纯文本
-      const text = innerHTML.replace(/<[^>]+>/g, '') 
+    html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (m, tag, text) => {
       const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\- \u4e00-\u9fa5]/g, '')
       if (tag !== 'h1') tocItems.push({ id, text, tag: tag.toUpperCase() })
-      return `<${tag} id="${id}" class="scroll-mt-40">${innerHTML}</${tag}>`
+      return `<${tag} id="${id}" class="scroll-mt-40">${text}</${tag}>`
     })
 
     post.value = {
