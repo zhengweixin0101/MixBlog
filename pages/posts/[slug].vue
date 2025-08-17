@@ -39,17 +39,13 @@ function highlightCodeBlocks(html) {
     /<pre><code(?: class="language-(\w+)")?>([\s\S]*?)<\/code><\/pre>/g,
     (_, lang, code) => {
       const decoded = decodeHTMLEntities(code)
-      const highlighted = lang && hljs.getLanguage(lang)
-        ? hljs.highlight(decoded, { language: lang }).value
-        : hljs.highlightAuto(decoded).value
-
       return `
         <div class="code-block-wrapper group relative">
           <button
             class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded-lg bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
             data-code="${encodeHTMLEntities(decoded)}"
           >复制</button>
-          <pre><code class="hljs">${highlighted}</code></pre>
+          <pre><code class="hljs ${lang ? 'language-' + lang : ''}">${decoded}</code></pre>
         </div>
       `
     }
@@ -239,6 +235,11 @@ onMounted(() => {
   Fancybox.bind('[data-fancybox="gallery"]')
   window.addEventListener('hashchange', () => highlightHeading(window.location.hash.slice(1)))
   document.addEventListener('click', onCopyBtnClick)
+
+  // 客户端高亮代码块
+  document.querySelectorAll('pre code').forEach(block => {
+    hljs.highlightElement(block)
+  })
 
   onBeforeUnmount(() => {
     observer.disconnect()
