@@ -1,9 +1,16 @@
 <script setup>
 import { onMounted, ref, onBeforeUnmount } from 'vue'
+import { useColorMode } from '#imports'
 import gsap from 'gsap'
 
 import { aboutConfig } from '@/siteConfig/about.js'
 import { siteConfig } from '@/siteConfig/main.js'
+
+const colorMode = useColorMode()
+
+if (process.client) {
+  document.documentElement.classList.toggle('dark', colorMode.value === 'dark')
+}
 
 //标签位置
 function leftTagPosition(index) {
@@ -371,65 +378,72 @@ onMounted(async () => {
             <div>
               <div class="text-sm text-gray-300">今日人数</div>
               <div class="font-extrabold h-10">
-                <client-only>
-                  <div v-if="statsToday">{{ statsToday.visitors.value }}</div>
-                  <div v-else class="bg-gray-700 rounded animate-pulse w-16 h-6 mt-2"></div>
-                </client-only>
+                <template v-if="statsToday">
+                  {{ statsToday.visitors.value }}
+                </template>
+                <template v-else>
+                  <div class="bg-gray-700 rounded animate-pulse w-16 h-6 mt-2"></div>
+                </template>
               </div>
             </div>
-
             <!-- 昨日人数 -->
             <div>
               <div class="text-sm text-gray-300">昨日人数</div>
               <div class="font-extrabold h-10">
-                <client-only>
-                  <div v-if="statsYesterday">{{ statsYesterday.visitors.value }}</div>
-                  <div v-else class="bg-gray-700 rounded animate-pulse w-16 h-6 mt-2"></div>
-                </client-only>
+                <template v-if="statsYesterday">
+                  {{ statsYesterday.visitors.value }}
+                </template>
+                <template v-else>
+                  <div class="bg-gray-700 rounded animate-pulse w-16 h-6 mt-2"></div>
+                </template>
               </div>
             </div>
-
             <!-- 本月访问 -->
             <div>
               <div class="text-sm text-gray-300">本月访问</div>
               <div class="font-extrabold h-10">
-                <client-only>
-                  <div v-if="statsTotal">{{ statsTotal.pageviews.value }}</div>
-                  <div v-else class="bg-gray-700 rounded animate-pulse w-20 h-6 mt-2"></div>
-                </client-only>
+                <template v-if="statsTotal">
+                  {{ statsTotal.pageviews.value }}
+                </template>
+                <template v-else>
+                  <div class="bg-gray-700 rounded animate-pulse w-20 h-6 mt-2"></div>
+                </template>
               </div>
             </div>
-
             <!-- 今日访问 -->
             <div>
               <div class="text-sm text-gray-300">今日访问</div>
               <div class="font-extrabold h-10">
-                <client-only>
-                  <div v-if="statsToday">{{ statsToday.pageviews.value }}</div>
-                  <div v-else class="bg-gray-700 rounded animate-pulse w-16 h-6 mt-2"></div>
-                </client-only>
+                <template v-if="statsToday">
+                  {{ statsToday.pageviews.value }}
+                </template>
+                <template v-else>
+                  <div class="bg-gray-700 rounded animate-pulse w-16 h-6 mt-2"></div>
+                </template>
               </div>
             </div>
-
             <!-- 昨日访问 -->
             <div>
               <div class="text-sm text-gray-300">昨日访问</div>
               <div class="font-extrabold h-10">
-                <client-only>
-                  <div v-if="statsYesterday">{{ statsYesterday.pageviews.value }}</div>
-                  <div v-else class="bg-gray-700 rounded animate-pulse w-16 h-6 mt-2"></div>
-                </client-only>
+                <template v-if="statsYesterday">
+                  {{ statsYesterday.pageviews.value }}
+                </template>
+                <template v-else>
+                  <div class="bg-gray-700 rounded animate-pulse w-16 h-6 mt-2"></div>
+                </template>
               </div>
             </div>
-
             <!-- 总访问量 -->
             <div>
               <div class="text-sm text-gray-300">总访问量</div>
               <div class="font-extrabold h-10">
-                <client-only>
-                  <div v-if="statsTotal">{{ statsTotal.pageviews.value }}</div>
-                  <div v-else class="bg-gray-700 rounded animate-pulse w-20 h-6 mt-2"></div>
-                </client-only>
+                <template v-if="statsTotal">
+                  {{ statsTotal.pageviews.value }}
+                </template>
+                <template v-else>
+                  <div class="bg-gray-700 rounded animate-pulse w-20 h-6 mt-2"></div>
+                </template>
               </div>
             </div>
           </div>
