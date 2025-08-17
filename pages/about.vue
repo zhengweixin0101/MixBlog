@@ -444,12 +444,28 @@ onMounted(async () => {
         </div>
       </div>
       
-      <div class="flex-1 md:flex-[3_3_0%] bg-gradient-to-r from-[#233142] to-[#455d7a] text-white p-5 rounded-2xl min-w-full md:min-w-[300px] flex flex-col justify-center gap-2">
-        <h2 class="text-3xl font-bold">占位</h2>
+      <div class="flex flex-col flex-1 md:flex-[3_3_0%] gap-4">
+        <div class="h-1/3 flex items-center justify-between w-full text-sm bg-white dark:bg-white/10 p-5 rounded-2xl 
+                    shadow-[0_0_2px_rgba(0,0,0,0.2)] min-w-full md:min-w-[200px] aboutsiteTips relative transition-colors duration-300"
+        >
+          <div class="flex flex-col">
+            <span class="text-gray-400">生于</span>
+            <span class="text-3xl text-#ff9a00 font-bold">2010</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-gray-400">就读学校</span>
+            <span class="text-3xl text-#f07b3f font-bold">滨江高级中学</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-gray-400">现在是</span>
+            <span class="text-3xl text-#ea5455 font-bold">高一学生</span>
+          </div>
+        </div>
+        <div class="h-2/3 bg-white dark:bg-white/10 p-5 rounded-2xl shadow-[0_0_2px_rgba(0,0,0,0.2)] min-w-full md:min-w-[200px] aboutsiteTips relative transition-colors duration-300">
+          占位
+        </div>
       </div>
     </div>
-
-            <div class="card-background-icon"><i class="iconfont icon-dice-d"></i></div>
   </main>
 </template>
 
