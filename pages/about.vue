@@ -114,7 +114,19 @@ const WEBSITE_ID = '7441ce23-3587-41b6-8919-e42932fc65d7';
 const TOKEN = 'nmDTV73ucyUS8829KW3miG8O/obEDyPu1Jey5st9HWUhXRQnA9mP5a9xMjVukSve/we34uIGNszqlwlo6ZrcRIW+OUon3O3/NkepjhxSFmIAAxoKjHqgoopaip+NharfN8egGKfog5Ypv2KAGnxpHtE9tl7NgNh93EbuGApaYcZeN+kmNzTpOfookmYlWkv2+9flKognxoXE/84UZ6Xz8zGUXG5+qPXwSwnk5gQoSuFPcJ1bCuP5V2hEb5i12tgOEORqrtEXzvwhloag+QiDeKQ+8RqluxSThooId4gy9onIstofGISPfRJ8qS9G0v9aC1qqJh/nXyBxfbi8HVeL51iio8M1HXENhQ==';
 const CREATED_AT = '2025-08-15T16:00:00.000Z';
 
-//缓存
+// 缓存
+const CACHE_KEY = 'umami_stats';
+const CACHE_DURATION = 10 * 60 * 1000; // 10 分钟
+
+// 检查浏览器是否支持持久化存储
+async function ensurePersistentStorage() {
+  if (navigator.storage && navigator.storage.persist) {
+    const granted = await navigator.storage.persist();
+    console.log('持久化存储状态:', granted);
+  }
+}
+
+// 获取当天和昨天的时间戳
 function getDayTimestamps(date = new Date()) {
   const start = new Date(date);
   start.setHours(0, 0, 0, 0);
@@ -122,26 +134,35 @@ function getDayTimestamps(date = new Date()) {
   end.setHours(23, 59, 59, 999);
   return { start: start.getTime(), end: end.getTime() };
 }
- 
-const statsToday = ref(null);
-const statsYesterday = ref(null);
-const statsTotal = ref(null);
-const error = ref(null);
 
-const CACHE_KEY = 'umami_stats';
-const CACHE_DURATION = 10 * 60 * 1000; // 10 分钟
+// 缓存数据
+function saveCache(data) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      ...data,
+      timestamp: Date.now()
+    }));
+  } catch (e) {
+    console.warn('访问数据缓存失败:', e);
+  }
+}
+
+// 获取缓存数据
+function loadCache() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return cached;
+    }
+  } catch (e) {}
+  return null;
+}
 
 async function fetchStats() {
-  const now = Date.now();
-  let cached = null;
+  await ensurePersistentStorage();
 
-  try {
-    cached = JSON.parse(localStorage.getItem(CACHE_KEY));
-  } catch (e) {
-    cached = null;
-  }
-
-  if (cached && now - Number(cached.timestamp) < CACHE_DURATION) {
+  const cached = loadCache();
+  if (cached) {
     statsToday.value = cached.statsToday;
     statsYesterday.value = cached.statsYesterday;
     statsTotal.value = cached.statsTotal;
@@ -166,7 +187,7 @@ async function fetchStats() {
     }).then(res => res.json());
 
     // 总量
-    const totalData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${createdAtTs}&endAt=${now}`, {
+    const totalData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${createdAtTs}&endAt=${Date.now()}`, {
       headers: { Authorization: `Bearer ${TOKEN}` }
     }).then(res => res.json());
 
@@ -174,13 +195,11 @@ async function fetchStats() {
     statsYesterday.value = yesterdayData;
     statsTotal.value = totalData;
 
-    localStorage.setItem(CACHE_KEY, JSON.stringify({
+    saveCache({
       statsToday: todayData,
       statsYesterday: yesterdayData,
-      statsTotal: totalData,
-      timestamp: now,
-    }));
-
+      statsTotal: totalData
+    });
   } catch (e) {
     console.error('API fetch error:', e);
     error.value = e.message;
