@@ -47,11 +47,8 @@ function highlightCodeBlocks(html) {
         <div class="code-block-wrapper group relative">
           <button
             class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded-lg bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
-            style="outline:none; border:none; box-shadow:none; -webkit-appearance:none; -moz-appearance:none; appearance:none; background-clip: padding-box;"
             data-code="${encodeHTMLEntities(decoded)}"
-          >
-            复制
-          </button>
+          >复制</button>
           <pre><code class="hljs">${highlighted}</code></pre>
         </div>
       `
@@ -61,6 +58,11 @@ function highlightCodeBlocks(html) {
 
 // KaTeX 渲染
 function renderKatex(html) {
+  const codeBlocks = []
+  html = html.replace(/<pre><code[\s\S]*?<\/code><\/pre>/g, (match) => {
+    codeBlocks.push(match)
+    return `___CODE_BLOCK_${codeBlocks.length - 1}___`
+  })
   html = html.replace(/\$\$([^$]+?)\$\$/g, (_, expr) => {
     try { return katex.renderToString(expr, { displayMode: true, throwOnError: false }) } 
     catch { return `<span class="katex-error">$$${expr}$$</span>` }
@@ -69,6 +71,7 @@ function renderKatex(html) {
     try { return katex.renderToString(expr, { displayMode: false, throwOnError: false }) } 
     catch { return `<span class="katex-error">$${expr}$</span>` }
   })
+  html = html.replace(/___CODE_BLOCK_(\d+)___/g, (_, index) => codeBlocks[index])
   return html
 }
 
