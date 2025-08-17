@@ -93,36 +93,34 @@ function toggleTheme() {
       </div>
     </nav>
 
-    <ClientOnly>
-      <Transition name="fade-slide">
-        <div
-          id="mobile-menu"
-          v-if="isMenuOpen"
-          class="md:hidden fixed top-[68px] left-4 w-1/4 min-w-[160px] mt-1 rounded-xl shadow-xl border border-white/10 backdrop-blur-md bg-white/60 dark:bg-[#1a1a1a]/60 z-40 overflow-hidden"
-        >
-          <ul class="flex flex-col divide-y divide-white/10 dark:divide-white/10">
-            <li
-              v-for="(item, index) in siteConfig.navItems"
-              :key="'mobile-' + index"
-              @click="isMenuOpen = false"
+    <Transition name="fade-slide">
+      <div
+        id="mobile-menu"
+        v-if="isMenuOpen"
+        class="md:hidden fixed top-[68px] left-4 w-1/4 min-w-[160px] mt-1 rounded-xl shadow-xl border border-white/10 backdrop-blur-md bg-white/60 dark:bg-[#1a1a1a]/60 z-40 overflow-hidden"
+      >
+        <ul class="flex flex-col divide-y divide-white/10 dark:divide-white/10">
+          <li
+            v-for="(item, index) in siteConfig.navItems"
+            :key="'mobile-' + index"
+            @click="isMenuOpen = false"
+          >
+            <NuxtLink
+              draggable="false"
+              :to="item.href"
+              class="flex items-center px-4 py-3 text-sm font-medium no-underline transition-colors duration-300"
+              :class="{
+                'bg-gradient-to-r from-#00e699/40 to-#00e2d8/40 text-#2f3f5b dark:text-gradient': isActive(item),
+                'text-#2f3f5b dark:text-white hover:bg-black/10 dark:hover:bg-white/10': !isActive(item)
+              }"
             >
-              <NuxtLink
-                draggable="false"
-                :to="item.href"
-                class="flex items-center px-4 py-3 text-sm font-medium no-underline transition-colors duration-300"
-                :class="{
-                  'bg-gradient-to-r from-#00e699/40 to-#00e2d8/40 text-#2f3f5b dark:text-gradient': isActive(item),
-                  'text-#2f3f5b dark:text-white hover:bg-black/10 dark:hover:bg-white/10': !isActive(item)
-                }"
-              >
-                <i :class="['iconfont', item.icon, 'mr-2 text-base']" />
-                <span>{{ item.label }}</span>
-              </NuxtLink>
-            </li>
-          </ul>
-        </div>
-      </Transition>
-    </ClientOnly>
+              <i :class="['iconfont', item.icon, 'mr-2 text-base']" />
+              <span>{{ item.label }}</span>
+            </NuxtLink>
+          </li>
+        </ul>
+      </div>
+    </Transition>
   </header>
 </template>
 
