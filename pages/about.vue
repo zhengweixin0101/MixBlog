@@ -5,24 +5,15 @@ import gsap from 'gsap'
 import { aboutConfig } from '@/siteConfig/about.js'
 import { siteConfig } from '@/siteConfig/main.js'
 
-//标签位置
+// 标签位置
 function leftTagPosition(index) {
-  return [
-    'top-12 left-14',
-    'top-25 left-10',
-    'bottom-10 left-14'
-  ][index] || ''
+  return ['top-12 left-14','top-25 left-10','bottom-10 left-14'][index] || ''
 }
-
 function rightTagPosition(index) {
-  return [
-    'top-12 right-14',
-    'top-25 right-10',
-    'bottom-12 right-14'
-  ][index] || ''
+  return ['top-12 right-14','top-25 right-10','bottom-12 right-14'][index] || ''
 }
 
-//tips切换动画
+// tips切换动画
 const tips = aboutConfig.author.tips
 const current = ref(0)
 
@@ -32,7 +23,7 @@ onMounted(() => {
   }, 2000)
 })
 
-//欢迎卡片
+// 欢迎卡片
 const helloAboutEl = ref(null)
 const cursorEl = ref(null)
 const shapeEls = ref([])
@@ -53,8 +44,6 @@ onMounted(() => {
   const shapes = shapeEls.value
 
   const rect = container.getBoundingClientRect()
-  
-  // 容器中心
   const centerX = rect.width / 2 - cursor.offsetWidth / 2
   const centerY = rect.height / 2 - cursor.offsetHeight / 2
 
@@ -88,7 +77,7 @@ onBeforeUnmount(() => {
   }
 })
 
-//技能
+// 技能
 const skills = [
   { name: 'Docker', icon: 'https://img02.anheyu.com/adminuploads/1/2022/09/25/63300647df7fa.png', color: '#57b6e6' },
   { name: 'Photoshop', icon: 'https://img02.anheyu.com/adminuploads/1/2022/09/25/63300647e1f10.png', color: '#4082c3' },
@@ -105,7 +94,7 @@ const mid = Math.ceil(skills.length / 2)
 const firstHalf = skills.slice(0, mid)
 const secondHalf = skills.slice(mid)
 
-//访问数据
+// 访问数据
 const cover = 'https://img02.anheyu.com/adminuploads/1/2022/09/23/632d634f8376d.jpg'
 // 配置
 const UMAMI_URL = 'https://statistics.zhengweixin.top';
@@ -114,19 +103,7 @@ const WEBSITE_ID = '7441ce23-3587-41b6-8919-e42932fc65d7';
 const TOKEN = 'nmDTV73ucyUS8829KW3miG8O/obEDyPu1Jey5st9HWUhXRQnA9mP5a9xMjVukSve/we34uIGNszqlwlo6ZrcRIW+OUon3O3/NkepjhxSFmIAAxoKjHqgoopaip+NharfN8egGKfog5Ypv2KAGnxpHtE9tl7NgNh93EbuGApaYcZeN+kmNzTpOfookmYlWkv2+9flKognxoXE/84UZ6Xz8zGUXG5+qPXwSwnk5gQoSuFPcJ1bCuP5V2hEb5i12tgOEORqrtEXzvwhloag+QiDeKQ+8RqluxSThooId4gy9onIstofGISPfRJ8qS9G0v9aC1qqJh/nXyBxfbi8HVeL51iio8M1HXENhQ==';
 const CREATED_AT = '2025-08-15T16:00:00.000Z';
 
-// 缓存
-const CACHE_KEY = 'umami_stats';
-const CACHE_DURATION = 10 * 60 * 1000; // 10 分钟
-
-// 检查浏览器是否支持持久化存储
-async function ensurePersistentStorage() {
-  if (navigator.storage && navigator.storage.persist) {
-    const granted = await navigator.storage.persist();
-    console.log('持久化存储状态:', granted);
-  }
-}
-
-// 获取当天和昨天的时间戳
+// 缓存相关
 function getDayTimestamps(date = new Date()) {
   const start = new Date(date);
   start.setHours(0, 0, 0, 0);
@@ -135,84 +112,78 @@ function getDayTimestamps(date = new Date()) {
   return { start: start.getTime(), end: end.getTime() };
 }
 
-// 缓存数据
-function saveCache(data) {
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify({
-      ...data,
-      timestamp: Date.now()
-    }));
-  } catch (e) {
-    console.warn('访问数据缓存失败:', e);
-  }
-}
+const statsToday = ref(null)
+const statsYesterday = ref(null)
+const statsTotal = ref(null)
+const error = ref(null)
 
-// 获取缓存数据
-function loadCache() {
-  try {
-    const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
-    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      return cached;
-    }
-  } catch (e) {}
-  return null;
-}
+const CACHE_KEY = 'umami_stats'
+const CACHE_DURATION = 10 * 60 * 1000 // 10 分钟
 
+// 获取统计数据
 async function fetchStats() {
-  await ensurePersistentStorage();
+  const now = Date.now()
+  let cached = null
 
-  const cached = loadCache();
-  if (cached) {
-    statsToday.value = cached.statsToday;
-    statsYesterday.value = cached.statsYesterday;
-    statsTotal.value = cached.statsTotal;
-    return;
+  try {
+    cached = JSON.parse(localStorage.getItem(CACHE_KEY))
+  } catch (e) {
+    cached = null
+  }
+
+  if (cached && now - Number(cached.timestamp) < CACHE_DURATION) {
+    statsToday.value = cached.statsToday
+    statsYesterday.value = cached.statsYesterday
+    statsTotal.value = cached.statsTotal
+    return
   }
 
   try {
-    const createdAtTs = new Date(CREATED_AT).getTime();
+    const createdAtTs = new Date(CREATED_AT).getTime()
 
     // 今日
-    const { start: startToday, end: endToday } = getDayTimestamps();
+    const { start: startToday, end: endToday } = getDayTimestamps()
     const todayData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${startToday}&endAt=${endToday}`, {
       headers: { Authorization: `Bearer ${TOKEN}` }
-    }).then(res => res.json());
+    }).then(res => res.json())
 
     // 昨日
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const { start: startYesterday, end: endYesterday } = getDayTimestamps(yesterday);
+    const yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    const { start: startYesterday, end: endYesterday } = getDayTimestamps(yesterday)
     const yesterdayData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${startYesterday}&endAt=${endYesterday}`, {
       headers: { Authorization: `Bearer ${TOKEN}` }
-    }).then(res => res.json());
+    }).then(res => res.json())
 
     // 总量
-    const totalData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${createdAtTs}&endAt=${Date.now()}`, {
+    const totalData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${createdAtTs}&endAt=${now}`, {
       headers: { Authorization: `Bearer ${TOKEN}` }
-    }).then(res => res.json());
+    }).then(res => res.json())
 
-    statsToday.value = todayData;
-    statsYesterday.value = yesterdayData;
-    statsTotal.value = totalData;
+    statsToday.value = todayData
+    statsYesterday.value = yesterdayData
+    statsTotal.value = totalData
+    error.value = null
 
-    saveCache({
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
       statsToday: todayData,
       statsYesterday: yesterdayData,
-      statsTotal: totalData
-    });
+      statsTotal: totalData,
+      timestamp: now,
+    }))
   } catch (e) {
-    console.error('API fetch error:', e);
-    error.value = e.message;
+    console.error('API fetch error:', e)
+    error.value = e.message
   }
 }
 
 onMounted(async () => {
   try {
-    await fetchStats();
+    await fetchStats()
   } catch (e) {
-    console.error('fetchStats error:', e);
+    console.error('fetchStats error:', e)
   }
-});
+})
 </script>
 
 <template>
