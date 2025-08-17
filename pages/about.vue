@@ -109,6 +109,7 @@ const secondHalf = skills.slice(mid)
 const cover = 'https://img02.anheyu.com/adminuploads/1/2022/09/23/632d634f8376d.jpg'
 // 配置
 const UMAMI_URL = 'https://statistics.zhengweixin.top';
+const UMAMI_SHARE_URL = 'https://statistics.zhengweixin.top/share/6FBrEjH0q8vcrGxh/zhengweixin.top';
 const WEBSITE_ID = '7441ce23-3587-41b6-8919-e42932fc65d7';
 const TOKEN = 'nmDTV73ucyUS8829KW3miG8O/obEDyPu1Jey5st9HWUhXRQnA9mP5a9xMjVukSve/we34uIGNszqlwlo6ZrcRIW+OUon3O3/NkepjhxSFmIAAxoKjHqgoopaip+NharfN8egGKfog5Ypv2KAGnxpHtE9tl7NgNh93EbuGApaYcZeN+kmNzTpOfookmYlWkv2+9flKognxoXE/84UZ6Xz8zGUXG5+qPXwSwnk5gQoSuFPcJ1bCuP5V2hEb5i12tgOEORqrtEXzvwhloag+QiDeKQ+8RqluxSThooId4gy9onIstofGISPfRJ8qS9G0v9aC1qqJh/nXyBxfbi8HVeL51iio8M1HXENhQ==';
 const CREATED_AT = '2025-08-15T16:00:00.000Z';
@@ -402,7 +403,7 @@ onMounted(async () => {
           </div>
           <div>
             <p class="text-sm text-white/50">统计信息来自 
-              <a href="https://github.com/umami-software/umami" target="_blank" rel="noopener nofollow" class="text-sm text-white/50">Umami</a>
+              <a :href=UMAMI_SHARE_URL target="_blank" rel="noopener nofollow" class="text-sm text-white/50">Umami</a>
             </p>
           </div>
           <div class="absolute right-0 bottom-1 text-white rounded-full bg-white/20 hover:bg-white/30 px-2 py-1 transition-colors duration-300">
