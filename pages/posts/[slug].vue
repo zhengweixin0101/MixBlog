@@ -188,29 +188,22 @@ watch([rawPostData, error], () => {
     html = renderKatex(html)
     html = highlightCodeBlocks(html)
 
-    if (process.client) {
-      const currentDomain = window.location.hostname
-      // 为外部链接添加 target="_blank" 和 rel="nofollow"
-      html = html.replace(/<a href="([^"]+)"/g, (match, href) => {
-        try {
-          const link = new URL(href)
-          if (link.hostname !== currentDomain) {
-            // 添加 target="_blank" 和 rel="nofollow noopener noreferrer"
-            let result = match
-            if (!/target=/.test(result)) {
-              result = result.replace('<a', '<a target="_blank"')
-            }
-            if (!/rel=/.test(result)) {
-              result = result.replace('<a', '<a rel="nofollow noopener noreferrer"')
-            }
-            return result
-          }
-        } catch (e) {
-          return match
+    // 为外部链接添加 target="_blank" 和 rel="nofollow"
+    const siteDomain = new URL(siteConfig.url).hostname
+    html = html.replace(/<a href="([^"]+)"/g, (match, href) => {
+      try {
+        const link = new URL(href, siteConfig.url)
+        if (link.hostname !== siteDomain) {
+          let attrs = ''
+          if (!/target=/.test(match)) attrs += ' target="_blank"'
+          if (!/rel=/.test(match)) attrs += ' rel="nofollow noopener noreferrer"'
+          return match.replace('<a', `<a${attrs}`)
         }
+      } catch (e) {
         return match
-      })
-    }
+      }
+      return match
+    })
 
     const tocItems = []
     html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (m, tag, innerHTML) => {
