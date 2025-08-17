@@ -42,7 +42,7 @@ function highlightCodeBlocks(html) {
       return `
         <div class="code-block-wrapper group relative">
           <button
-            class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded-lg bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
+            class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded-lg border border-black/20 dark:border-white/20 bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
             data-code="${encodeHTMLEntities(decoded)}"
           >复制</button>
           <pre><code class="hljs ${lang ? 'language-' + lang : ''}">${decoded}</code></pre>
