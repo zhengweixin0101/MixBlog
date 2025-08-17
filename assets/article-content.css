@@ -324,5 +324,8 @@ html.dark .article-content code:not(pre code) {
   overflow: hidden;
 
   white-space: pre;
-  overflow-x: auto;
+}
+
+pre code.hljs {
+  overflow-x: hidden !important;
 }
