@@ -1,25 +1,47 @@
 <script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useColorMode } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
 
 const route = useRoute()
-
 const colorMode = useColorMode()
 
-function toggleTheme() {
-  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
-}
-
 const isMenuOpen = ref(false)
+const menuButton = ref(null)
+
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value
 }
 
 function isActive(item) {
-  if (item.href === '/posts') {
-    return route.path.startsWith('/posts')
-  }
+  if (item.href === '/posts') return route.path.startsWith('/posts')
   return route.path === item.href
+}
+
+// 点击空白区域关闭菜单
+function handleClickOutside(event) {
+  const menu = document.getElementById('mobile-menu')
+  if (
+    isMenuOpen.value &&
+    menu &&
+    !menu.contains(event.target) &&
+    menuButton.value &&
+    !menuButton.value.contains(event.target)
+  ) {
+    isMenuOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
+function toggleTheme() {
+  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 }
 </script>
 
@@ -52,6 +74,7 @@ function isActive(item) {
         </ClientOnly>
 
         <button
+          ref="menuButton"
           @click="toggleMenu"
           aria-label="展开菜单"
           class="md:hidden w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center select-none cursor-pointer"
@@ -74,25 +97,36 @@ function isActive(item) {
       </div>
     </nav>
 
-    <transition name="fade-slide">
-      <div
-        v-if="isMenuOpen"
-        class="md:hidden fixed top-[68px] left-4 w-1/4 min-w-[160px] mt-1 rounded-xl shadow-xl border border-white/10 backdrop-blur-md bg-white/60 dark:bg-[#1a1a1a]/60 z-40 overflow-hidden"
-      >
-        <ul class="flex flex-col divide-y divide-white/10 dark:divide-white/10">
-          <li v-for="(item, index) in siteConfig.navItems" :key="'mobile-' + index" @click="isMenuOpen = false">
-            <NuxtLink
-              draggable="false"
-              :to="item.href"
-              class="flex items-center px-4 py-3 text-sm font-medium no-underline text-#2f3f5b dark:text-white hover:bg-black/10 dark:hover:bg-white/10 transition-colors duration-300"
+    <ClientOnly>
+      <Transition name="fade-slide">
+        <div
+          id="mobile-menu"
+          v-if="isMenuOpen"
+          class="md:hidden fixed top-[68px] left-4 w-1/4 min-w-[160px] mt-1 rounded-xl shadow-xl border border-white/10 backdrop-blur-md bg-white/60 dark:bg-[#1a1a1a]/60 z-40 overflow-hidden"
+        >
+          <ul class="flex flex-col divide-y divide-white/10 dark:divide-white/10">
+            <li
+              v-for="(item, index) in siteConfig.navItems"
+              :key="'mobile-' + index"
+              @click="isMenuOpen = false"
             >
-              <i :class="['iconfont', item.icon, 'mr-2 text-base']"></i>
-              <span>{{ item.label }}</span>
-            </NuxtLink>
-          </li>
-        </ul>
-      </div>
-    </transition>
+              <NuxtLink
+                draggable="false"
+                :to="item.href"
+                class="flex items-center px-4 py-3 text-sm font-medium no-underline transition-colors duration-300"
+                :class="{
+                  'bg-gradient-to-r from-#00e699/40 to-#00e2d8/40 text-#2f3f5b dark:text-gradient': isActive(item),
+                  'text-#2f3f5b dark:text-white hover:bg-black/10 dark:hover:bg-white/10': !isActive(item)
+                }"
+              >
+                <i :class="['iconfont', item.icon, 'mr-2 text-base']" />
+                <span>{{ item.label }}</span>
+              </NuxtLink>
+            </li>
+          </ul>
+        </div>
+      </Transition>
+    </ClientOnly>
   </header>
 </template>
 
