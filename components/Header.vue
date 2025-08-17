@@ -49,29 +49,27 @@ function toggleTheme() {
   <header>
     <nav class="fixed top-0 left-0 right-0 z-50 w-full h-[68px] bg-#f8f8f8/50 dark:bg-[#0e1111]/50 backdrop-blur-md transition-colors duration-300 border-b border-white/10 dark:border-white/10">
       <div class="flex items-center justify-between h-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[90vw] xl:max-w-[80vw] 2xl:max-w-[55vw] mx-auto">
-        <ClientOnly>
-          <ul class="hidden md:flex justify-start space-x-4 list-none p-0 m-0 flex-1">
-            <li v-for="(item, index) in siteConfig.navItems" :key="'main-' + index" class="relative">
-              <span
-                v-if="isActive(item)"
-                class="absolute inset-0 -z-10
-                      bg-gradient-to-r from-#00e699/40 to-#00e2d8/40
-                      dark:hidden transition-colors duration-300"
-              />
-              <NuxtLink
-                :to="item.href"
-                class="flex items-center space-x-1 no-underline whitespace-nowrap"
-                :class="{
-                  'text-#2f3f5b dark:text-gradient': isActive(item),
-                  'text-#2f3f5b hover:bg-#00e699/20 dark:hover:bg-transparent dark:text-white dark:hover:brightness-75 cursor-pointer': !isActive(item)
-                }"
-              >
-                <i :class="['iconfont', item.icon, { 'text-#2f3f5b dark:text-gradient': isActive(item) }]" />
-                <span>{{ item.label }}</span>
-              </NuxtLink>
-            </li>
-          </ul>
-        </ClientOnly>
+        <ul class="hidden md:flex justify-start space-x-4 list-none p-0 m-0 flex-1">
+          <li v-for="(item, index) in siteConfig.navItems" :key="'main-' + index" class="relative">
+            <span
+              v-if="isActive(item)"
+              class="absolute inset-0 -z-10
+                    bg-gradient-to-r from-#00e699/40 to-#00e2d8/40
+                    dark:hidden transition-colors duration-300"
+            />
+            <NuxtLink
+              :to="item.href"
+              class="flex items-center space-x-1 no-underline whitespace-nowrap"
+              :class="{
+                'text-#2f3f5b dark:text-gradient': isActive(item),
+                'text-#2f3f5b hover:bg-#00e699/20 dark:hover:bg-transparent dark:text-white dark:hover:brightness-75 cursor-pointer': !isActive(item)
+              }"
+            >
+              <i :class="['iconfont', item.icon, { 'text-#2f3f5b dark:text-gradient': isActive(item) }]" />
+              <span>{{ item.label }}</span>
+            </NuxtLink>
+          </li>
+        </ul>
 
         <button
           ref="menuButton"
@@ -89,10 +87,8 @@ function toggleTheme() {
           class="w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center select-none cursor-pointer"
           type="button"
         >
-          <ClientOnly>
             <i v-if="colorMode.value === 'dark'" class="iconfont icon-a-Frame47 text-lg"></i>
             <i v-else class="iconfont icon-a-Frame48 text-lg"></i>
-          </ClientOnly>
         </button>
       </div>
     </nav>
