@@ -4,7 +4,7 @@ import gsap from 'gsap'
 
 import { aboutConfig } from '@/siteConfig/about.js'
 import { siteConfig } from '@/siteConfig/main.js'
- 
+
 //标签位置
 function leftTagPosition(index) {
   return [
@@ -114,11 +114,7 @@ const WEBSITE_ID = '7441ce23-3587-41b6-8919-e42932fc65d7';
 const TOKEN = 'nmDTV73ucyUS8829KW3miG8O/obEDyPu1Jey5st9HWUhXRQnA9mP5a9xMjVukSve/we34uIGNszqlwlo6ZrcRIW+OUon3O3/NkepjhxSFmIAAxoKjHqgoopaip+NharfN8egGKfog5Ypv2KAGnxpHtE9tl7NgNh93EbuGApaYcZeN+kmNzTpOfookmYlWkv2+9flKognxoXE/84UZ6Xz8zGUXG5+qPXwSwnk5gQoSuFPcJ1bCuP5V2hEb5i12tgOEORqrtEXzvwhloag+QiDeKQ+8RqluxSThooId4gy9onIstofGISPfRJ8qS9G0v9aC1qqJh/nXyBxfbi8HVeL51iio8M1HXENhQ==';
 const CREATED_AT = '2025-08-15T16:00:00.000Z';
 
-const statsToday = ref(null);
-const statsYesterday = ref(null);
-const statsTotal = ref(null);
-const error = ref(null);
-
+//缓存
 function getDayTimestamps(date = new Date()) {
   const start = new Date(date);
   start.setHours(0, 0, 0, 0);
@@ -126,15 +122,38 @@ function getDayTimestamps(date = new Date()) {
   end.setHours(23, 59, 59, 999);
   return { start: start.getTime(), end: end.getTime() };
 }
+ 
+const statsToday = ref(null);
+const statsYesterday = ref(null);
+const statsTotal = ref(null);
+const error = ref(null);
 
-onMounted(async () => {
+const CACHE_KEY = 'umami_stats';
+const CACHE_DURATION = 10 * 60 * 1000; // 10 分钟
+
+async function fetchStats() {
+  const now = Date.now();
+  let cached = null;
+
+  try {
+    cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+  } catch (e) {
+    cached = null;
+  }
+
+  if (cached && now - Number(cached.timestamp) < CACHE_DURATION) {
+    statsToday.value = cached.statsToday;
+    statsYesterday.value = cached.statsYesterday;
+    statsTotal.value = cached.statsTotal;
+    return;
+  }
+
   try {
     const createdAtTs = new Date(CREATED_AT).getTime();
-    const now = Date.now();
 
     // 今日
     const { start: startToday, end: endToday } = getDayTimestamps();
-    statsToday.value = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${startToday}&endAt=${endToday}`, {
+    const todayData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${startToday}&endAt=${endToday}`, {
       headers: { Authorization: `Bearer ${TOKEN}` }
     }).then(res => res.json());
 
@@ -142,17 +161,37 @@ onMounted(async () => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const { start: startYesterday, end: endYesterday } = getDayTimestamps(yesterday);
-    statsYesterday.value = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${startYesterday}&endAt=${endYesterday}`, {
+    const yesterdayData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${startYesterday}&endAt=${endYesterday}`, {
       headers: { Authorization: `Bearer ${TOKEN}` }
     }).then(res => res.json());
 
     // 总量
-    statsTotal.value = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${createdAtTs}&endAt=${now}`, {
+    const totalData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${createdAtTs}&endAt=${now}`, {
       headers: { Authorization: `Bearer ${TOKEN}` }
     }).then(res => res.json());
 
+    statsToday.value = todayData;
+    statsYesterday.value = yesterdayData;
+    statsTotal.value = totalData;
+
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      statsToday: todayData,
+      statsYesterday: yesterdayData,
+      statsTotal: totalData,
+      timestamp: now,
+    }));
+
   } catch (e) {
+    console.error('API fetch error:', e);
     error.value = e.message;
+  }
+}
+
+onMounted(async () => {
+  try {
+    await fetchStats();
+  } catch (e) {
+    console.error('fetchStats error:', e);
   }
 });
 </script>
