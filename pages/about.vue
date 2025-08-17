@@ -1,9 +1,16 @@
 <script setup>
 import { onMounted, ref, onBeforeUnmount } from 'vue'
+import { useColorMode } from '#imports'
 import gsap from 'gsap'
 
 import { aboutConfig } from '@/siteConfig/about.js'
 import { siteConfig } from '@/siteConfig/main.js'
+
+const colorMode = useColorMode()
+
+if (process.client) {
+  document.documentElement.classList.toggle('dark', colorMode.value === 'dark')
+}
 
 //标签位置
 function leftTagPosition(index) {
