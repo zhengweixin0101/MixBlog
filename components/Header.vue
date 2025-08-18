@@ -87,8 +87,10 @@ function toggleTheme() {
           class="w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center select-none cursor-pointer"
           type="button"
         >
-          <i v-if="colorMode.value === 'dark'" class="iconfont icon-a-Frame47 text-lg"></i>
-          <i v-else class="iconfont icon-a-Frame48 text-lg"></i>
+          <client-only>
+            <i v-if="colorMode.value === 'dark'" class="iconfont icon-a-Frame47 text-lg"></i>
+            <i v-else class="iconfont icon-a-Frame48 text-lg"></i>
+          </client-only>
         </button>
       </div>
     </nav>
