@@ -61,6 +61,13 @@ export const aboutConfig = {
                 { name: '壹决', img: 'https://cdn.zhengweixin.top/blog/about/game/Iso.png' },
             ],
         },
+        animes: [
+            { name: "番剧A", href: "https://example.com/a", img: "https://cdn.zhengweixin.top/blog/about/632d634f8376d.jpg" },
+            { name: "番剧B", href: "https://example.com/a", img: "https://cdn.zhengweixin.top/blog/about/632d634f8376d.jpg" },
+            { name: "番剧C", href: "https://example.com/a", img: "https://cdn.zhengweixin.top/blog/about/632f0dd8f33c6.webp" },
+            { name: "番剧D", href: "https://example.com/a", img: "https://cdn.zhengweixin.top/blog/about/632f0dd8f33c6.webp" },
+            { name: "番剧D", href: "https://example.com/a", img: "https://cdn.zhengweixin.top/blog/about/632f0dd8f33c6.webp" },
+        ]
     },
 
     helloCard: {

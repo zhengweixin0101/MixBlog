@@ -190,8 +190,9 @@ onMounted(async () => {
   }
 })
 
-//爱好游戏
+// 游戏&番剧
 const hoverHero = ref(null)
+const hoveredIndex = ref(null)
 </script>
 
 <template>
@@ -545,9 +546,35 @@ const hoverHero = ref(null)
 
     <div data-fade class="flex flex-wrap md:flex-row gap-4 w-full mx-auto m-5">
       <!-- 番剧 -->
-      <div class="flex-1 md:flex-[2_2_0%] p-5 rounded-2xl min-w-full md:min-w-[200px] relative transition-colors duration-300">
-        <div class="text-xs absolute text-gray-300">爱好番剧</div>
-        <h2 class="text-3xl font-bold mt-5 text-white">番剧</h2>
+      <div class="flex-1 md:flex-[2_2_0%] p-5 rounded-2xl min-w-full md:min-w-[200px] relative transition-colors duration-300 overflow-hidden">
+        <div class="absolute left-5 top-5 text-xs text-gray-300 pointer-events-none z-20">番剧</div>
+        <h2 class="absolute left-5 top-10 text-3xl font-bold text-white pointer-events-none z-20">爱好番剧</h2>
+        <div class="absolute inset-0 -m-5">
+          <div class="absolute inset-0 flex w-[120%] left-1/2 -translate-x-1/2">
+            <div
+              v-for="(anime, index) in aboutConfig.author.animes"
+              :key="index"
+              class="relative flex-none h-full overflow-hidden cursor-pointer transition-all duration-800 ease-out skew-x-[-10deg]"
+              :style="{
+                width:
+                  aboutConfig.author.animes.length <= 1
+                    ? '100%'
+                    : (hoveredIndex === null
+                        ? (100 / aboutConfig.author.animes.length)
+                        : (hoveredIndex === index ? 46 : (100 - 46) / (aboutConfig.author.animes.length - 1)
+                      )) + '%'
+              }"
+              @mouseenter="hoveredIndex = index"
+              @mouseleave="hoveredIndex = null"
+            >
+              <div
+                class="absolute inset-0 transition-all duration-800 ease-out"
+                :class="hoveredIndex === index ? 'scale-125' : 'scale-115'"
+                :style="{ background: `url(${anime.img}) center / cover no-repeat` }"
+              ></div>
+            </div>
+          </div>
+        </div>
       </div>
       <!-- 游戏 -->
       <div 
