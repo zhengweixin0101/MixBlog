@@ -90,17 +90,6 @@ function addFancyboxAttributesToAnchors(html) {
   })
 }
 
-// 高亮标题
-const HIGHLIGHT_DURATION = 3000
-function highlightHeading(rawId) {
-  if (typeof document === 'undefined' || !rawId) return
-  const id = decodeURIComponent(rawId)
-  const el = document.getElementById(id)
-  if (!el) return
-  el.classList.add('highlighted')
-  setTimeout(() => el.classList.remove('highlighted'), HIGHLIGHT_DURATION)
-}
-
 // 代码高亮样式
 const isDark = ref(false)
 function loadHighlightStyle(darkMode) {
@@ -188,7 +177,7 @@ watch([rawPostData, error], () => {
     html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (m, tag, text) => {
       const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\- \u4e00-\u9fa5]/g, '')
       if (tag !== 'h1') tocItems.push({ id, text, tag: tag.toUpperCase() })
-      return `<${tag} id="${id}" class="scroll-mt-40">${text}</${tag}>`
+      return `<${tag} id="${id}" class="scroll-mt-18">${text}</${tag}>`
     })
 
     post.value = {
@@ -233,7 +222,6 @@ onMounted(() => {
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 
   Fancybox.bind('[data-fancybox="gallery"]')
-  window.addEventListener('hashchange', () => highlightHeading(window.location.hash.slice(1)))
   document.addEventListener('click', onCopyBtnClick)
 
   // 客户端高亮代码块
@@ -243,13 +231,9 @@ onMounted(() => {
 
   onBeforeUnmount(() => {
     observer.disconnect()
-    window.removeEventListener('hashchange', () => highlightHeading(window.location.hash.slice(1)))
     document.removeEventListener('click', onCopyBtnClick)
   })
 })
-
-// hash对应标题高亮
-watch(() => route.hash, (hash) => { highlightHeading(hash.slice(1)) }, { immediate: true })
 
 // 格式化日期
 const formattedDate = computed(() => {
