@@ -34,6 +34,7 @@ export const aboutConfig = {
             { name: 'Docker', icon: 'https://cdn.zhengweixin.top/blog/about/skills/docker.png', color: '#57b6e6' },
             { name: 'Python', icon: 'https://cdn.zhengweixin.top/blog/about/skills/python.png', color: '#fff' },
             { name: 'Git', icon: 'https://cdn.zhengweixin.top/blog/about/skills/git.webp', color: '#df5b40' },
+            { name: 'ChatGPT', icon: 'https://cdn.zhengweixin.top/blog/about/skills/chatgpt.svg', color: '#4aa181' },
             { name: 'Photoshop', icon: 'https://cdn.zhengweixin.top/blog/about/skills/ps.png', color: '#4082c3' },
             { name: 'DJI', icon: 'https://cdn.zhengweixin.top/blog/about/skills/dji.svg', color: '#000' },
             { name: 'VALORANT', icon: 'https://cdn.zhengweixin.top/blog/about/skills/valorant.svg', color: '#ff4654' },
