@@ -102,8 +102,6 @@ const firstHalf = skills.slice(0, mid)
 const secondHalf = skills.slice(mid)
 
 // 访问数据
-const cover = aboutConfig.umami.cover
-// 配置
 const UMAMI_URL = aboutConfig.umami.url
 const UMAMI_SHARE_URL =  aboutConfig.umami.shareUrl
 const WEBSITE_ID = aboutConfig.umami.siteId
@@ -191,6 +189,9 @@ onMounted(async () => {
     console.error('fetchStats error:', e)
   }
 })
+
+//爱好游戏
+const hoverHero = ref(null)
 </script>
 
 <template>
@@ -390,7 +391,7 @@ onMounted(async () => {
       <!-- 访问统计 -->
       <div 
         class="flex-1 md:flex-[2_2_0%] p-5 rounded-2xl min-w-full md:min-w-[200px] relative text-white overflow-hidden transition-colors duration-300"
-        :style="{ background: `url(${cover}) top / cover no-repeat` }"
+        :style="{ background: `url(${aboutConfig.umami.cover}) top / cover no-repeat` }"
       >
         <!-- 蒙版层 -->
         <div class="absolute inset-0 bg-gradient-to-t from-[#0c1c2c]/90 to-transparent z-0"></div>
@@ -541,6 +542,65 @@ onMounted(async () => {
         </i>
       </div>
     </div>
+
+    <div data-fade class="flex flex-wrap md:flex-row gap-4 w-full mx-auto m-5">
+      <!-- 番剧 -->
+      <div class="flex-1 md:flex-[2_2_0%] p-5 rounded-2xl min-w-full md:min-w-[200px] relative transition-colors duration-300">
+        <div class="text-xs absolute text-gray-300">爱好番剧</div>
+        <h2 class="text-3xl font-bold mt-5 text-white">番剧</h2>
+      </div>
+      <!-- 游戏 -->
+      <div 
+        class="flex-1 md:flex-[3_3_0%] p-5 rounded-2xl min-w-full md:min-w-[200px] relative text-white overflow-hidden transition-colors duration-300"
+        :style="{ background: `url(${aboutConfig.author.game.img}) top / cover no-repeat` }"
+      >
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0c1c2c]/90 to-[#0c1c2c]/50 z-0"></div>
+        <div class="relative z-10">
+          <div class="text-xs text-gray-300">爱好游戏</div>
+          <h2 class="text-4xl font-bold mt-1 mb-50">{{ aboutConfig.author.game.name }}</h2>
+        </div>
+        <div class="absolute right-5 bottom-5 text-md text-white/90 z-10" >
+          {{ aboutConfig.author.game.id }}
+        </div>
+        <div class="absolute left-5 bottom-5 flex -space-x-3 z-10">
+          <div
+            v-for="(hero, idx) in aboutConfig.author.game.heroes"
+            :key="idx"
+            class="relative"
+            @mouseenter="hoverHero = hero.name"
+            @mouseleave="hoverHero = null"
+            :style="{ zIndex: hoverHero === hero.name ? 999 : idx }"
+          >
+            <img
+              :src="hero.img"
+              :alt="hero.name"
+              :style="{
+                border: '2px solid rgba(255,0,0,0.4)',
+                borderRadius: '9999px'
+              }"
+              class="w-10 h-10 object-cover transition-all duration-300"
+              :class="hoverHero === hero.name ? 'opacity-100' : (hoverHero ? 'opacity-30' : 'opacity-100')"
+            />
+            <transition
+              name="fade"
+              enter-active-class="transition-opacity duration-200"
+              leave-active-class="transition-opacity duration-300"
+              enter-from-class="opacity-0"
+              enter-to-class="opacity-100"
+              leave-from-class="opacity-100"
+              leave-to-class="opacity-0"
+            >
+              <div
+                v-if="hoverHero === hero.name"
+                class="absolute bottom-full left-1/2 -translate-x-1/3 mb-1 ml-5 px-2 py-1 text-#2f3f5b text-xs bg-white/90 rounded whitespace-nowrap z-50"
+              >
+                擅长英雄：{{ hero.name }}
+              </div>
+            </transition>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 </template>
 
@@ -596,7 +656,7 @@ onMounted(async () => {
 }
 
 .animate-MAX {
-  animation: MAX 1s infinite;
+  animation: MAX 2s infinite;
   transform-origin: center;
   animation-timing-function: ease-in-out;
 }

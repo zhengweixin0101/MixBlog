@@ -49,7 +49,20 @@ export const aboutConfig = {
             code: 'ISFP-T',
             img: 'https://cdn.zhengweixin.top/blog/about/ISFP.svg',
         },
+        game: {
+            name: 'VALORANT',
+            img: 'https://cdn.zhengweixin.top/blog/about/124395.jpg',
+            id: 'ShinX #26157',
+            heroes: [
+                { name: '不死鸟', img: 'https://cdn.zhengweixin.top/blog/about/game/Phoenix.png' },
+                { name: '贤者', img: 'https://cdn.zhengweixin.top/blog/about/game/Sage.png' },
+                { name: '盖可', img: 'https://cdn.zhengweixin.top/blog/about/game/Gekko.png' },
+                { name: '暮蝶', img: 'https://cdn.zhengweixin.top/blog/about/game/Clove.png' },
+                { name: '壹决', img: 'https://cdn.zhengweixin.top/blog/about/game/Iso.png' },
+            ],
+        },
     },
+
     helloCard: {
         text: "Hello there!",
         colors: ['#66c6ba', '#a4e5d9', '#c8f4de'],
