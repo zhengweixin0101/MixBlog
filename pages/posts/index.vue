@@ -65,7 +65,7 @@ const filteredPosts = computed(() => {
             class="absolute inset-0 -z-10
                   bg-gradient-to-r from-#00e699/50 to-#00e2d8/50
                   dark:hidden transition-colors duration-300"
-          />
+          ></span>
         </span>
       </h1>
       <p data-fade class="mt-2 text-#2f3f5b dark:text-gray-300 transition-colors duration-300">
@@ -174,7 +174,7 @@ const filteredPosts = computed(() => {
             class="absolute inset-0 -z-10
                   bg-gradient-to-r from-#00e699/30 to-#00e2d8/30
                   dark:hidden transition-colors duration-300"
-          />
+          ></span>
         </NuxtLink>
       </div>
     </section>

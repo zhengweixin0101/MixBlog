@@ -294,7 +294,7 @@ const formattedDate = computed(() => {
             class="absolute inset-0 -z-10
                   bg-gradient-to-r from-#00e699/30 to-#00e2d8/30
                   dark:hidden transition-colors duration-300"
-          />
+          ></span>
         </NuxtLink>
       </div>
     </div>
@@ -315,7 +315,7 @@ const formattedDate = computed(() => {
               class="absolute inset-0 -z-10
                     bg-gradient-to-r from-[#00e69980] to-[#00e2d850]
                     dark:hidden"
-            />
+            ></span>
           </span>
         </h1>
         <div data-fade class="text-sm text-#2f3f5b dark:text-gray-400 mt-2 pb-4 flex flex-col gap-2 transition-colors duration-300" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
@@ -327,14 +327,14 @@ const formattedDate = computed(() => {
       </div>
       <div class="flex lg:gap-8 px-2 flex-col md:flex-row max-w-full">
         <section data-fade class=" flex-1 min-w-0 max-w-full">
-          <article v-html="post.content" class="article-content whitespace-normal break-words" />
+          <article v-html="post.content" class="article-content whitespace-normal break-words"></article>
         </section>
         <div data-fade class="sticky top-30 flex-shrink-0 hidden md:block self-start">
           <Sidebar :toc="post.toc" :title="post.frontmatter.title" />
           <div class="flex items-center justify-center py-20"></div>
         </div>
       </div>
-      <Comment />
+      <Comment data-fade />
     </div>
   </main>
 </template>

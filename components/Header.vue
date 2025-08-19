@@ -56,7 +56,7 @@ function toggleTheme() {
               class="absolute inset-0 -z-10
                     bg-gradient-to-r from-#00e699/40 to-#00e2d8/40
                     dark:hidden transition-colors duration-300"
-            />
+            ></span>
             <NuxtLink
               :to="item.href"
               class="flex items-center space-x-1 no-underline whitespace-nowrap"
@@ -65,7 +65,7 @@ function toggleTheme() {
                 'text-#2f3f5b hover:bg-#00e699/20 dark:hover:bg-transparent dark:text-white dark:hover:brightness-75 cursor-pointer': !isActive(item)
               }"
             >
-              <i :class="['iconfont', item.icon, { 'text-#2f3f5b dark:text-gradient': isActive(item) }]" />
+              <i :class="['iconfont', item.icon, { 'text-#2f3f5b dark:text-gradient': isActive(item) }]" ></i>
               <span>{{ item.label }}</span>
             </NuxtLink>
           </li>
@@ -116,7 +116,7 @@ function toggleTheme() {
                 'text-#2f3f5b dark:text-white hover:bg-black/10 dark:hover:bg-white/10': !isActive(item)
               }"
             >
-              <i :class="['iconfont', item.icon, 'mr-2 text-base']" />
+              <i :class="['iconfont', item.icon, 'mr-2 text-base']" ></i>
               <span>{{ item.label }}</span>
             </NuxtLink>
           </li>
