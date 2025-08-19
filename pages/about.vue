@@ -201,7 +201,7 @@ onMounted(async () => {
         <span
           v-for="(tag, i) in aboutConfig.author.tags.left"
           :key="'left-' + i"
-          class="author-tag absolute rounded-full bg-white dark:bg-white/15 py-1 px-2 shadow"
+          class="author-tag absolute rounded-full bg-white dark:bg-white/15 py-1 px-2 shadow transition-colors duration-300"
           :class="leftTagPosition(i)"
         >
           {{ tag }}
@@ -221,7 +221,7 @@ onMounted(async () => {
         <span
           v-for="(tag, i) in aboutConfig.author.tags.right"
           :key="'right-' + i"
-          class="author-tag absolute rounded-full bg-white dark:bg-white/15 py-1 px-2 shadow"
+          class="author-tag absolute rounded-full bg-white dark:bg-white/15 py-1 px-2 shadow transition-colors duration-300"
           :class="rightTagPosition(i)"
         >
           {{ tag }}
@@ -232,17 +232,20 @@ onMounted(async () => {
     <h1 data-fade class="text-3xl flex justify-center mt-5 md:mt--5">
       <span class="relative inline-block transition-colors duration-300 text-#2f3f5b dark:text-gradient">
         关于我
-        <span class="absolute inset-0 -z-10 bg-gradient-to-r from-#00e699/50 to-#00e2d8/50 dark:hidden transition-colors duration-300"/>
+        <span class="absolute inset-0 -z-10 bg-gradient-to-r from-#00e699/40 to-#00e2d8/40 dark:hidden transition-colors duration-300"></span>
       </span>
     </h1>
 
     <div data-fade class="flex flex-wrap justify-center gap-4 w-full mx-auto m-5">
-      <div class="flex-1 md:flex-[3_3_0%] bg-gradient-to-r from-#112d4e/70 to-#3f72af/70 text-white p-5 rounded-2xl min-w-full md:min-w-[300px] flex flex-col justify-center gap-2">
-        <div class="text-sm opacity-90">Hi，很高兴认识你！👋</div>
+      <div class="flex-1 md:flex-[3_3_0%] bg-white dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] transition-colors duration-300
+                  p-5 rounded-2xl min-w-full md:min-w-[300px] flex flex-col justify-center gap-2 -z-20"
+      >
+        <div class="text-sm opacity-90">Hi，很高兴认识你！<span class="text-xl">👋</span></div>
         <h2 class="text-3xl font-bold">我叫
           <span class="relative inline-block">
-            <span class="text-gradient">
+            <span class="dark:text-gradient">
               {{ aboutConfig.author.name }}
+              <span class="absolute inset-0 -z-10 bg-gradient-to-r from-#00e699/40 to-#00e2d8/40 dark:hidden transition-colors duration-300"></span>
             </span>
           </span>
         </h2>
@@ -290,7 +293,7 @@ onMounted(async () => {
       </div>
       <!-- 内容 -->
       <div class="absolute top-0 left-0 w-full h-[250px] flex justify-center items-center bg-white mix-blend-screen dark:bg-#649dad transition-colors duration-300">
-        <h2 class="text-10vw 2xl:text-35 text-#649dad dark:text-white flex items-center justify-center">{{ aboutConfig.helloCard.text }}</h2>
+        <h2 class="text-10vw 2xl:text-35 text-#649dad dark:text-white flex items-center justify-center transition-colors duration-300">{{ aboutConfig.helloCard.text }}</h2>
       </div>
     </div>
 
@@ -472,7 +475,7 @@ onMounted(async () => {
           </div>
           <div>
             <p class="text-sm text-white/50">统计信息来自 
-              <a :href=UMAMI_SHARE_URL target="_blank" rel="noopener nofollow" class="text-sm text-white/50 no-underline hover:text-white">Umami</a>
+              <a :href=UMAMI_SHARE_URL target="_blank" rel="noopener nofollow" class="text-sm text-white/50 no-underline hover:text-white transition-colors duration-200">Umami</a>
             </p>
           </div>
           <div class="absolute right-0 bottom-1 text-white rounded-full bg-white/20 hover:bg-white/30 px-2 py-1 transition-colors duration-300">
@@ -504,11 +507,38 @@ onMounted(async () => {
         <div class="h-2/3 flex justify-between bg-white dark:bg-white/10 p-5 rounded-2xl shadow-[0_0_2px_rgba(0,0,0,0.2)] min-h-200px md:min-h-0 min-w-full md:min-w-200px relative transition-colors duration-300">
           <div class="text-xs absolute text-gray-400">性格</div>
           <h2 class="text-2xl font-bold mt-5">{{ aboutConfig.author.personality.name }}<br/><span class="text-#e4ae3a text-4xl">{{ aboutConfig.author.personality.code }}</span></h2>
-          <div class="absolute bottom-4 text-sm text-#999999">在 <a class="text-#999999 no-underline hover:text-white" href="https://www.16personalities.com/" target="_blank" rel="noopener nofollow">16personalities</a> 了解更多</div>
-          <div class="absolute justify-center -right-2 md:top-3 transition-transform duration-800 hover:-rotate-8">
+          <div class="absolute bottom-4 text-sm text-#999999">在 <a class="text-#999999 no-underline hover:text-white transition-colors duration-200" href="https://www.16personalities.com/" target="_blank" rel="noopener nofollow">16personalities</a> 上了解更多</div>
+          <div class="absolute justify-center right-0 md:top-3 transition-transform duration-800 hover:-rotate-8">
             <img :src="aboutConfig.author.personality.img" />
           </div>
         </div>
+      </div>
+    </div>
+
+    <div data-fade class="flex flex-wrap justify-center gap-4 w-full mx-auto m-5">
+      <div class="flex-1 md:flex-[3_3_0%] bg-white dark:bg-white/10 p-5 rounded-2xl shadow-[0_0_2px_rgba(0,0,0,0.2)]
+                  min-w-full md:min-w-[200px] relative transition-colors duration-300"
+      >
+        <div class="text-xs absolute text-gray-400">特长</div>
+          <h2 class="text-2xl sm:text-3xl font-bold mt-5">
+            <span class="text-#aa96da dark:text-#ffe2e2 transition-colors duration-300">脑回路新奇的 酸菜鱼</span>
+            <br/>
+            <span class="mt-3 text-#aa96da/60 dark:text-white transition-colors duration-300">行动力指数<span class="ml-3 inline-block animate-MAX">MAX</span></span>
+          </h2>
+      </div>
+      <div class="flex-1 md:flex-[2_2_0%] bg-white dark:bg-white/10 p-5 rounded-2xl shadow-[0_0_2px_rgba(0,0,0,0.2)]
+                  min-w-full md:min-w-[200px] relative transition-colors duration-300 overflow-hidden group"
+      >
+        <div class="text-xs absolute text-gray-400">座右铭</div>
+        <h2 class="text-3xl font-bold mt-5">
+          <span>往日不悔，</span>
+          <br/>
+          <span class="mt-3 opacity-70">未来可期。</span>
+        </h2>
+        <i class="iconfont icon-dice-d text-9xl opacity-10 
+                  absolute right-0 bottom-0 translate-x-1/3 translate-y-1/3
+                  transition-transform duration-20000 group-hover:rotate-360">
+        </i>
       </div>
     </div>
   </main>
@@ -555,5 +585,19 @@ onMounted(async () => {
 }
 .animate-scroll-right {
   animation: scroll-right 30s linear infinite;
+}
+
+/* MAX动画 */
+@keyframes MAX {
+  0%   { transform: scale(1); }
+  25%  { transform: scale(1.2); }
+  50%  { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+.animate-MAX {
+  animation: MAX 1s infinite;
+  transform-origin: center;
+  animation-timing-function: ease-in-out;
 }
 </style>

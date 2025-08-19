@@ -1,5 +1,5 @@
 ---
-title: 在博客中添加 Umami 访问统计数据
+title: 在博客中添加 Umami 数据展示
 date: 2025-08-17
 tags:
   - 前端
