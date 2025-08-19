@@ -318,7 +318,9 @@ const formattedDate = computed(() => {
           <div class="flex items-center justify-center py-20"></div>
         </div>
       </div>
-      <Comment data-fade />
+      <div  data-fade>
+        <Comment />
+      </div>
     </div>
   </main>
 </template>
