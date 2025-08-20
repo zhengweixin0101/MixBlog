@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: blog-rss
+    name: blog
     env: node
     buildCommand: pnpm install && pnpm build
     startCommand: pnpm start
