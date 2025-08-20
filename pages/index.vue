@@ -1,8 +1,5 @@
 <script setup>
 import { siteConfig } from '@/siteConfig/main.js'
-
-if (process.server) console.log('服务端渲染')
-if (process.client) console.log('客户端渲染')
 </script>
 
 <template>
