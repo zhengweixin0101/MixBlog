@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "npm run generate-all && nuxt build",
+    "build": "nuxt build",
     "dev": "npm run generate-all && nuxt dev",
     "generate": "npm run generate-all && nuxt generate && node scripts/flatten-html.js",
     "preview": "nuxt preview",
