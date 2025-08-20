@@ -1,10 +1,25 @@
 <script setup>
 import { onMounted, ref, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
+import { useHead } from '#imports'
 import gsap from 'gsap'
 
 import { aboutConfig } from '@/siteConfig/about.js'
 import { siteConfig } from '@/siteConfig/main.js'
+
+//head
+useHead({
+  titleTemplate: `About | ${siteConfig.title}`,
+  meta: [
+    { name: 'description', content: `Hello! I'm ${aboutConfig.author.name}. This is my "About" page. I'm here to introduce myself. Nice to meet you!` },
+    { name: 'keywords', content: `${siteConfig.keywords},about,about me,自我介绍,个人简介,个人介绍,${aboutConfig.author.name}` },
+    { property: 'og:title', content: `About | ${siteConfig.title}` },
+    { property: 'og:description', content: `Hello! I'm ${aboutConfig.author.name}. This is my "About" page. I'm here to introduce myself. Nice to meet you!` },
+    { property: 'og:url', content: `${siteConfig.url}/about` },
+    { name: 'twitter:title', content: `About | ${siteConfig.title}` },
+    { name: 'twitter:description', content: `Hello! I'm ${aboutConfig.author.name}. This is my "About" page. I'm here to introduce myself. Nice to meet you!` },
+  ],
+})
 
 // 标签位置
 function leftTagPosition(index) {
