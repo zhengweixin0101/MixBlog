@@ -126,7 +126,7 @@ function onCopyBtnClick(e) {
 // 获取文章
 const { data: rawPostData, error } = await useAsyncData(
   `post-${route.params.slug}`,
-  () => $fetch(`${siteConfig.postsData.postContent}${route.params.slug}`)
+  () => $fetch(`${siteConfig.postsData.postContent}/${route.params.slug}.json`)
 )
 
 const post = ref({
