@@ -1,7 +1,7 @@
 <template>
-  <aside class="hidden lg:block w-60 p-4 rounded-lg bg-black/5 dark:bg-white/10 transition-colors duration-300">
+  <aside class="hidden lg:block w-60 p-4 rounded-lg bg-#fefefe dark:bg-white/10 transition-colors duration-300">
     <section>
-      <div class="text-xl font-bold mb-2 bg-gradient-to-r from-[#00e699] to-[#00e2d8] bg-clip-text text-transparent">
+      <div class="text-xl font-bold mb-2 dark:text-gradient">
         目录
       </div>
       <a href="#" class="text-mx font-semibold text-#2f3f5b/80 dark:text-white no-underline before:hidden hover:text-#2f3f5b dark:hover:text-gray-400 transition-colors" @click.prevent="scrollToTop">
@@ -10,7 +10,7 @@
       <ul class="list-none p-0 m-0 mt-1">
         <li v-for="(item, index) in toc" :key="index" class="mb-1">
           <a
-            :href="`#${item.id}`"
+            href="javascript:void(0)"
             class="block relative text-#2f3f5b dark:text-gray-400 no-underline hover:text-#2f3f5b/60 dark:hover:text-white transition-colors duration-300 text-sm leading-tight"
             :class="{
               'pl-4 before:left-0': item.tag === 'H2',
@@ -19,6 +19,7 @@
               'pl-10 before:left-6': item.tag === 'H5',
               'pl-12 before:left-8': item.tag === 'H6'
             }"
+            @click.prevent="scrollTo(item.id)"
           >
             {{ item.text }}
           </a>
@@ -34,6 +35,13 @@ const scrollToTop = () => {
     top: 0,
     behavior: 'smooth'
   })
+}
+
+const scrollTo = (id) => {
+  const el = document.getElementById(id)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 }
 
 defineProps({

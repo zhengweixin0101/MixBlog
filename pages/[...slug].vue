@@ -34,7 +34,7 @@
             class="absolute inset-0 -z-10
                   bg-gradient-to-r from-#00e699/30 to-#00e2d8/30
                   dark:hidden transition-colors duration-300"
-          />
+          ></span>
         </NuxtLink>
       </div>
     </div>
@@ -43,7 +43,7 @@
 
 <script setup>
 import { useHead } from '#imports'
-import { siteConfig } from '@/site.config.js'
+import { siteConfig } from '@/siteConfig/main.js'
 
 //head
 useHead({

@@ -1,48 +1,22 @@
 [
   {
-    "slug": "latex-example",
-    "title": "Latex Example",
-    "date": "2023-10-01",
-    "description": "Here is a sample of some basic Latex syntax that can be used when writing Latex content in Astro.",
+    "slug": "cf-no-credit",
+    "title": "免信用卡为 Cloudflare 添加付款方式",
+    "date": "2025-08-15",
+    "description": "Cloudflare 的部分服务需要添加付款方式才能使用。本文分享一种无需绑定真实信用卡就能完成绑定的方法。",
     "tags": [
-      "tag4"
+      "Cloudflare",
+      "实用教程"
     ]
   },
   {
-    "slug": "markdown-example",
-    "title": "Markdown Example",
-    "date": "1921-01-10",
-    "description": "Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.",
+    "slug": "use-umami-api-on-nuxt",
+    "title": "在博客中添加 Umami 数据展示",
+    "date": "2025-08-17",
+    "description": "使用 Umami API 在 Nuxt 博客中展示访问统计数据。",
     "tags": [
-      "tag5"
-    ]
-  },
-  {
-    "slug": "the-unbearable-lightness-of-being",
-    "title": "The Unbearable Lightness of Being",
-    "date": "1984-01-24",
-    "description": "The idea of eternal return is a mysterious one, an……",
-    "tags": [
-      "tag6"
-    ]
-  },
-  {
-    "slug": "tolerance-and-freedom",
-    "title": "容忍与自由",
-    "date": "1959-03-16",
-    "description": "十七八年前，我最后一次会见我的母校康耐儿大学的史学大师布尔先生（George Lincoln Bur……",
-    "tags": [
-      "tag3"
-    ]
-  },
-  {
-    "slug": "hometown",
-    "title": "故鄉",
-    "date": "1921-01-10",
-    "description": "我冒了嚴寒，回到相隔二千餘里，別了二十餘年的故鄉去。\r\n\r\n時候既然是深冬；漸近故鄉時，天氣又陰晦了……",
-    "tags": [
-      1,
-      "tag3"
+      "前端",
+      "实用教程"
     ]
   },
   {
@@ -51,17 +25,7 @@
     "date": "2025-07-26",
     "description": "这是一篇测试文章，用于测试文章的生成和页面效果。",
     "tags": [
-      "测试",
-      "Test"
-    ]
-  },
-  {
-    "slug": "rashomon",
-    "title": "羅生門",
-    "date": "1971-03-05",
-    "description": "ある日の暮方の事である。一人の下人げにんが、羅生門らしょうもんの下で雨やみを待っていた。\r\n\r\n広い……",
-    "tags": [
-      "tag2"
+      "Other"
     ]
   }
 ]

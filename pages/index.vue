@@ -1,5 +1,5 @@
 <script setup>
-import { siteConfig } from '@/site.config.js'
+import { siteConfig } from '@/siteConfig/main.js'
 </script>
 
 <template>
@@ -20,7 +20,7 @@ import { siteConfig } from '@/site.config.js'
               class="absolute inset-0 -z-10
                     bg-gradient-to-r from-#00e699/50 to-#00e2d8/50
                     dark:hidden transition-colors duration-300"
-            />
+            ></span>
           </span>
         </h1>
         <p

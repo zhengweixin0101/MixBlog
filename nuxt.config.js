@@ -1,4 +1,4 @@
-import { siteConfig } from './site.config.js'
+import { siteConfig } from './siteConfig/main.js'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -20,8 +20,4 @@ export default defineNuxtConfig({
     classSuffix: '',
   },
   css: ['@/assets/main.css'],
-  plugins: [
-    '@/plugins/fade-in.js',
-    '@/plugins/nprogress.client.js',
-  ],
 })

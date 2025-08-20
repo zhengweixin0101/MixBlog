@@ -10,13 +10,13 @@ import 'katex/dist/katex.min.css'
 import { Fancybox } from '@fancyapps/ui/dist/fancybox/'
 import '@fancyapps/ui/dist/fancybox/fancybox.css'
 
+import Comment from '@/components/Comment.vue'
 import Sidebar from '@/components/Sidebar.vue'
 import '@/assets/article-content.css'
 
-import { siteConfig } from '@/site.config.js'
+import { siteConfig } from '@/siteConfig/main.js'
 
 const route = useRoute()
-const loading = ref(true)
 
 // HTML实体解析
 function decodeHTMLEntities(str) {
@@ -39,20 +39,13 @@ function highlightCodeBlocks(html) {
     /<pre><code(?: class="language-(\w+)")?>([\s\S]*?)<\/code><\/pre>/g,
     (_, lang, code) => {
       const decoded = decodeHTMLEntities(code)
-      const highlighted = lang && hljs.getLanguage(lang)
-        ? hljs.highlight(decoded, { language: lang }).value
-        : hljs.highlightAuto(decoded).value
-
       return `
         <div class="code-block-wrapper group relative">
           <button
-            class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded-lg bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
-            style="outline:none; border:none; box-shadow:none; -webkit-appearance:none; -moz-appearance:none; appearance:none; background-clip: padding-box;"
+            class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded-lg border border-black/20 dark:border-white/20 bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
             data-code="${encodeHTMLEntities(decoded)}"
-          >
-            复制
-          </button>
-          <pre><code class="hljs">${highlighted}</code></pre>
+          >复制</button>
+          <pre><code class="hljs ${lang ? 'language-' + lang : ''}">${decoded}</code></pre>
         </div>
       `
     }
@@ -61,6 +54,11 @@ function highlightCodeBlocks(html) {
 
 // KaTeX 渲染
 function renderKatex(html) {
+  const codeBlocks = []
+  html = html.replace(/<pre><code[\s\S]*?<\/code><\/pre>/g, (match) => {
+    codeBlocks.push(match)
+    return `___CODE_BLOCK_${codeBlocks.length - 1}___`
+  })
   html = html.replace(/\$\$([^$]+?)\$\$/g, (_, expr) => {
     try { return katex.renderToString(expr, { displayMode: true, throwOnError: false }) } 
     catch { return `<span class="katex-error">$$${expr}$$</span>` }
@@ -69,6 +67,7 @@ function renderKatex(html) {
     try { return katex.renderToString(expr, { displayMode: false, throwOnError: false }) } 
     catch { return `<span class="katex-error">$${expr}$</span>` }
   })
+  html = html.replace(/___CODE_BLOCK_(\d+)___/g, (_, index) => codeBlocks[index])
   return html
 }
 
@@ -89,17 +88,6 @@ function addFancyboxAttributesToAnchors(html) {
     const lazyImgTag = imgTag.replace('<img', '<img loading="lazy"')
     return `<a${aAttrs} data-fancybox="gallery">${lazyImgTag}</a>`
   })
-}
-
-// 高亮标题
-const HIGHLIGHT_DURATION = 3000
-function highlightHeading(rawId) {
-  if (typeof document === 'undefined' || !rawId) return
-  const id = decodeURIComponent(rawId)
-  const el = document.getElementById(id)
-  if (!el) return
-  el.classList.add('highlighted')
-  setTimeout(() => el.classList.remove('highlighted'), HIGHLIGHT_DURATION)
 }
 
 // 代码高亮样式
@@ -162,17 +150,34 @@ watch([rawPostData, error], () => {
       toc: []
     }
   } else {
-    let html = marked.parse(rawPostData.value.content)
+    let html = marked(rawPostData.value.content)
     html = wrapImagesWithLinks(html)
     html = addFancyboxAttributesToAnchors(html)
     html = renderKatex(html)
     html = highlightCodeBlocks(html)
 
+    // 为外部链接添加 target="_blank" 和 rel="nofollow"
+    const siteDomain = new URL(siteConfig.url).hostname
+    html = html.replace(/<a href="([^"]+)"/g, (match, href) => {
+      try {
+        const link = new URL(href, siteConfig.url)
+        if (link.hostname !== siteDomain) {
+          let attrs = ''
+          if (!/target=/.test(match)) attrs += ' target="_blank"'
+          if (!/rel=/.test(match)) attrs += ' rel="nofollow noopener noreferrer"'
+          return match.replace('<a', `<a${attrs}`)
+        }
+      } catch (e) {
+        return match
+      }
+      return match
+    })
+
     const tocItems = []
     html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (m, tag, text) => {
       const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\- \u4e00-\u9fa5]/g, '')
       if (tag !== 'h1') tocItems.push({ id, text, tag: tag.toUpperCase() })
-      return `<${tag} id="${id}" class="scroll-mt-40">${text}</${tag}>`
+      return `<${tag} id="${id}" class="scroll-mt-18">${text}</${tag}>`
     })
 
     post.value = {
@@ -217,18 +222,18 @@ onMounted(() => {
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 
   Fancybox.bind('[data-fancybox="gallery"]')
-  window.addEventListener('hashchange', () => highlightHeading(window.location.hash.slice(1)))
   document.addEventListener('click', onCopyBtnClick)
+
+  // 客户端高亮代码块
+  document.querySelectorAll('pre code').forEach(block => {
+    hljs.highlightElement(block)
+  })
 
   onBeforeUnmount(() => {
     observer.disconnect()
-    window.removeEventListener('hashchange', () => highlightHeading(window.location.hash.slice(1)))
     document.removeEventListener('click', onCopyBtnClick)
   })
 })
-
-// hash对应标题高亮
-watch(() => route.hash, (hash) => { highlightHeading(hash.slice(1)) }, { immediate: true })
 
 // 格式化日期
 const formattedDate = computed(() => {
@@ -273,7 +278,7 @@ const formattedDate = computed(() => {
             class="absolute inset-0 -z-10
                   bg-gradient-to-r from-#00e699/30 to-#00e2d8/30
                   dark:hidden transition-colors duration-300"
-          />
+          ></span>
         </NuxtLink>
       </div>
     </div>
@@ -294,7 +299,7 @@ const formattedDate = computed(() => {
               class="absolute inset-0 -z-10
                     bg-gradient-to-r from-[#00e69980] to-[#00e2d850]
                     dark:hidden"
-            />
+            ></span>
           </span>
         </h1>
         <div data-fade class="text-sm text-#2f3f5b dark:text-gray-400 mt-2 pb-4 flex flex-col gap-2 transition-colors duration-300" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
@@ -306,11 +311,15 @@ const formattedDate = computed(() => {
       </div>
       <div class="flex lg:gap-8 px-2 flex-col md:flex-row max-w-full">
         <section data-fade class=" flex-1 min-w-0 max-w-full">
-          <article v-html="post.content" class="article-content whitespace-normal break-words" />
+          <article v-html="post.content" class="article-content whitespace-normal break-words"></article>
         </section>
         <div data-fade class="sticky top-30 flex-shrink-0 hidden md:block self-start">
           <Sidebar :toc="post.toc" :title="post.frontmatter.title" />
+          <div class="flex items-center justify-center py-20"></div>
         </div>
+      </div>
+      <div  data-fade>
+        <Comment />
       </div>
     </div>
   </main>

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useHead } from '#imports'
-import { siteConfig } from '@/site.config.js'
+import { siteConfig } from '@/siteConfig/main.js'
 
 //head
 useHead({
@@ -20,7 +20,6 @@ useHead({
 // 搜索和筛选相关状态
 const searchTerm = ref('')
 const selectedTag = ref('')
-const revealedPosts = ref({})
 
 // 读取文章列表
 const { data: postsRaw } = await useAsyncData('posts-list', () =>
@@ -66,7 +65,7 @@ const filteredPosts = computed(() => {
             class="absolute inset-0 -z-10
                   bg-gradient-to-r from-#00e699/50 to-#00e2d8/50
                   dark:hidden transition-colors duration-300"
-          />
+          ></span>
         </span>
       </h1>
       <p data-fade class="mt-2 text-#2f3f5b dark:text-gray-300 transition-colors duration-300">
@@ -110,7 +109,7 @@ const filteredPosts = computed(() => {
           :key="post.slug + selectedTag + searchTerm"
           :class="[
             'relative w-full h-160px rounded-xl list-none will-change-transform motion-safe:transform-gpu transition duration-300 animate-shadow',
-            'hover:shadow-[0_0_0_1px_#00e699] hover:scale-[1.02] active:scale-[0.97]'
+            'hover:shadow-[0_0_0_1px_#00e699] hover:scale-[1.02] active:scale-[0.97] shadow-[0_0_2px_rgba(0,0,0,0.2)]'
           ].join(' ')"
         >
           <NuxtLink
@@ -118,9 +117,9 @@ const filteredPosts = computed(() => {
             class="block h-full rounded-xl no-underline focus:outline-none cursor-pointer"
           >
             <div
-              class="bg-black/3 dark:bg-white/10 h-full rounded-xl p-4 no-underline focus:outline-none focus-visible:ring focus-visible:ring-[#00e699] transition-transform duration-300 active:scale-95 hover:scale-102"
+              class="bg-#fefefe dark:bg-white/10 h-full rounded-xl p-4 no-underline focus:outline-none focus-visible:ring focus-visible:ring-[#00e699] transition-transform duration-300 active:scale-95 hover:scale-102"
             >
-              <h4 class="text-#2f3f5b dark:text-white text-xl transition-colors duration-300">{{ post.title }}</h4>
+              <h4 class="text-#2f3f5b dark:text-white text-xm transition-colors duration-300">{{ post.title }}</h4>
               <p class="mt-1 text-#2f3f5b dark:text-gray-400 text-sm transition-colors duration-300">
                 {{ post.description || '暂无描述' }}
               </p>
@@ -175,7 +174,7 @@ const filteredPosts = computed(() => {
             class="absolute inset-0 -z-10
                   bg-gradient-to-r from-#00e699/30 to-#00e2d8/30
                   dark:hidden transition-colors duration-300"
-          />
+          ></span>
         </NuxtLink>
       </div>
     </section>

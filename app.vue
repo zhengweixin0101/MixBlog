@@ -6,7 +6,7 @@
 
 <script setup>
 import { useHead } from '#imports'
-import { siteConfig } from '@/site.config.js'
+import { siteConfig } from '@/siteConfig/main.js'
 
 useHead({
   titleTemplate: siteConfig.title,
@@ -33,14 +33,19 @@ useHead({
     { name: 'twitter:description', content: siteConfig.description },
     { name: 'twitter:card', content: 'summary' }
   ],
-link: [
-  { rel: 'icon', type: 'image/png', href: '/favicon-96x96.png', sizes: '96x96' },
-  { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-  { rel: 'shortcut icon', href: '/favicon.ico' },
-  { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
 
-  { rel: 'alternate', type: 'application/rss+xml', title: "ShinX's Blog RSS", href: '/rss.xml' },
-  { rel: 'stylesheet', href: siteConfig.thirdParty.iconfont },
-]
+  link: [
+      ...siteConfig.icons,
+    { rel: 'alternate', type: 'application/rss+xml', title: `${siteConfig.title} RSS`, href: '/rss.xml' },
+    { rel: 'stylesheet', href: siteConfig.thirdParty.iconfont },
+  ],
+
+  script: [
+    {
+      src: siteConfig.thirdParty.umami.js,
+      defer: true,
+      'data-website-id': siteConfig.thirdParty.umami.siteID,
+    },
+  ],
 })
 </script>

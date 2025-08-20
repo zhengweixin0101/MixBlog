@@ -3,61 +3,37 @@
   
   <url>
     <loc>https://zhengweixin.top</loc>
-    <lastmod>2025-08-14</lastmod>
+    <lastmod>2025-08-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zhengweixin.top/posts</loc>
-    <lastmod>2025-08-14</lastmod>
+    <lastmod>2025-08-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zhengweixin.top/about</loc>
-    <lastmod>2025-08-14</lastmod>
+    <lastmod>2025-08-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zhengweixin.top/posts/latex-example</loc>
-    <lastmod>2025-08-13</lastmod>
+    <loc>https://zhengweixin.top/posts/cf-no-credit</loc>
+    <lastmod>2025-08-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zhengweixin.top/posts/markdown-example</loc>
-    <lastmod>2025-08-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://zhengweixin.top/posts/the-unbearable-lightness-of-being</loc>
-    <lastmod>2025-08-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://zhengweixin.top/posts/tolerance-and-freedom</loc>
-    <lastmod>2025-08-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://zhengweixin.top/posts/hometown</loc>
-    <lastmod>2025-08-13</lastmod>
+    <loc>https://zhengweixin.top/posts/use-umami-api-on-nuxt</loc>
+    <lastmod>2025-08-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zhengweixin.top/posts/test-post</loc>
-    <lastmod>2025-08-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://zhengweixin.top/posts/rashomon</loc>
-    <lastmod>2025-08-13</lastmod>
+    <lastmod>2025-08-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import matter from 'gray-matter'
-import { siteConfig } from '../site.config.js'
+import { siteConfig } from '../siteConfig/main.js'
 
 const baseUrl = siteConfig.url
 
