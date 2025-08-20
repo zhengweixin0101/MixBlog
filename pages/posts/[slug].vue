@@ -161,25 +161,33 @@ watch([rawPostData, error], async () => {
       toc: tocItems
     }
 
-    // 等 DOM 渲染完成后再高亮
     applyClientEnhancements()
   }
 }, { immediate: true })
 
-// 监听内容变化（路由切换）
+// 监听内容变化
 watch(() => post.value.content, () => applyClientEnhancements())
 
 // 高亮 + Fancybox
 function applyClientEnhancements() {
   if (!process.client) return
-  // 用 requestAnimationFrame 等待 DOM 渲染完成
   nextTick(() => {
     requestAnimationFrame(() => {
-      document.querySelectorAll('article pre code').forEach(block => hljs.highlightElement(block))
+      const codeBlocks = document.querySelectorAll('article pre code')
+      if (codeBlocks.length) {
+        codeBlocks.forEach(block => hljs.highlightElement(block))
+      }
       Fancybox.bind('[data-fancybox="gallery"]')
     })
   })
 }
+
+watch(
+  () => post.value.content,
+  () => {
+    applyClientEnhancements()
+  }
+)
 
 // head
 useHead(() => {
