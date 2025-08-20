@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: blog
-    env: node
-    buildCommand: pnpm install && pnpm build
-    startCommand: pnpm start
-    autoDeploy: true
