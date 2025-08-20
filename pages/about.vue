@@ -402,7 +402,7 @@ function handleClick(link) {
     <div data-fade class="flex flex-wrap justify-center gap-4 w-full mx-auto m-5">
       <!-- 访问统计 -->
       <div 
-        class="flex-1 md:flex-[2_2_0%] p-5 rounded-2xl min-w-full md:min-w-[200px] relative text-white overflow-hidden transition-colors duration-300"
+        class="flex-1 md:flex-[2_2_0%] p-5 rounded-2xl min-w-full md:min-w-200px h-300px relative text-white overflow-hidden transition-colors duration-300"
         :style="{ background: `url(${aboutConfig.umami.cover}) top / cover no-repeat` }"
       >
         <!-- 蒙版层 -->
@@ -410,78 +410,90 @@ function handleClick(link) {
         <div class="relative z-10">
           <div class="text-xs text-gray-300">数据</div>
           <h2 class="text-3xl font-bold mt-1 text-white">访问统计</h2>
-
           <!-- 统计信息 -->
-          <div class="grid grid-cols-3 text-2xl mt-8 mb-8">
+          <div class="grid grid-cols-3 text-2xl mt-8 mb-5 gap-y-4">
             <!-- 今日人数 -->
             <div>
               <div class="text-sm text-gray-300">今日人数</div>
-              <div class="font-extrabold h-10">
-                <template v-if="statsToday">
-                  {{ statsToday.visitors.value }}
+              <div class="font-extrabold h-10 relative">
+                <!-- 透明占位文字保证高度一致 -->
+                <span class="opacity-0">{{ statsToday ? statsToday.visitors.value : '0000' }}</span>
+                
+                <template v-if="!statsToday">
+                  <div class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"></div>
                 </template>
                 <template v-else>
-                  <div class="bg-gray-700 rounded animate-pulse w-16 h-6 mt-2"></div>
+                  <span class="absolute left-0 top-1/2 -translate-y-1/2">{{ statsToday.visitors.value }}</span>
                 </template>
               </div>
             </div>
+
             <!-- 昨日人数 -->
             <div>
               <div class="text-sm text-gray-300">昨日人数</div>
-              <div class="font-extrabold h-10">
-                <template v-if="statsYesterday">
-                  {{ statsYesterday.visitors.value }}
+              <div class="font-extrabold h-10 relative">
+                <span class="opacity-0">{{ statsYesterday ? statsYesterday.visitors.value : '0000' }}</span>
+                <template v-if="!statsYesterday">
+                  <div class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"></div>
                 </template>
                 <template v-else>
-                  <div class="bg-gray-700 rounded animate-pulse w-16 h-6 mt-2"></div>
+                  <span class="absolute left-0 top-1/2 -translate-y-1/2">{{ statsYesterday.visitors.value }}</span>
                 </template>
               </div>
             </div>
+
             <!-- 本月访问 -->
             <div>
               <div class="text-sm text-gray-300">本月访问</div>
-              <div class="font-extrabold h-10">
-                <template v-if="statsTotal">
-                  {{ statsTotal.pageviews.value }}
+              <div class="font-extrabold h-10 relative">
+                <span class="opacity-0">{{ statsTotal ? statsTotal.pageviews.value : '00000' }}</span>
+                <template v-if="!statsTotal">
+                  <div class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-20 h-6"></div>
                 </template>
                 <template v-else>
-                  <div class="bg-gray-700 rounded animate-pulse w-20 h-6 mt-2"></div>
+                  <span class="absolute left-0 top-1/2 -translate-y-1/2">{{ statsTotal.pageviews.value }}</span>
                 </template>
               </div>
             </div>
+
             <!-- 今日访问 -->
             <div>
               <div class="text-sm text-gray-300">今日访问</div>
-              <div class="font-extrabold h-10">
-                <template v-if="statsToday">
-                  {{ statsToday.pageviews.value }}
+              <div class="font-extrabold h-10 relative">
+                <span class="opacity-0">{{ statsToday ? statsToday.pageviews.value : '0000' }}</span>
+                <template v-if="!statsToday">
+                  <div class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"></div>
                 </template>
                 <template v-else>
-                  <div class="bg-gray-700 rounded animate-pulse w-16 h-6 mt-2"></div>
+                  <span class="absolute left-0 top-1/2 -translate-y-1/2">{{ statsToday.pageviews.value }}</span>
                 </template>
               </div>
             </div>
+
             <!-- 昨日访问 -->
             <div>
               <div class="text-sm text-gray-300">昨日访问</div>
-              <div class="font-extrabold h-10">
-                <template v-if="statsYesterday">
-                  {{ statsYesterday.pageviews.value }}
+              <div class="font-extrabold h-10 relative">
+                <span class="opacity-0">{{ statsYesterday ? statsYesterday.pageviews.value : '0000' }}</span>
+                <template v-if="!statsYesterday">
+                  <div class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"></div>
                 </template>
                 <template v-else>
-                  <div class="bg-gray-700 rounded animate-pulse w-16 h-6 mt-2"></div>
+                  <span class="absolute left-0 top-1/2 -translate-y-1/2">{{ statsYesterday.pageviews.value }}</span>
                 </template>
               </div>
             </div>
+
             <!-- 总访问量 -->
             <div>
               <div class="text-sm text-gray-300">总访问量</div>
-              <div class="font-extrabold h-10">
-                <template v-if="statsTotal">
-                  {{ statsTotal.pageviews.value }}
+              <div class="font-extrabold h-10 relative">
+                <span class="opacity-0">{{ statsTotal ? statsTotal.pageviews.value : '00000' }}</span>
+                <template v-if="!statsTotal">
+                  <div class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-20 h-6"></div>
                 </template>
                 <template v-else>
-                  <div class="bg-gray-700 rounded animate-pulse w-20 h-6 mt-2"></div>
+                  <span class="absolute left-0 top-1/2 -translate-y-1/2">{{ statsTotal.pageviews.value }}</span>
                 </template>
               </div>
             </div>
@@ -491,7 +503,7 @@ function handleClick(link) {
               <a :href=UMAMI_SHARE_URL target="_blank" rel="noopener nofollow" class="text-sm text-white/50 no-underline hover:text-white transition-colors duration-200">Umami</a>
             </p>
           </div>
-          <div class="absolute right-0 bottom-1 text-white rounded-full bg-white/20 hover:bg-white/30 px-2 py-1 transition-colors duration-300">
+          <div class="absolute right-0 -bottom-1 text-white rounded-full bg-white/20 hover:bg-white/30 px-2 py-1 transition-colors duration-300">
             <NuxtLink to="/posts" class="no-underline">
               <i class="color-white iconfont icon-ans-icon-arrow-circle-right"></i>
               <span class="text-white ml-2">文章列表</span>
