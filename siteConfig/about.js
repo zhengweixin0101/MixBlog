@@ -30,6 +30,7 @@ export const aboutConfig = {
             { name: 'CSS3', icon: 'https://cdn.zhengweixin.top/blog/about/skills/css.png', color: '#2c51db' },
             { name: 'JS', icon: 'https://cdn.zhengweixin.top/blog/about/skills/js.png', color: '#f7cb4f' },
             { name: 'HTML', icon: 'https://cdn.zhengweixin.top/blog/about/skills/html.png', color: '#e9572b' },
+            { name: 'Unocss', icon: 'https://cdn.zhengweixin.top/blog/about/skills/unocss.svg', color: '#fff' },
             { name: 'Node', icon: 'https://cdn.zhengweixin.top/blog/about/skills/node.svg', color: '#333' },
             { name: 'Docker', icon: 'https://cdn.zhengweixin.top/blog/about/skills/docker.png', color: '#57b6e6' },
             { name: 'Python', icon: 'https://cdn.zhengweixin.top/blog/about/skills/python.png', color: '#fff' },
