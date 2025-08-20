@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 import gsap from 'gsap'
 
 import { aboutConfig } from '@/siteConfig/about.js'
@@ -192,7 +193,17 @@ onMounted(async () => {
 
 // 游戏&番剧
 const hoverHero = ref(null)
+
 const hoveredIndex = ref(null)
+const router = useRouter()
+function handleClick(link) {
+  if (!link) return;
+  if (link.startsWith('http')) {
+    window.open(link, '_blank')
+  } else {
+    router.push(link)
+  }
+}
 </script>
 
 <template>
@@ -546,15 +557,20 @@ const hoveredIndex = ref(null)
 
     <div data-fade class="flex flex-wrap md:flex-row gap-4 w-full mx-auto m-5">
       <!-- 番剧 -->
-      <div class="flex-1 md:flex-[2_2_0%] p-5 rounded-2xl min-w-full md:min-w-[200px] relative transition-colors duration-300 overflow-hidden">
+      <div class="flex-1 md:flex-[2_2_0%] p-5 rounded-2xl min-w-full md:min-w-300px min-h-300px relative transition-colors duration-300 overflow-hidden">
         <div class="absolute left-5 top-5 text-xs text-gray-300 pointer-events-none z-20">番剧</div>
         <h2 class="absolute left-5 top-10 text-3xl font-bold text-white pointer-events-none z-20">爱好番剧</h2>
-        <div class="absolute inset-0 -m-5">
+
+        <div class="absolute inset-0 -m-5 z-10">
           <div class="absolute inset-0 flex w-[120%] left-1/2 -translate-x-1/2">
-            <div
+            <a
               v-for="(anime, index) in aboutConfig.author.animes"
               :key="index"
-              class="relative flex-none h-full overflow-hidden cursor-pointer transition-all duration-800 ease-out skew-x-[-10deg]"
+              :href="anime.href"
+              :title="anime.name"
+              target="_blank"
+              rel="external nofollow noreferrer"
+              class="relative flex-none h-full overflow-hidden transition-all duration-800 ease-out skew-x-[-10deg] cursor-pointer"
               :style="{
                 width:
                   aboutConfig.author.animes.length <= 1
@@ -568,11 +584,13 @@ const hoveredIndex = ref(null)
               @mouseleave="hoveredIndex = null"
             >
               <div
-                class="absolute inset-0 transition-all duration-800 ease-out"
+                class="absolute inset-0 transition-transform duration-800 ease-out"
                 :class="hoveredIndex === index ? 'scale-125' : 'scale-115'"
-                :style="{ background: `url(${anime.img}) center / cover no-repeat` }"
+                :style="{ 
+                  background: `linear-gradient(to top, rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${anime.img}) center / cover no-repeat` 
+                }"
               ></div>
-            </div>
+            </a>
           </div>
         </div>
       </div>

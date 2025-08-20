@@ -62,12 +62,11 @@ export const aboutConfig = {
             ],
         },
         animes: [
-            { name: "番剧A", href: "https://example.com/a", img: "https://cdn.zhengweixin.top/blog/about/632d634f8376d.jpg" },
-            { name: "番剧B", href: "https://example.com/a", img: "https://cdn.zhengweixin.top/blog/about/632d634f8376d.jpg" },
-            { name: "番剧C", href: "https://example.com/a", img: "https://cdn.zhengweixin.top/blog/about/632f0dd8f33c6.webp" },
-            { name: "番剧D", href: "https://example.com/a", img: "https://cdn.zhengweixin.top/blog/about/632f0dd8f33c6.webp" },
-            { name: "番剧D", href: "https://example.com/a", img: "https://cdn.zhengweixin.top/blog/about/632f0dd8f33c6.webp" },
-        ]
+            { name: "鬼灭之刃", href: "https://www.bilibili.com/bangumi/media/md21226899", img: "https://cdn.zhengweixin.top/blog/about/animes/07a4ec8e2a95558a99859e1e374fe4b634e47aaf.jpg" },
+            { name: "Re：从零开始的异世界生活", href: "https://www.bilibili.com/bangumi/media/md28224394", img: "https://cdn.zhengweixin.top/blog/about/animes/3c125e1aad08643e3eff2fb7d45e740c1a052725.jpg" },
+            { name: "约会大作战", href: "https://www.bilibili.com/bangumi/media/md4188", img: "https://cdn.zhengweixin.top/blog/about/animes/ad4dc7bf7bef59255536e54fe818985b0e270d14.jpg" },
+            { name: "咒术回战", href: "https://www.bilibili.com/bangumi/media/md28229899", img: "https://cdn.zhengweixin.top/blog/about/animes/91e9534cc55aa1a6dc959e7d6d33bde970208232.jpg" },
+        ],
     },
 
     helloCard: {
