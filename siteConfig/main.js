@@ -30,8 +30,8 @@ export const siteConfig = {
     ],
 
     postsData: {
-        postsList: "http://127.0.0.1:8000/api/list",
-        postContent: "http://127.0.0.1:8000/api/article?slug=",
+        postsList: "https://blog-article-api.onrender.com/api/list",
+        postContent: "https://blog-article-api.onrender.com/api/article?slug=",
         mdList: 'https://zhengweixin.top/data/md-list.json',
     },
 
