@@ -18,7 +18,7 @@ export const siteConfig = {
     },
 
     socialLinks: [
-        { icon: 'icon-shapes', text: 'Apps', href: '/', external: false, },
+        { icon: 'icon-app', text: 'Apps', href: '/apps', external: false, },
         { icon: 'icon-envelope', text: 'Mail', href: 'mailto:zhengweixin0101@outlook.com', external: false, },
         { icon: 'icon-github', text: 'Github', href: 'https://github.com/zhengweixin0101', external: true, },
     ],
@@ -26,7 +26,8 @@ export const siteConfig = {
     navItems: [
         { label: 'Home', href: '/', icon: 'icon-portalIndex' },
         { label: 'Posts', href: '/posts', icon: 'icon-Pen' },
-        { label: 'About', href: '/about', icon: 'icon-about1' },
+        { label: 'Apps', href: '/apps', icon: 'icon-app' },
+        { label: 'About', href: '/about', icon: 'icon-guanyu' },
     ],
 
     postsData: {
@@ -36,7 +37,7 @@ export const siteConfig = {
     },
 
     thirdParty: {
-        iconfont: '//at.alicdn.com/t/c/font_4401174_hr55rf9i4b.css',
+        iconfont: '//at.alicdn.com/t/c/font_4401174_sccns5v6rcf.css',
         twikooEnvId: "https://twikoo.api.zhengweixin.top/.netlify/functions/twikoo",
         umami: {
             js: 'https://statistics.zhengweixin.top/script.js',

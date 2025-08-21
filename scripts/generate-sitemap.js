@@ -11,6 +11,7 @@ const pageFilesMap = {
   '': '/pages/index.vue',
   '/posts': '/pages/posts/index.vue',
   '/about': '/pages/about.vue',
+  '/apps': '/pages/apps.vue',
 }
 
 // 获取文件最后修改时间
