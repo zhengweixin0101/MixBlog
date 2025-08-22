@@ -56,7 +56,6 @@ function generateSitemap(routes) {
     <loc>${baseUrl}${url}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
   </url>`).join('')
 
   return `<?xml version="1.0" encoding="UTF-8"?>
