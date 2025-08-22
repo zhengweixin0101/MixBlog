@@ -50,7 +50,6 @@ const apps = computed(() => appsConfig.appsData || [])
           <a
             :href="app.link"
             target="_blank"
-            rel="noopener noreferrer"
             class="block h-full rounded-xl no-underline focus:outline-none cursor-pointer"
           >
             <div class="h-full rounded-xl p-4 no-underline">
