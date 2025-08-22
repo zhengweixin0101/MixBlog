@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useHead } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
 import Comment from '@/components/Comment.vue'
+import dayjs from 'dayjs'
 
 // head 信息
 useHead({
@@ -28,7 +29,7 @@ const { data: memosRaw } = await useAsyncData('memos-list', async () => {
 const memos = computed(() => memosRaw.value || [])
 
 // 格式化时间
-const formatDate = (date) => new Date(date).toLocaleString()
+const formatDate = (date) => dayjs(date).format('YYYY-MM-DD   HH:mm')
 </script>
 
 <template>
