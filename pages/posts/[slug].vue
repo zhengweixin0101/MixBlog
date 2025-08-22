@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useHead, useRoute } from '#imports'
 import { marked } from 'marked'
 import dayjs from 'dayjs'
@@ -25,13 +25,6 @@ function decodeHTMLEntities(str) {
   txt.innerHTML = str
   return txt.value
 }
-function encodeHTMLEntities(str) {
-  return str.replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
-}
 
 // 代码高亮处理
 function highlightCodeBlocks(html) {
@@ -43,7 +36,7 @@ function highlightCodeBlocks(html) {
         <div class="code-block-wrapper group relative">
           <button
             class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded-lg border border-black/20 dark:border-white/20 bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
-            data-code="${encodeHTMLEntities(decoded)}"
+            data-code="${decoded}"
           >复制</button>
           <pre><code class="hljs ${lang ? 'language-' + lang : ''}">${decoded}</code></pre>
         </div>
@@ -55,16 +48,16 @@ function highlightCodeBlocks(html) {
 // KaTeX 渲染
 function renderKatex(html) {
   const codeBlocks = []
-  html = html.replace(/<pre><code[\s\S]*?<\/code><\/pre>/g, (match) => {
+  html = html.replace(/<pre><code[\s\S]*?<\/code><\/pre>/g, match => {
     codeBlocks.push(match)
     return `___CODE_BLOCK_${codeBlocks.length - 1}___`
   })
   html = html.replace(/\$\$([^$]+?)\$\$/g, (_, expr) => {
-    try { return katex.renderToString(expr, { displayMode: true, throwOnError: false }) } 
+    try { return katex.renderToString(expr, { displayMode: true, throwOnError: false }) }
     catch { return `<span class="katex-error">$$${expr}$$</span>` }
   })
   html = html.replace(/\$(.+?)\$/g, (_, expr) => {
-    try { return katex.renderToString(expr, { displayMode: false, throwOnError: false }) } 
+    try { return katex.renderToString(expr, { displayMode: false, throwOnError: false }) }
     catch { return `<span class="katex-error">$${expr}$</span>` }
   })
   html = html.replace(/___CODE_BLOCK_(\d+)___/g, (_, index) => codeBlocks[index])
@@ -109,9 +102,8 @@ function loadHighlightStyle(darkMode) {
 function onCopyBtnClick(e) {
   const btn = e.target.closest('.copy-btn')
   if (!btn) return
-  const encodedCode = btn.getAttribute('data-code')
-  if (!encodedCode) return
-  const code = decodeHTMLEntities(encodedCode)
+  const code = btn.getAttribute('data-code')
+  if (!code) return
   navigator.clipboard.writeText(code).then(() => {
     const originalText = btn.innerText
     btn.innerText = '已复制'
@@ -126,7 +118,8 @@ function onCopyBtnClick(e) {
 // 获取文章
 const { data: rawPostData, error } = await useAsyncData(
   `post-${route.params.slug}`,
-  () => $fetch(`${siteConfig.postsData.postContent}/${route.params.slug}.json`)
+  () => $fetch(`${siteConfig.postsData.postContent}${route.params.slug}`),
+  { server: true }
 )
 
 const post = ref({
@@ -138,14 +131,14 @@ const post = ref({
 const notFound = computed(() => error.value || !rawPostData.value)
 
 // 解析文章
-watch([rawPostData, error], () => {
+watch([rawPostData, error], async () => {
   if (notFound.value) {
     post.value = {
       content: '',
       frontmatter: {
         title: '文章未找到',
         description: '该文章不存在或已被删除。',
-        tags: ['不存在', 'Not Found', '404']
+        tags: ['不存在','Not Found','404']
       },
       toc: []
     }
@@ -154,24 +147,6 @@ watch([rawPostData, error], () => {
     html = wrapImagesWithLinks(html)
     html = addFancyboxAttributesToAnchors(html)
     html = renderKatex(html)
-    html = highlightCodeBlocks(html)
-
-    // 为外部链接添加 target="_blank" 和 rel="nofollow"
-    const siteDomain = new URL(siteConfig.url).hostname
-    html = html.replace(/<a href="([^"]+)"/g, (match, href) => {
-      try {
-        const link = new URL(href, siteConfig.url)
-        if (link.hostname !== siteDomain) {
-          let attrs = ''
-          if (!/target=/.test(match)) attrs += ' target="_blank"'
-          if (!/rel=/.test(match)) attrs += ' rel="nofollow noopener noreferrer"'
-          return match.replace('<a', `<a${attrs}`)
-        }
-      } catch (e) {
-        return match
-      }
-      return match
-    })
 
     const tocItems = []
     html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (m, tag, text) => {
@@ -185,8 +160,34 @@ watch([rawPostData, error], () => {
       frontmatter: rawPostData.value.frontmatter,
       toc: tocItems
     }
+
+    applyClientEnhancements()
   }
 }, { immediate: true })
+
+// 监听内容变化
+watch(() => post.value.content, () => applyClientEnhancements())
+
+// 高亮 + Fancybox
+function applyClientEnhancements() {
+  if (!process.client) return
+  nextTick(() => {
+    requestAnimationFrame(() => {
+      const codeBlocks = document.querySelectorAll('article pre code')
+      if (codeBlocks.length) {
+        codeBlocks.forEach(block => hljs.highlightElement(block))
+      }
+      Fancybox.bind('[data-fancybox="gallery"]')
+    })
+  })
+}
+
+watch(
+  () => post.value.content,
+  () => {
+    applyClientEnhancements()
+  }
+)
 
 // head
 useHead(() => {
@@ -208,11 +209,12 @@ useHead(() => {
 })
 
 // 页面挂载
+let observer
 onMounted(() => {
   isDark.value = document.documentElement.classList.contains('dark')
   loadHighlightStyle(isDark.value)
 
-  const observer = new MutationObserver(() => {
+  observer = new MutationObserver(() => {
     const darkNow = document.documentElement.classList.contains('dark')
     if (darkNow !== isDark.value) {
       isDark.value = darkNow
@@ -221,18 +223,12 @@ onMounted(() => {
   })
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 
-  Fancybox.bind('[data-fancybox="gallery"]')
   document.addEventListener('click', onCopyBtnClick)
+})
 
-  // 客户端高亮代码块
-  document.querySelectorAll('pre code').forEach(block => {
-    hljs.highlightElement(block)
-  })
-
-  onBeforeUnmount(() => {
-    observer.disconnect()
-    document.removeEventListener('click', onCopyBtnClick)
-  })
+onBeforeUnmount(() => {
+  observer?.disconnect()
+  document.removeEventListener('click', onCopyBtnClick)
 })
 
 // 格式化日期

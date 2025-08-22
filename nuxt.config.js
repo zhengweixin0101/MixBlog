@@ -2,18 +2,13 @@ import { siteConfig } from './siteConfig/main.js'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  hooks: {
-    'nitro:build:before': async (nitro) => {
-      const res = await fetch(siteConfig.postsData.mdList)
-      const posts = await res.json()
-      nitro.options.prerender.routes = posts.map(post => `/posts/${post.slug}`)
-      console.log('Prerender routes:', nitro.options.prerender.routes)
-    },
+  ssr: true,
+  nitro: {
+    prerender: {
+      routes: ['/', '/about', '/apps']
+    }
   },
-  modules: [
-    '@nuxtjs/color-mode',
-    '@unocss/nuxt',
-  ],
+  modules: ['@nuxtjs/color-mode', '@unocss/nuxt'],
   colorMode: {
     preference: 'dark',
     fallback: 'dark',
