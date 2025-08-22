@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   ssr: true,
   target: 'server',
+  modules: ['@nuxtjs/color-mode', '@unocss/nuxt', '@nuxtjs/sitemap', '@nuxtjs/sitemap'],
   colorMode: {
     preference: 'dark',
     fallback: 'dark',
