@@ -10,14 +10,12 @@ const __dirname = path.dirname(__filename);
 const postsDir = path.resolve(__dirname, '../posts');
 const outDir = path.resolve(__dirname, '../public/data/posts');
 const listFile = path.resolve(__dirname, '../public/data/posts-list.json');
-const mdFileListFile = path.resolve(__dirname, '../public/data/md-list.json');
 
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
 const files = fs.readdirSync(postsDir).filter(f => f.endsWith('.md'));
 
 const postList = [];
-const mdFileList = [];
 
 files.forEach(filename => {
     const slugFromFile = filename.replace(/\.md$/, '');
@@ -79,11 +77,6 @@ files.forEach(filename => {
     if (needWrite) {
         fs.writeFileSync(outFile, newContent, 'utf-8');
     }
-
-    mdFileList.push({
-        filename,
-        slug: slugUsed
-    });
 });
 
 // 格式化日期
@@ -104,19 +97,6 @@ if (fs.existsSync(listFile)) {
 }
 if (needWriteList) {
     fs.writeFileSync(listFile, postListContent, 'utf-8');
-}
-
-// 输出md-file.json
-const mdFileListContent = JSON.stringify(mdFileList, null, 2);
-let needWriteMdFile = true;
-if (fs.existsSync(mdFileListFile)) {
-    const oldMdFile = fs.readFileSync(mdFileListFile, 'utf-8');
-    if (oldMdFile === mdFileListContent) {
-        needWriteMdFile = false;
-    }
-}
-if (needWriteMdFile) {
-    fs.writeFileSync(mdFileListFile, mdFileListContent, 'utf-8');
 }
 
 console.log('✅ 文章数据生成完毕 ');

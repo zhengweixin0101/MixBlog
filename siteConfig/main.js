@@ -33,7 +33,6 @@ export const siteConfig = {
     postsData: {
         postsList: "https://article.api.zhengweixin.top/api/list",
         postContent: "https://article.api.zhengweixin.top/api/article?slug=",
-        mdList: 'https://zhengweixin.top/data/md-list.json',
     },
 
     thirdParty: {

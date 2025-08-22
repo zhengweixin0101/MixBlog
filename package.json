@@ -3,16 +3,15 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
-    "dev": "npm run generate-all && nuxt dev",
-    "generate": "npm run generate-all && nuxt generate && node scripts/flatten-html.js",
+    "build": "npm run generate-sitemap && npm run generate-rss && nuxt build",
+    "dev": "nuxt dev",
+    "generate": "npm run generate-sitemap && npm run generate-rss && npm run generate-post-json && nuxt generate && node scripts/flatten-html.js",
     "start": "nuxt start -p $PORT",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "generate-post-json": "node scripts/generate-post-json.js",
     "generate-sitemap": "node scripts/generate-sitemap.js",
-    "generate-rss": "node scripts/generate-rss.js",
-    "generate-all": "npm run generate-post-json && npm run generate-sitemap && npm run generate-rss"
+    "generate-rss": "node scripts/generate-rss.js"
   },
   "dependencies": {
     "@fancyapps/ui": "^6.0.22",
