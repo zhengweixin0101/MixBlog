@@ -1,0 +1,10 @@
+{
+    "redirects": [
+        {
+            "source": "/:path+/",
+            "has": [],
+            "destination": "/:path",
+            "permanent": true
+        }
+    ]
+}
