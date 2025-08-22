@@ -27,7 +27,7 @@ export const siteConfig = {
         { label: 'Home', href: '/', icon: 'icon-portalIndex' },
         { label: 'Posts', href: '/posts', icon: 'icon-Pen' },
         { label: 'Apps', href: '/apps', icon: 'icon-app' },
-        { label: 'Talks', href: '/talks', icon: 'icon-guanyu' },
+        { label: 'Talks', href: '/talks', icon: 'icon-wodeshuoshuo' },
         { label: 'About', href: '/about', icon: 'icon-guanyu' },
     ],
 
@@ -37,7 +37,7 @@ export const siteConfig = {
     },
 
     thirdParty: {
-        iconfont: '//at.alicdn.com/t/c/font_4401174_2xnguqwu1n1.css',
+        iconfont: '//at.alicdn.com/t/c/font_4401174_zvd9lh5o2xr.css',
         twikooEnvId: "https://twikoo.api.zhengweixin.top/.netlify/functions/twikoo",
         memosApi: "https://memos.zhengweixin.top/api/v1/memos",
         umami: {
