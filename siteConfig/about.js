@@ -79,7 +79,7 @@ export const aboutConfig = {
         url: 'https://statistics.zhengweixin.top',
         shareUrl: 'https://statistics.zhengweixin.top/share/6FBrEjH0q8vcrGxh/zhengweixin.top',
         siteId: '7441ce23-3587-41b6-8919-e42932fc65d7',
-        token: 'nmDTV73ucyUS8829KW3miG8O/obEDyPu1Jey5st9HWUhXRQnA9mP5a9xMjVukSve/we34uIGNszqlwlo6ZrcRIW+OUon3O3/NkepjhxSFmIAAxoKjHqgoopaip+NharfN8egGKfog5Ypv2KAGnxpHtE9tl7NgNh93EbuGApaYcZeN+kmNzTpOfookmYlWkv2+9flKognxoXE/84UZ6Xz8zGUXG5+qPXwSwnk5gQoSuFPcJ1bCuP5V2hEb5i12tgOEORqrtEXzvwhloag+QiDeKQ+8RqluxSThooId4gy9onIstofGISPfRJ8qS9G0v9aC1qqJh/nXyBxfbi8HVeL51iio8M1HXENhQ==',
+        token: 'Fp5LgLwc4z5dLEp89WzldmpJplRXrmgWb9cp93NowW8m1ENpPgDAOpyoY0ONEFFABOURznRM4KvlId0V0JpADgLhqqu92SdABb7omUWxP93rj3MPnwVmZbVFiyux4YbZYHXuZf7jbeZnWYRaXpDny/aBi/Bwb3a0GAXG0YwMtGYXqYbmQ12pKa6u8w9GeIBUjhe5+9fesrxG3YfBQxoxZhpAGucfCekSGMu5suVbNap7JqiS8lneNFpuelTHClillVDeSq7Cwf9O6GUoPvzfa3La8ox307y30qCMhvUEUXajaaYoxnu2dQq8sabPJ23JL41Fb3veJGplfTur/SOmS14avI+Xycb1GF2wVNp1QFPytUUz+5/EKORt1naFAjBLGExW',
         createTime: '2025-08-15T16:00:00.000Z',
         cacheDuration: 10 * 60 * 1000,
     },
