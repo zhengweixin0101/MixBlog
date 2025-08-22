@@ -130,6 +130,13 @@ const post = ref({
 
 const notFound = computed(() => error.value || !rawPostData.value)
 
+// 链接添加 target="_blank" 和 rel="noopener noreferrer nofollow"
+function enhanceLinks(html) {
+  return html
+    .replace(/<a(?![^>]*\btarget=)([^>]*)>/g, '<a target="_blank" rel="noopener noreferrer nofollow"$1>')
+    .replace(/<a([^>]*)target=("[^"]*"|'[^']*'|[^\s>]*)/g, '<a$1target="_blank" rel="noopener noreferrer nofollow"')
+}
+
 // 解析文章
 watch([rawPostData, error], async () => {
   if (notFound.value) {
@@ -147,6 +154,7 @@ watch([rawPostData, error], async () => {
     html = wrapImagesWithLinks(html)
     html = addFancyboxAttributesToAnchors(html)
     html = renderKatex(html)
+    html = enhanceLinks(html)
 
     const tocItems = []
     html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (m, tag, text) => {

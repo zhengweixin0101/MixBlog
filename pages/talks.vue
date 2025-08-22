@@ -69,7 +69,7 @@ const formatDate = (date) => new Date(date).toLocaleString()
                     v-else-if="child.type === 'LINK'"
                     :href="child.linkNode.url"
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener noreferrer nofollow"
                     class="text-#2f3f5b dark:text-white underline hover:opacity-60 px-0.5"
                   >
                     {{ child.linkNode.text }}
