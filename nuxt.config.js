@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       routes: async () => {
-        const baseRoutes = ['/', '/apps', '/talks', '/about',]
+        const baseRoutes = ['/', '/apps', '/talks', '/about'];
         if (process.argv.includes('generate')) {
           const res = await fetch(siteConfig.postsData.postsList)
           const posts = await res.json()
