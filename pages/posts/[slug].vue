@@ -18,6 +18,21 @@ import { siteConfig } from '@/siteConfig/main.js'
 
 const route = useRoute()
 
+// 获取文章
+const { data: rawPostData, error } = await useAsyncData(
+  `post-${route.params.slug}`,
+  () => $fetch(`${siteConfig.postsData.postContent}${route.params.slug}.json`),
+  { server: true }
+)
+
+const post = ref({
+  content: '',
+  frontmatter: {},
+  toc: []
+})
+
+const notFound = computed(() => error.value || !rawPostData.value)
+
 // 代码高亮处理
 function highlightCodeBlocks(html) {
   return html.replace(
@@ -105,21 +120,6 @@ function onCopyBtnClick(e) {
     setTimeout(() => { btn.innerText = originalText }, 1000)
   })
 }
-
-// 获取文章
-const { data: rawPostData, error } = await useAsyncData(
-  `post-${route.params.slug}`,
-  () => $fetch(`${siteConfig.postsData.postContent}${route.params.slug}`),
-  { server: true }
-)
-
-const post = ref({
-  content: '',
-  frontmatter: {},
-  toc: []
-})
-
-const notFound = computed(() => error.value || !rawPostData.value)
 
 // 链接添加 target="_blank" 和 rel="noopener noreferrer nofollow"
 function enhanceLinks(html) {
