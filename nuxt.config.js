@@ -13,6 +13,11 @@ export default defineNuxtConfig({
       }
     },
   },
+  nitro: {
+    prerender: {
+      routes: ['/', '/about', '/apps', '/talks'],
+    },
+  },
   modules: ['@nuxtjs/color-mode', '@unocss/nuxt'],
   colorMode: {
     preference: 'dark',
