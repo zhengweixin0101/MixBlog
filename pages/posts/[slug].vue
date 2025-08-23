@@ -154,6 +154,7 @@ watch([rawPostData, error], async () => {
     html = wrapImagesWithLinks(html)
     html = addFancyboxAttributesToAnchors(html)
     html = renderKatex(html)
+    html = highlightCodeBlocks(html)
     html = enhanceLinks(html)
 
     const tocItems = []
