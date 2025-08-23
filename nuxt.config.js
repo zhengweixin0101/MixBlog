@@ -5,15 +5,12 @@ export default defineNuxtConfig({
   ssr: true,
   hooks: {
     'nitro:build:before': async (nitro) => {
-      const res = await fetch(siteConfig.postsData.postsList)
-      const posts = await res.json()
-      nitro.options.prerender.routes = posts.map(post => `/posts/${post.slug}`)
-      console.log('Prerender routes:', nitro.options.prerender.routes)
-    },
-  },
-  nitro: {
-    prerender: {
-      routes: ['/', '/about', '/apps']
+      if (nitro.options.prerender.generate) {
+        const res = await fetch(siteConfig.postsData.postsList)
+        const posts = await res.json()
+        nitro.options.prerender.routes = posts.map(post => `/posts/${post.slug}`)
+        console.log('Prerender routes:', nitro.options.prerender.routes)
+      }
     },
   },
   modules: ['@nuxtjs/color-mode', '@unocss/nuxt'],
