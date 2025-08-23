@@ -21,7 +21,7 @@ const route = useRoute()
 // 获取文章
 const { data: rawPostData, error } = await useAsyncData(
   `post-${route.params.slug}`,
-  () => $fetch(`${siteConfig.postsData.postContent}${route.params.slug}.json`),
+  () => $fetch(`${siteConfig.postsData.postContent}${route.params.slug}`),
   { server: true }
 )
 
