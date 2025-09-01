@@ -26,6 +26,11 @@ export const appsConfig = {
             link: 'https://music.zhengweixin.top',
         },
         {
+            name: '123Pan',
+            description: '123网盘浏览器无限制下载',
+            link: 'https://123pan.zhengweixin.top',
+        },
+        {
             name: 'Google Dino',
             description: '谷歌浏览器离线小恐龙在线版',
             link: 'https://dino.zhengweixin.top',
