@@ -63,7 +63,12 @@
                         disabled
                       />
                       <template v-for="c in child.taskListItemNode.children">
-                        <span v-if="c.type === 'TEXT'">{{ c.textNode.content }}</span>
+                        <span
+                          v-if="c.type === 'TEXT'"
+                          :class="child.taskListItemNode.complete ? 'line-through opacity-70' : ''"
+                        >
+                          {{ c.textNode.content }}
+                        </span>
                       </template>
                     </label>
                   </li>
