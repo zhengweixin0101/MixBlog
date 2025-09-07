@@ -185,7 +185,7 @@ async function initMasonry() {
   }
 }
 
-// 缓存逻辑
+// 请求数据
 const memosRaw = ref([])
 const MEMOS_API = siteConfig.thirdParty.memosApi
 const CACHE_KEY = 'memos-cache'
