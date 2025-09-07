@@ -29,6 +29,9 @@ importers:
       katex:
         specifier: ^0.16.22
         version: 0.16.22
+      macy:
+        specifier: ^2.5.1
+        version: 2.5.1
       marked:
         specifier: ^16.1.2
         version: 16.2.0
@@ -2829,6 +2832,10 @@ packages:
   luxon@3.7.1:
     resolution: {integrity: sha512-RkRWjA926cTvz5rAb1BqyWkKbbjzCGchDUIKMCUvNi17j6f6j8uHGDV82Aqcqtzd+icoYpELmG3ksgGiFNNcNg==}
     engines: {node: '>=12'}
+
+  macy@2.5.1:
+    resolution: {integrity: sha512-+y4WYyh3rl4G8UczZP30pXxhLQRZ941QcaDmWoGefzUBXdwNW8TOhjjN1g5i/VG3SmiSsHgpjVXhlnZ84P2QMw==}
+    engines: {node: '>= 0.9'}
 
   magic-regexp@0.10.0:
     resolution: {integrity: sha512-Uly1Bu4lO1hwHUW0CQeSWuRtzCMNO00CmXtS8N6fyvB3B979GOEEeAkiTUDsmbYLAbvpUS/Kt5c4ibosAzVyVg==}
@@ -7228,6 +7235,8 @@ snapshots:
       yallist: 3.1.1
 
   luxon@3.7.1: {}
+
+  macy@2.5.1: {}
 
   magic-regexp@0.10.0:
     dependencies:
