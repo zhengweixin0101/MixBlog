@@ -63,7 +63,12 @@
                         disabled
                       />
                       <template v-for="c in child.taskListItemNode.children">
-                        <span v-if="c.type === 'TEXT'">{{ c.textNode.content }}</span>
+                        <span
+                          v-if="c.type === 'TEXT'"
+                          :class="child.taskListItemNode.complete ? 'line-through opacity-70' : ''"
+                        >
+                          {{ c.textNode.content }}
+                        </span>
                       </template>
                     </label>
                   </li>
@@ -127,8 +132,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
-import { computed } from 'vue'
+import { ref, onMounted, nextTick, computed } from 'vue'
 import { useHead } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
 import Comment from '@/components/Comment.vue'
@@ -152,14 +156,6 @@ useHead({
     { name: 'twitter:description', content: `share my life.` },
   ],
 })
-
-// 获取 Memos 数据
-const MEMOS_API = siteConfig.thirdParty.memosApi
-const { data: memosRaw } = await useAsyncData('memos-list', async () => {
-  const res = await $fetch(MEMOS_API)
-  return res.memos || []
-})
-const memos = computed(() => memosRaw.value || [])
 
 // 格式化时间
 dayjs.extend(utc)
@@ -189,7 +185,47 @@ async function initMasonry() {
   }
 }
 
-onMounted(() => {
+// 缓存逻辑
+const memosRaw = ref([])
+const MEMOS_API = siteConfig.thirdParty.memosApi
+const CACHE_KEY = 'memos-cache'
+const CACHE_DURATION = 30 * 60 * 1000 // 缓存时长
+
+async function fetchMemos() {
+  if (typeof window !== 'undefined') {
+    const cache = localStorage.getItem(CACHE_KEY)
+    if (cache) {
+      const { timestamp, data } = JSON.parse(cache)
+      if (Date.now() - timestamp < CACHE_DURATION) {
+        memosRaw.value = data
+        return
+      }
+    }
+  }
+
+  // 缓存无效请求 API
+  const res = await $fetch(MEMOS_API)
+  const memos = res.memos || []
+  memosRaw.value = memos
+
+  // 存入缓存
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify({
+        timestamp: Date.now(),
+        data: memos,
+      })
+    )
+  }
+}
+
+const memos = computed(() => memosRaw.value || [])
+
+onMounted(async () => {
+  // 获取数据
+  await fetchMemos()
+
   // 初始化 Masonry
   nextTick().then(() => initMasonry())
 
