@@ -1,5 +1,5 @@
 <template>
-  <main v-fade-in>
+  <main v-if="dataReady" v-fade-in>
     <section class="py-12 w-full max-w-screen-xl mx-auto">
       <!-- 标题 -->
       <h1 data-fade class="text-3xl mt-40">
@@ -17,7 +17,7 @@
       </p>
 
       <!-- Masonry 容器 -->
-      <ul v-if="dataReady" data-fade ref="masonryContainer" class="mt-8 list-none">
+      <ul data-fade ref="masonryContainer" class="mt-8 list-none">
         <li
           v-for="memo in memos"
           :key="memo.name"
@@ -124,7 +124,7 @@
         </li>
       </ul>
 
-      <div v-if="dataReady" data-fade id="comment">
+      <div data-fade id="comment">
         <Comment />
       </div>
     </section>
