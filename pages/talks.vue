@@ -185,40 +185,51 @@ async function initMasonry() {
   }
 }
 
-// 服务端缓存
-let serverCache = {
-  data: null,
-  timestamp: 0,
-}
-const CACHE_DURATION = 60 * 1000
-
-// 获取 Memos
+// 缓存逻辑
 const memosRaw = ref([])
-const memos = computed(() => memosRaw.value || [])
+const MEMOS_API = siteConfig.thirdParty.memosApi
+const CACHE_KEY = 'memos-cache'
+const CACHE_DURATION = 30 * 60 * 1000 // 缓存时长
 
 async function fetchMemos() {
-  const now = Date.now()
-
-  // 使用缓存
-  if (serverCache.data && now - serverCache.timestamp < CACHE_DURATION) {
-    return serverCache.data
+  if (typeof window !== 'undefined') {
+    const cache = localStorage.getItem(CACHE_KEY)
+    if (cache) {
+      const { timestamp, data } = JSON.parse(cache)
+      if (Date.now() - timestamp < CACHE_DURATION) {
+        memosRaw.value = data
+        return
+      }
+    }
   }
 
-  const res = await $fetch(siteConfig.thirdParty.memosApi)
-  const memosData = res.memos || []
+  // 缓存无效请求 API
+  const res = await $fetch(MEMOS_API)
+  const memos = res.memos || []
+  memosRaw.value = memos
 
-  // 更新缓存
-  serverCache = { data: memosData, timestamp: now }
-  return memosData
+  // 存入缓存
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify({
+        timestamp: Date.now(),
+        data: memos,
+      })
+    )
+  }
 }
 
-// 初始化
-if (process.server) {
-  memosRaw.value = await fetchMemos()
-}
+const memos = computed(() => memosRaw.value || [])
 
-onMounted(() => {
-  nextTick(() => initMasonry())
+onMounted(async () => {
+  // 获取数据
+  await fetchMemos()
+
+  // 初始化 Masonry
+  nextTick().then(() => initMasonry())
+
+  // 初始化 Fancybox
   Fancybox.bind('[data-fancybox]')
 })
 </script>
