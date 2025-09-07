@@ -86,7 +86,7 @@ const formatDate = (date) => dayjs(date).format('YYYY-MM-DD   HH:mm')
 
               <!-- 任务列表 -->
               <ul v-else-if="node.type === 'LIST'" class="list-none space-y-1">
-                <template v-for="(child, childIdx) in node.listNode.children" :key="child.type + Math.random()">
+                <template v-for="(child, childIdx) in node.listNode.children" :key="child.type + childIdx">
                   <li v-if="child.type === 'TASK_LIST_ITEM'" class="flex items-center gap-1">
                     <label class="leading-snug flex items-center">
                       <input
