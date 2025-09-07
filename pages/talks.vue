@@ -74,13 +74,18 @@
             <!-- 图片 -->
             <template v-if="memo.resources?.length">
               <div class="flex flex-wrap gap-4 mt-3">
-                <img
+                <a
                   v-for="res in memo.resources"
                   :key="res.name"
-                  :src="res.externalLink"
-                  :alt="res.filename"
-                  class="max-w-15 rounded-lg shadow-md"
-                />
+                  :href="res.externalLink"
+                  data-fancybox="gallery-all"
+                >
+                  <img
+                    :src="res.externalLink"
+                    :alt="res.filename"
+                    class="w-16 h-16 object-cover rounded-lg cursor-pointer shadow-[0_0_8px_0_rgba(0,0,0,0.2)]"
+                  />
+                </a>
               </div>
             </template>
           </div>
@@ -127,9 +132,13 @@ import { computed } from 'vue'
 import { useHead } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
 import Comment from '@/components/Comment.vue'
+
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
+
+import { Fancybox } from '@fancyapps/ui'
+import '@fancyapps/ui/dist/fancybox/fancybox.css'
 
 useHead({
   titleTemplate: `说说 | ${siteConfig.title}`,
@@ -157,7 +166,7 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 const formatDate = (date) => dayjs(date).tz('Asia/Shanghai').format('YYYY-MM-DD   HH:mm')
 
-// Masonry 容器 ref
+// Masonry 容器
 const masonryContainer = ref(null)
 let macyInstance = null
 
@@ -180,9 +189,11 @@ async function initMasonry() {
   }
 }
 
-// 数据加载完成后初始化
-onMounted(async () => {
-  await nextTick()
-  initMasonry()
+onMounted(() => {
+  // 初始化 Masonry
+  nextTick().then(() => initMasonry())
+
+  // 初始化 Fancybox
+  Fancybox.bind('[data-fancybox]')
 })
 </script>
