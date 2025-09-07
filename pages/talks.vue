@@ -4,6 +4,8 @@ import { useHead } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
 import Comment from '@/components/Comment.vue'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 
 // head 信息
 useHead({
@@ -29,7 +31,12 @@ const { data: memosRaw } = await useAsyncData('memos-list', async () => {
 const memos = computed(() => memosRaw.value || [])
 
 // 格式化时间
-const formatDate = (date) => dayjs(date).format('YYYY-MM-DD   HH:mm')
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
+const formatDate = (date) => {
+  return dayjs(date).tz('Asia/Shanghai').format('YYYY-MM-DD   HH:mm')
+}
 </script>
 
 <template>
