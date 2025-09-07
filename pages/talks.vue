@@ -1,5 +1,5 @@
 <template>
-  <main v-fade-in>
+  <main v-if="dataReady" v-fade-in>
     <section class="py-12 w-full max-w-screen-xl mx-auto">
       <!-- 标题 -->
       <h1 data-fade class="text-3xl mt-40">
@@ -185,8 +185,9 @@ async function initMasonry() {
   }
 }
 
-// 缓存逻辑
+// 请求数据
 const memosRaw = ref([])
+const dataReady = ref(false)
 const MEMOS_API = siteConfig.thirdParty.memosApi
 const CACHE_KEY = 'memos-cache'
 const CACHE_DURATION = 30 * 60 * 1000 // 缓存时长
@@ -198,6 +199,7 @@ async function fetchMemos() {
       const { timestamp, data } = JSON.parse(cache)
       if (Date.now() - timestamp < CACHE_DURATION) {
         memosRaw.value = data
+        dataReady.value = true
         return
       }
     }
@@ -218,6 +220,7 @@ async function fetchMemos() {
       })
     )
   }
+  dataReady.value = true
 }
 
 const memos = computed(() => memosRaw.value || [])
