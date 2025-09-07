@@ -1,44 +1,3 @@
-<script setup>
-import { computed } from 'vue'
-import { useHead } from '#imports'
-import { siteConfig } from '@/siteConfig/main.js'
-import Comment from '@/components/Comment.vue'
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-import timezone from 'dayjs/plugin/timezone'
-
-// head 信息
-useHead({
-  titleTemplate: `说说 | ${siteConfig.title}`,
-  meta: [
-    { name: 'description', content: `share my life.` },
-    { name: 'keywords', content: `${siteConfig.keywords},说说,memos` },
-    { property: 'og:title', content: `说说 | ${siteConfig.title}` },
-    { property: 'og:description', content: `share my life.` },
-    { property: 'og:url', content: `${siteConfig.url}/talks` },
-    { name: 'twitter:title', content: `说说 | ${siteConfig.title}` },
-    { name: 'twitter:description', content: `share my life.` },
-  ],
-})
-
-// 获取 Memos 数据
-const MEMOS_API = siteConfig.thirdParty.memosApi
-const { data: memosRaw } = await useAsyncData('memos-list', async () => {
-  const res = await $fetch(MEMOS_API)
-  return res.memos || []
-})
-
-const memos = computed(() => memosRaw.value || [])
-
-// 格式化时间
-dayjs.extend(utc)
-dayjs.extend(timezone)
-
-const formatDate = (date) => {
-  return dayjs(date).tz('Asia/Shanghai').format('YYYY-MM-DD   HH:mm')
-}
-</script>
-
 <template>
   <main v-fade-in>
     <section class="py-12 w-full max-w-screen-xl mx-auto">
@@ -57,8 +16,8 @@ const formatDate = (date) => {
         Share my life anytime, anywhere.
       </p>
 
-      <!-- 卡片列表 --> 
-      <ul data-fade class="mt-8 columns-1 sm:columns-2 2xl:columns-2 gap-5 list-none">
+      <!-- Masonry 容器 -->
+      <ul data-fade ref="masonryContainer" class="mt-8 list-none">
         <li
           v-for="memo in memos"
           :key="memo.name"
@@ -161,3 +120,69 @@ const formatDate = (date) => {
     </section>
   </main>
 </template>
+
+<script setup>
+import { ref, onMounted, nextTick } from 'vue'
+import { computed } from 'vue'
+import { useHead } from '#imports'
+import { siteConfig } from '@/siteConfig/main.js'
+import Comment from '@/components/Comment.vue'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+
+useHead({
+  titleTemplate: `说说 | ${siteConfig.title}`,
+  meta: [
+    { name: 'description', content: `share my life.` },
+    { name: 'keywords', content: `${siteConfig.keywords},说说,memos` },
+    { property: 'og:title', content: `说说 | ${siteConfig.title}` },
+    { property: 'og:description', content: `share my life.` },
+    { property: 'og:url', content: `${siteConfig.url}/talks` },
+    { name: 'twitter:title', content: `说说 | ${siteConfig.title}` },
+    { name: 'twitter:description', content: `share my life.` },
+  ],
+})
+
+// 获取 Memos 数据
+const MEMOS_API = siteConfig.thirdParty.memosApi
+const { data: memosRaw } = await useAsyncData('memos-list', async () => {
+  const res = await $fetch(MEMOS_API)
+  return res.memos || []
+})
+const memos = computed(() => memosRaw.value || [])
+
+// 格式化时间
+dayjs.extend(utc)
+dayjs.extend(timezone)
+const formatDate = (date) => dayjs(date).tz('Asia/Shanghai').format('YYYY-MM-DD   HH:mm')
+
+// Masonry 容器 ref
+const masonryContainer = ref(null)
+let macyInstance = null
+
+async function initMasonry() {
+  if (typeof window === 'undefined' || !masonryContainer.value) return
+  const Macy = (await import('macy')).default
+  if (macyInstance) {
+    macyInstance.reInit()
+  } else {
+    macyInstance = Macy({
+      container: masonryContainer.value,
+      trueOrder: false,
+      waitForImages: true,
+      margin: 14,
+      columns: 2,
+      breakAt: {
+        640: 1,
+      },
+    })
+  }
+}
+
+// 数据加载完成后初始化
+onMounted(async () => {
+  await nextTick()
+  initMasonry()
+})
+</script>
