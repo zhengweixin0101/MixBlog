@@ -17,7 +17,7 @@
       </p>
 
       <!-- Masonry 容器 -->
-      <ul data-fade ref="masonryContainer" class="mt-8 list-none">
+      <ul v-if="dataReady" data-fade ref="masonryContainer" class="mt-8 list-none">
         <li
           v-for="memo in memos"
           :key="memo.name"
@@ -124,7 +124,7 @@
         </li>
       </ul>
 
-      <div data-fade id="comment">
+      <div v-if="dataReady" data-fade id="comment">
         <Comment />
       </div>
     </section>
@@ -187,6 +187,7 @@ async function initMasonry() {
 
 // 请求数据
 const memosRaw = ref([])
+const dataReady = ref(false)
 const MEMOS_API = siteConfig.thirdParty.memosApi
 const CACHE_KEY = 'memos-cache'
 const CACHE_DURATION = 30 * 60 * 1000 // 缓存时长
@@ -198,6 +199,7 @@ async function fetchMemos() {
       const { timestamp, data } = JSON.parse(cache)
       if (Date.now() - timestamp < CACHE_DURATION) {
         memosRaw.value = data
+        dataReady.value = true
         return
       }
     }
@@ -218,6 +220,7 @@ async function fetchMemos() {
       })
     )
   }
+  dataReady.value = true
 }
 
 const memos = computed(() => memosRaw.value || [])
