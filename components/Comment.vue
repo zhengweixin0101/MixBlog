@@ -89,6 +89,14 @@ html.dark .tk-ruser {
   text-decoration: none;
 }
 
+.tk-content img {
+  margin-top: 5px;
+  border-radius: 4px;
+  display: block;
+  cursor: pointer;
+  max-width: 100px !important;
+}
+
 .twikoo .tk-footer {
   display: none;
 }
