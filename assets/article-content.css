@@ -298,14 +298,31 @@ html.dark .article-content code:not(pre code) {
 }
 
 .article-content pre {
+  background-color: #fff;
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
   margin-top: 1rem;
   margin-bottom: 1rem;
   border-radius: 8px;
-  overflow: hidden;
+}
 
-  white-space: pre;
+html.dark .article-content pre {
+  background-color: #1a1a1a;
+  color: #fff;
 }
 
 pre code.hljs {
-  overflow-x: hidden !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+pre code.hljs::-webkit-scrollbar {
+  display: none;
+}
+
+.article-content pre code.hljs {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  display: block;
 }
