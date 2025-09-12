@@ -21,7 +21,7 @@
         <li
           v-for="memo in memos"
           :key="memo.name"
-          class="break-inside-avoid mb-5 rounded-xl px-4 pt-4 pb-2 bg-white dark:bg-white/10 shadow"
+          class="break-inside-avoid mb-5 rounded-xl px-4 pt-4 pb-2 bg-white dark:bg-white/10 shadow transition-color duration-300"
         >
           <!-- 富文本内容渲染 -->
           <div class="space-y-3 text-#2f3f5b dark:text-white text-base">
@@ -124,6 +124,17 @@
         </li>
       </ul>
 
+      <!-- 加载更多按钮 -->
+      <div data-fade v-if="!finished" class="mt-4 flex justify-center">
+        <button
+          class="px-4 py-2 bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 hover:opacity-70 rounded-full transition-all duration-300 cursor-pointer shadow-none border-none"
+          :disabled="loading"
+          @click="fetchMemos(nextPageToken)"
+        >
+          {{ loading ? '加载中...' : '加载更多' }}
+        </button>
+      </div>
+
       <div data-fade id="comment">
         <Comment />
       </div>
@@ -186,19 +197,43 @@ async function initMasonry() {
 }
 
 // 请求数据
+const memos = ref([])
+const nextPageToken = ref(null)
+const loading = ref(false)
+const finished = ref(false)
+
 const MEMOS_API = siteConfig.thirdParty.memosApi
 
-const { data: memosRaw } = await useAsyncData('memos', async () => {
+// 首屏数据
+const { data: initialData } = await useAsyncData('memos', async () => {
   try {
-    const res = await $fetch(MEMOS_API)
-    return res.memos || []
+    return await $fetch(`${MEMOS_API}?pageSize=1`)
   } catch (e) {
     console.error('Fetch memos failed', e)
-    return []
+    return { memos: [], nextPageToken: null }
   }
 }, { server: true })
 
-const memos = computed(() => memosRaw.value || [])
+memos.value = initialData.value.memos || []
+nextPageToken.value = initialData.value.nextPageToken || null
+if (!nextPageToken.value) finished.value = true
+
+// 加载更多
+async function fetchMemos(pageToken = '') {
+  if (loading.value || finished.value) return
+  loading.value = true
+  try {
+    const res = await $fetch(`${MEMOS_API}?pageSize=1&pageToken=${pageToken}`)
+    memos.value.push(...(res.memos || []))
+    nextPageToken.value = res.nextPageToken || null
+    if (!res.nextPageToken) finished.value = true
+    nextTick().then(() => initMasonry())
+  } catch (e) {
+    console.error('Fetch memos failed', e)
+  } finally {
+    loading.value = false
+  }
+}
 
 onMounted(() => {
   // 初始化 Masonry
