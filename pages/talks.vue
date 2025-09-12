@@ -24,7 +24,7 @@
           class="break-inside-avoid mb-5 rounded-xl px-4 pt-4 pb-2 bg-white dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] transition-color duration-300"
         >
           <!-- 富文本内容渲染 -->
-          <div class="space-y-3 text-#2f3f5b dark:text-white text-base">
+          <div class="text-#2f3f5b dark:text-white text-base">
             <template v-for="(node, idx) in memo.nodes" :key="idx">
               <!-- 段落 -->
               <p v-if="node.type === 'PARAGRAPH'" class="whitespace-pre-line leading-relaxed">
@@ -51,7 +51,7 @@
               ><code>{{ node.codeBlockNode.content }}</code></pre>
 
               <!-- 任务列表 -->
-              <ul v-else-if="node.type === 'LIST'" class="list-none space-y-1">
+              <ul v-else-if="node.type === 'LIST'" class="list-none space-y-0.5">
                 <template v-for="(child, childIdx) in node.listNode.children" :key="child.type + childIdx">
                   <li v-if="child.type === 'TASK_LIST_ITEM'" class="flex items-center gap-1">
                     <label class="leading-snug flex items-center">
@@ -59,7 +59,7 @@
                         type="checkbox"
                         :id="`checkbox-${memo.name}-${childIdx}`" 
                         :checked="child.taskListItemNode.complete"
-                        class="w-4 h-4 rounded-md border-2 border-gray-400 dark:border-gray-600 accent-green-500 mr-1 mt-0.5"
+                        class="custom-checkbox mr-1 mt-0.5"
                         disabled
                       />
                       <template v-for="c in child.taskListItemNode.children">
@@ -103,11 +103,11 @@
             <div class="flex gap-1 items-center">
               <!-- 日期 -->
               <span class="flex items-center px-1.5 py-0.5 text-xs rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">
-                <i class="iconfont icon-zhong mt-0.4"></i> {{ formatDate(memo.displayTime) }}
+                <i class="iconfont icon-zhong"></i> <span class="mb-0.2">{{ formatDate(memo.displayTime) }}</span>
               </span>
               <!-- 定位 -->
               <span v-if="memo.location?.placeholder" class="flex items-center px-1.5 py-0.5 text-xs rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">
-                <i class="iconfont icon-dingwei mt-0.4"></i> {{ memo.location.placeholder }}
+                <i class="iconfont icon-dingwei"></i> <span class="mb-0.2">{{ memo.location.placeholder }}</span>
               </span>
             </div>
             <div class="flex flex-wrap gap-1.5">
@@ -116,7 +116,7 @@
                 :key="idx"
                 class="flex items-center px-1.5 py-0.5 text-xs rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300"
               >
-                {{ tag }}
+                <span class="mb-0.3">{{ tag }}</span>
               </span>
 
             </div>
@@ -245,3 +245,36 @@ onMounted(() => {
   })
 })
 </script>
+
+<style>
+/* 隐藏浏览器默认勾 */
+.custom-checkbox {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #9ca3af;
+  border-radius: 4px;
+  background-color: transparent;
+  position: relative;
+  cursor: not-allowed;
+}
+
+/* 选中状态 */
+.custom-checkbox:checked {
+  background-color: #22c55e;
+  border-color: #22c55e;
+}
+
+/* 勾 */
+.custom-checkbox:checked::after {
+  content: "✔";
+  color: #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  font-size: 12px;
+  line-height: 1;
+}
+</style>
