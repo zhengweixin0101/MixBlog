@@ -40,8 +40,8 @@ const apps = computed(() => appsConfig.appsData || [])
       </p>
 
       <!-- 卡片列表 -->
-      <ul data-fade class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
-        <li
+      <ul class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
+        <li data-fade
           v-for="app in apps"
           :key="app.link"
           class="relative w-full h-120px rounded-xl list-none outline-none bg-#fefefe dark:bg-white/10 
