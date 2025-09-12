@@ -17,8 +17,8 @@
       </p>
 
       <!-- Masonry 容器 -->
-      <ul data-fade ref="masonryContainer" class="mt-8 list-none">
-        <li
+      <ul ref="masonryContainer" class="mt-8 list-none">
+        <li data-fade
           v-for="memo in memos"
           :key="memo.name"
           class="break-inside-avoid mb-5 rounded-xl px-4 pt-4 pb-2 bg-white dark:bg-white/10 shadow transition-color duration-300"
@@ -207,7 +207,7 @@ const MEMOS_API = siteConfig.thirdParty.memosApi
 // 首屏数据
 const { data: initialData } = await useAsyncData('memos', async () => {
   try {
-    return await $fetch(`${MEMOS_API}?pageSize=1`)
+    return await $fetch(`${MEMOS_API}?pageSize=10`)
   } catch (e) {
     console.error('Fetch memos failed', e)
     return { memos: [], nextPageToken: null }
@@ -223,7 +223,7 @@ async function fetchMemos(pageToken = '') {
   if (loading.value || finished.value) return
   loading.value = true
   try {
-    const res = await $fetch(`${MEMOS_API}?pageSize=1&pageToken=${pageToken}`)
+    const res = await $fetch(`${MEMOS_API}?pageSize=10&pageToken=${pageToken}`)
     memos.value.push(...(res.memos || []))
     nextPageToken.value = res.nextPageToken || null
     if (!res.nextPageToken) finished.value = true
