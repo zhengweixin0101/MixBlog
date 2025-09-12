@@ -205,6 +205,8 @@ onMounted(() => {
   nextTick().then(() => initMasonry())
 
   // 初始化 Fancybox
-  Fancybox.bind('[data-fancybox]')
+  Fancybox.bind('[data-fancybox]', {
+    Hash: false
+  })
 })
 </script>
