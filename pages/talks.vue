@@ -83,7 +83,7 @@
                   v-for="res in memo.resources"
                   :key="res.name"
                   :href="res.externalLink"
-                  data-fancybox="gallery-all"
+                  :data-fancybox="`gallery-${memo.name}`"
                 >
                   <img
                     :src="res.externalLink"
