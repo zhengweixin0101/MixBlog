@@ -302,10 +302,15 @@ html.dark .article-content code:not(pre code) {
   margin-bottom: 1rem;
   border-radius: 8px;
   overflow: hidden;
-
   white-space: pre;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
 }
 
 pre code.hljs {
-  overflow-x: hidden !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+pre code.hljs::-webkit-scrollbar {
+  display: none;
 }
