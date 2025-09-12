@@ -257,7 +257,6 @@ onMounted(() => {
   border-radius: 4px;
   background-color: transparent;
   position: relative;
-  cursor: not-allowed;
 }
 
 /* 选中状态 */
