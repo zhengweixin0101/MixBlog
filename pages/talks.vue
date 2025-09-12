@@ -1,5 +1,5 @@
 <template>
-  <main v-if="dataReady" v-fade-in>
+  <main v-fade-in>
     <section class="py-12 w-full max-w-screen-xl mx-auto">
       <!-- 标题 -->
       <h1 data-fade class="text-3xl mt-40">
@@ -17,11 +17,11 @@
       </p>
 
       <!-- Masonry 容器 -->
-      <ul data-fade ref="masonryContainer" class="mt-8 list-none">
-        <li
+      <ul ref="masonryContainer" class="mt-8 list-none">
+        <li data-fade
           v-for="memo in memos"
           :key="memo.name"
-          class="break-inside-avoid mb-5 rounded-xl px-4 pt-4 pb-2 bg-white dark:bg-white/10 shadow"
+          class="break-inside-avoid mb-5 rounded-xl px-4 pt-4 pb-2 bg-white dark:bg-white/10 shadow transition-color duration-300"
         >
           <!-- 富文本内容渲染 -->
           <div class="space-y-3 text-#2f3f5b dark:text-white text-base">
@@ -83,7 +83,7 @@
                   v-for="res in memo.resources"
                   :key="res.name"
                   :href="res.externalLink"
-                  data-fancybox="gallery-all"
+                  :data-fancybox="`gallery-${memo.name}`"
                 >
                   <img
                     :src="res.externalLink"
@@ -123,6 +123,17 @@
           </div>
         </li>
       </ul>
+
+      <!-- 加载更多按钮 -->
+      <div data-fade v-if="!finished" class="mt-4 flex justify-center">
+        <button
+          class="px-4 py-2 bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 hover:opacity-70 rounded-full transition-all duration-300 cursor-pointer shadow-none border-none"
+          :disabled="loading"
+          @click="fetchMemos(nextPageToken)"
+        >
+          {{ loading ? '加载中...' : '加载更多' }}
+        </button>
+      </div>
 
       <div data-fade id="comment">
         <Comment />
@@ -186,53 +197,51 @@ async function initMasonry() {
 }
 
 // 请求数据
-const memosRaw = ref([])
-const dataReady = ref(false)
+const memos = ref([])
+const nextPageToken = ref(null)
+const loading = ref(false)
+const finished = ref(false)
+
 const MEMOS_API = siteConfig.thirdParty.memosApi
-const CACHE_KEY = 'memos-cache'
-const CACHE_DURATION = 30 * 60 * 1000 // 缓存时长
 
-async function fetchMemos() {
-  if (typeof window !== 'undefined') {
-    const cache = localStorage.getItem(CACHE_KEY)
-    if (cache) {
-      const { timestamp, data } = JSON.parse(cache)
-      if (Date.now() - timestamp < CACHE_DURATION) {
-        memosRaw.value = data
-        dataReady.value = true
-        return
-      }
-    }
+// 首屏数据
+const { data: initialData } = await useAsyncData('memos', async () => {
+  try {
+    return await $fetch(`${MEMOS_API}?pageSize=10`)
+  } catch (e) {
+    console.error('Fetch memos failed', e)
+    return { memos: [], nextPageToken: null }
   }
+}, { server: true })
 
-  // 缓存无效请求 API
-  const res = await $fetch(MEMOS_API)
-  const memos = res.memos || []
-  memosRaw.value = memos
+memos.value = initialData.value.memos || []
+nextPageToken.value = initialData.value.nextPageToken || null
+if (!nextPageToken.value) finished.value = true
 
-  // 存入缓存
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({
-        timestamp: Date.now(),
-        data: memos,
-      })
-    )
+// 加载更多
+async function fetchMemos(pageToken = '') {
+  if (loading.value || finished.value) return
+  loading.value = true
+  try {
+    const res = await $fetch(`${MEMOS_API}?pageSize=10&pageToken=${pageToken}`)
+    memos.value.push(...(res.memos || []))
+    nextPageToken.value = res.nextPageToken || null
+    if (!res.nextPageToken) finished.value = true
+    nextTick().then(() => initMasonry())
+  } catch (e) {
+    console.error('Fetch memos failed', e)
+  } finally {
+    loading.value = false
   }
-  dataReady.value = true
 }
 
-const memos = computed(() => memosRaw.value || [])
-
-onMounted(async () => {
-  // 获取数据
-  await fetchMemos()
-
+onMounted(() => {
   // 初始化 Masonry
   nextTick().then(() => initMasonry())
 
   // 初始化 Fancybox
-  Fancybox.bind('[data-fancybox]')
+  Fancybox.bind('[data-fancybox]', {
+    Hash: false
+  })
 })
 </script>
