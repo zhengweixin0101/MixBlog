@@ -21,7 +21,7 @@
         <li data-fade
           v-for="memo in memos"
           :key="memo.name"
-          class="break-inside-avoid mb-5 rounded-xl px-4 pt-4 pb-2 bg-white dark:bg-white/10 shadow transition-color duration-300"
+          class="break-inside-avoid mb-5 rounded-xl px-4 pt-4 pb-2 bg-white dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] transition-color duration-300"
         >
           <!-- 富文本内容渲染 -->
           <div class="space-y-3 text-#2f3f5b dark:text-white text-base">

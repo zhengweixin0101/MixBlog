@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full border border-dashed border-gray-500 mt-10 mb-5"></div>
+  <div class="w-full border border-dashed border-gray-500 mt-10 mb-15"></div>
   <div id="tcomment"></div>
 </template>
 
@@ -24,60 +24,69 @@ onMounted(() => {
 
 
 <style>
-.twikoo {
-  background: #FFFFFF;
-  border-radius: 12px;
-  padding: 16px;
-  transition: background-color 300ms ease;
-  box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.15);
-}
-
-html.dark .twikoo {
-  background: #1E1E1E;
-  box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.15);
-}
-
-.twikoo .tk-meta-input input:focus, textarea:focus {
+.twikoo .tk-meta-input input:focus, textarea:focus, .el-textarea textarea:focus {
     outline: none;
-    border-color: #00e69990;
+    border-color: #2dc866;
 }
 
-.twikoo .el-textarea textarea:focus {
-  outline: none;
-  border-color: #00e69990;
+html.dark .twikoo .tk-meta-input input:focus, textarea:focus, .el-textarea textarea:focus {
+  border-color: #2dc86690 !important;
 }
 
 .tk-send:not(.is-disabled) {
-  background-color: #27a160 !important;
-  border-color: #27a160 !important;
+  background-color: #2dc866 !important;
+  border-color: #2dc866 !important;
   color: #ffffff !important;
 }
 
 .tk-send:not(.is-disabled):hover {
-  background-color: #1f8650 !important;
-  border-color: #1f8650 !important;
+  background-color: #2dc86699 !important;
+  border-color: #2dc86699 !important;
 }
 
 .tk-send.is-disabled {
-  background-color: #27a160 !important;
-  border-color: #27a160 !important;
+  background-color: #2dc866 !important;
+  border-color: #2dc866 !important;
   color: #ffffff !important;
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.tk-preview:hover {
-  border-color: #27a160 !important;
-  color: #27a160 !important;
+.tk-preview:hover, .tk-preview:focus {
+  border-color: #2dc866 !important;
+  color: #2dc866 !important;
 }
 
-.tk-icon svg, .tk-action svg {
-  fill: #00e699 !important;
+.tk-comments-title svg, .tk-action svg {
+  fill: #2dc866 !important;
+}
+
+.tk-extras {
+  fill: 0 0 rgb(0 0 0 / 0) !important;
 }
 
 .tk-tag-green {
-  color: #27a160 !important;
-  border-color: #27a160 !important;
+  color: #2dc866 !important;
+  border-color: #2dc866 !important;
+}
+
+.tk-action-count {
+  color: #2dc866 !important;
+}
+
+.tk-time {
+  opacity: 0.8 !important;
+}
+
+.tk-ruser {
+  color: #2f3f5b;
+  text-decoration: none;
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+}
+
+html.dark .tk-ruser {
+  color: #fff;
+  text-decoration: none;
 }
 
 .twikoo .tk-footer {
