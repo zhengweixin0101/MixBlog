@@ -1,5 +1,5 @@
 <template>
-  <main v-if="dataReady" v-fade-in>
+  <main v-fade-in>
     <section class="py-12 w-full max-w-screen-xl mx-auto">
       <!-- 标题 -->
       <h1 data-fade class="text-3xl mt-40">
@@ -186,49 +186,21 @@ async function initMasonry() {
 }
 
 // 请求数据
-const memosRaw = ref([])
-const dataReady = ref(false)
 const MEMOS_API = siteConfig.thirdParty.memosApi
-const CACHE_KEY = 'memos-cache'
-const CACHE_DURATION = 30 * 60 * 1000 // 缓存时长
 
-async function fetchMemos() {
-  if (typeof window !== 'undefined') {
-    const cache = localStorage.getItem(CACHE_KEY)
-    if (cache) {
-      const { timestamp, data } = JSON.parse(cache)
-      if (Date.now() - timestamp < CACHE_DURATION) {
-        memosRaw.value = data
-        dataReady.value = true
-        return
-      }
-    }
+const { data: memosRaw } = await useAsyncData('memos', async () => {
+  try {
+    const res = await $fetch(MEMOS_API)
+    return res.memos || []
+  } catch (e) {
+    console.error('Fetch memos failed', e)
+    return []
   }
-
-  // 缓存无效请求 API
-  const res = await $fetch(MEMOS_API)
-  const memos = res.memos || []
-  memosRaw.value = memos
-
-  // 存入缓存
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({
-        timestamp: Date.now(),
-        data: memos,
-      })
-    )
-  }
-  dataReady.value = true
-}
+}, { server: true })
 
 const memos = computed(() => memosRaw.value || [])
 
-onMounted(async () => {
-  // 获取数据
-  await fetchMemos()
-
+onMounted(() => {
   // 初始化 Masonry
   nextTick().then(() => initMasonry())
 
