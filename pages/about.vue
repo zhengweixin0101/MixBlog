@@ -585,8 +585,8 @@ function handleClick(link) {
     <div data-fade class="flex flex-wrap md:flex-row gap-4 w-full mx-auto m-5">
       <!-- 番剧 -->
       <div class="flex-1 md:flex-[2_2_0%] p-5 rounded-2xl min-w-full md:min-w-300px min-h-300px relative transition-colors duration-300 overflow-hidden">
-        <div class="absolute left-5 top-5 text-xs text-gray-300 pointer-events-none z-20">番剧</div>
-        <h2 class="absolute left-5 top-10 text-3xl font-bold text-white pointer-events-none z-20">爱好番剧</h2>
+        <div class="absolute left-5 top-5 text-xs text-gray-300 pointer-events-none z-20" style="text-shadow: 0px 0px 5px rgba(0,0,0,1);">番剧</div>
+        <h2 class="absolute left-5 top-10 text-3xl font-bold text-white pointer-events-none z-20" style="text-shadow: 0px 0px 5px rgba(0,0,0,1);">爱好番剧</h2>
 
         <div class="absolute inset-0 -m-5 z-10">
           <div class="absolute inset-0 flex w-[120%] left-1/2 -translate-x-1/2">
@@ -613,8 +613,11 @@ function handleClick(link) {
               <div
                 class="absolute inset-0 transition-transform duration-800 ease-out"
                 :class="hoveredIndex === index ? 'scale-125' : 'scale-115'"
-                :style="{ 
-                  background: `linear-gradient(to top, rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${anime.img}) center / cover no-repeat` 
+                :style="{
+                  background:
+                    $colorMode.value === 'dark'
+                      ? `linear-gradient(rgba(0,0,0,0.15)), url(${anime.img}) center / cover no-repeat`
+                      : `url(${anime.img}) center / cover no-repeat`
                 }"
               ></div>
             </a>
@@ -623,13 +626,14 @@ function handleClick(link) {
       </div>
       <!-- 游戏 -->
       <div 
-        class="flex-1 md:flex-[3_3_0%] p-5 rounded-2xl min-w-full md:min-w-[200px] relative text-white overflow-hidden transition-colors duration-300"
+        class="flex-1 md:flex-[3_3_0%] p-5 rounded-2xl min-w-full md:min-w-200px relative text-white overflow-hidden transition-colors duration-300"
         :style="{ background: `url(${aboutConfig.author.game.img}) top / cover no-repeat` }"
       >
-        <div class="absolute inset-0 bg-gradient-to-t from-[#0c1c2c]/90 to-[#0c1c2c]/50 z-0"></div>
+        <div class="absolute inset-0 z-0 hidden dark:block bg-gradient-to-t from-#000/99 to-#000/0"></div>
+        <div class="absolute inset-0 z-0 block dark:hidden bg-gradient-to-t from-#000/50 to-#000/0"></div>
         <div class="relative z-10">
-          <div class="text-xs text-gray-300">爱好游戏</div>
-          <h2 class="text-4xl font-bold mt-1 mb-50">{{ aboutConfig.author.game.name }}</h2>
+          <div class="text-xs text-gray-300" style="text-shadow: 0px 0px 5px rgba(0,0,0,1);">爱好游戏</div>
+          <h2 class="text-4xl font-bold mt-1 mb-50" style="text-shadow: 0px 0px 5px rgba(0,0,0,1);">{{ aboutConfig.author.game.name }}</h2>
         </div>
         <div class="absolute right-5 bottom-5 text-md text-white/90 z-10" >
           {{ aboutConfig.author.game.id }}
