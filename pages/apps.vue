@@ -62,9 +62,9 @@ const apps = computed(() => appsConfig.appsData || [])
               </p>
             </div>
             <div class="-mt-9 ml-4 text-#2f3f5b dark:text-white transition-colors duration-300">
-              <span class="relative dark:text-gradient
-                          after:content-[''] after:absolute after:left-0 after:bottom-0.5
-                          after:h-1px after:w-0 after:bg-gradient-to-r after:from-#00e699 after:to-#00e2d8
+              <span class="relative inline-block dark:text-gradient
+                          after:content-[''] after:absolute after:left-0 after:bottom-0
+                          after:h-[2px] after:w-0 after:bg-gradient-to-r after:from-#00e699 after:to-#00e2d8
                           after:transition-all after:duration-300 group-hover:after:w-full">
                 Go to →
               </span>
