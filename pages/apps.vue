@@ -45,7 +45,7 @@ const apps = computed(() => appsConfig.appsData || [])
             v-for="app in apps"
             :key="app.link"
             class="relative w-full h-120px rounded-xl list-none outline-none bg-#fefefe dark:bg-white/10 
-                  shadow-[0_0_2px_rgba(0,0,0,0.2)] hover:shadow-[0_0_0_1px_#00e699] hover:scale-102 active:scale-98 
+                  shadow-[0_0_2px_rgba(0,0,0,0.2)] hover:shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]
                   transition-all duration-300 group"
         >
           <a

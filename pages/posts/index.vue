@@ -107,7 +107,7 @@ const filteredPosts = computed(() => {
       <ul :key="selectedTag + '-' + searchTerm" class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
         <li data-fade
           v-for="post in filteredPosts"
-          class="relative w-full h-160px rounded-xl list-none shadow-[0_0_2px_rgba(0,0,0,0.2)] hover:shadow-[0_0_0_1px_#00e699] hover:scale-102 active:scale-98 
+          class="relative w-full h-160px rounded-xl list-none shadow-[0_0_2px_rgba(0,0,0,0.2)] hover:shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]
                  bg-#fefefe dark:bg-white/10 transition-all duration-300"
         >
           <NuxtLink
