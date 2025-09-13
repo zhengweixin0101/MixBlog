@@ -123,14 +123,22 @@ const UMAMI_SHARE_URL =  aboutConfig.umami.shareUrl
 const WEBSITE_ID = aboutConfig.umami.siteId
 const TOKEN = aboutConfig.umami.token
 const CREATED_AT = aboutConfig.umami.createTime
+const CACHE_DURATION = aboutConfig.cacheDuration || 5*60*1000
 
-// 缓存相关
+// 缓存
+let serverCache = {
+  timestamp: 0,
+  statsToday: null,
+  statsYesterday: null,
+  statsTotal: null
+}
+
 function getDayTimestamps(date = new Date()) {
-  const start = new Date(date);
-  start.setHours(0, 0, 0, 0);
-  const end = new Date(start);
-  end.setHours(23, 59, 59, 999);
-  return { start: start.getTime(), end: end.getTime() };
+  const start = new Date(date)
+  start.setHours(0,0,0,0)
+  const end = new Date(start)
+  end.setHours(23,59,59,999)
+  return { start: start.getTime(), end: end.getTime() }
 }
 
 const statsToday = ref(null)
@@ -138,73 +146,53 @@ const statsYesterday = ref(null)
 const statsTotal = ref(null)
 const error = ref(null)
 
-const CACHE_KEY = 'umami_stats'
-const CACHE_DURATION = aboutConfig.cacheDuration || 10 * 60 * 1000
-
-// 获取统计数据
-async function fetchStats() {
+const { data, error: asyncError } = await useAsyncData('umamiStats', async () => {
   const now = Date.now()
-  let cached = null
 
-  try {
-    cached = JSON.parse(localStorage.getItem(CACHE_KEY))
-  } catch (e) {
-    cached = null
-  }
-
-  if (cached && now - Number(cached.timestamp) < CACHE_DURATION) {
-    statsToday.value = cached.statsToday
-    statsYesterday.value = cached.statsYesterday
-    statsTotal.value = cached.statsTotal
-    return
+  if (serverCache.timestamp && now - serverCache.timestamp < CACHE_DURATION) {
+    return serverCache
   }
 
   try {
     const createdAtTs = new Date(CREATED_AT).getTime()
 
-    // 今日
     const { start: startToday, end: endToday } = getDayTimestamps()
     const todayData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${startToday}&endAt=${endToday}`, {
       headers: { Authorization: `Bearer ${TOKEN}` }
     }).then(res => res.json())
 
-    // 昨日
     const yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
+    yesterday.setDate(yesterday.getDate() -1 )
     const { start: startYesterday, end: endYesterday } = getDayTimestamps(yesterday)
     const yesterdayData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${startYesterday}&endAt=${endYesterday}`, {
       headers: { Authorization: `Bearer ${TOKEN}` }
     }).then(res => res.json())
 
-    // 总量
     const totalData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${createdAtTs}&endAt=${now}`, {
       headers: { Authorization: `Bearer ${TOKEN}` }
     }).then(res => res.json())
 
-    statsToday.value = todayData
-    statsYesterday.value = yesterdayData
-    statsTotal.value = totalData
-    error.value = null
-
-    localStorage.setItem(CACHE_KEY, JSON.stringify({
+    serverCache = {
+      timestamp: now,
       statsToday: todayData,
       statsYesterday: yesterdayData,
-      statsTotal: totalData,
-      timestamp: now,
-    }))
-  } catch (e) {
-    console.error('API fetch error:', e)
-    error.value = e.message
-  }
-}
+      statsTotal: totalData
+    }
 
-onMounted(async () => {
-  try {
-    await fetchStats()
+    return serverCache
   } catch (e) {
-    console.error('fetchStats error:', e)
+    console.error(e)
+    return { statsToday:null, statsYesterday:null, statsTotal:null }
   }
 })
+
+// 保持原调用方式
+if (data.value) {
+  statsToday.value = data.value.statsToday
+  statsYesterday.value = data.value.statsYesterday
+  statsTotal.value = data.value.statsTotal
+}
+if (asyncError.value) error.value = asyncError.value.message
 
 // 游戏&番剧
 const hoverHero = ref(null)
