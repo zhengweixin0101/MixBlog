@@ -137,7 +137,6 @@ const { data: statsToday } = await useAsyncData('statsToday', async () => {
   return $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
     headers: { Authorization: `Bearer ${TOKEN}` },
     params: { startAt: start, endAt: end },
-    server: true
   })
 })
 
@@ -148,7 +147,6 @@ const { data: statsYesterday } = await useAsyncData('statsYesterday', async () =
   return $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
     headers: { Authorization: `Bearer ${TOKEN}` },
     params: { startAt: start, endAt: end },
-    server: true
   })
 })
 
@@ -158,7 +156,6 @@ const { data: statsTotal } = await useAsyncData('statsTotal', async () => {
   return $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
     headers: { Authorization: `Bearer ${TOKEN}` },
     params: { startAt: createdAtTs, endAt: now },
-    server: true
   })
 })
 
