@@ -544,10 +544,16 @@ function handleClick(link) {
             <span class="text-xl lg:text-3xl text-#ea5455 font-bold">{{ aboutConfig.author.work }}</span>
           </div>
         </div>
-        <div class="h-2/3 flex justify-between bg-white dark:bg-white/10 p-5 rounded-2xl shadow-[0_0_2px_rgba(0,0,0,0.2)] min-h-200px md:min-h-0 min-w-full md:min-w-200px relative transition-colors duration-300">
+        <div class="h-2/3 flex justify-between bg-white dark:bg-white/10 p-5 rounded-2xl shadow-[0_0_2px_rgba(0,0,0,0.2)]
+                    min-h-200px md:min-h-0 min-w-full md:min-w-200px relative transition-colors duration-300"
+        >
           <div class="text-xs absolute text-gray-400">性格</div>
           <h2 class="text-2xl font-bold mt-5">{{ aboutConfig.author.personality.name }}<br/><span class="text-#e4ae3a text-4xl">{{ aboutConfig.author.personality.code }}</span></h2>
-          <div class="absolute bottom-4 text-sm text-#999999">在 <a class="text-#999999 no-underline hover:text-white transition-colors duration-200" href="https://www.16personalities.com/" target="_blank" rel="noopener nofollow">16personalities</a> 上了解更多</div>
+          <div class="absolute bottom-4 text-sm text-#999999">
+            在 
+            <a class="text-#999999 no-underline hover:text-white transition-colors duration-200" :href="aboutConfig.author.personality.learnMore" target="_blank" rel="noopener nofollow">16personalities</a>
+            上了解更多
+          </div>
           <div class="absolute justify-center right-0 md:top-3 transition-transform duration-800 hover:-rotate-8">
             <img :src="aboutConfig.author.personality.img" />
           </div>

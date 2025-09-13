@@ -49,6 +49,7 @@ export const aboutConfig = {
             name: '冒险家',
             code: 'ISFP-T',
             img: 'https://cdn.zhengweixin.top/blog/about/ISFP.svg',
+            learnMore: 'https://www.16personalities.com/isfp-personality'
         },
         game: {
             name: 'VALORANT',
