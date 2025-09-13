@@ -132,32 +132,47 @@ function getDayTimestamps(date = new Date()) {
   return { start: start.getTime(), end: end.getTime() }
 }
 
-const { data: statsToday } = await useAsyncData('statsToday', async () => {
-  const { start, end } = getDayTimestamps()
-  return $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
-    headers: { Authorization: `Bearer ${TOKEN}` },
-    params: { startAt: start, endAt: end },
-  })
-})
+// 今日
+const { data: statsToday } = useAsyncData(
+  'statsToday',
+  async () => {
+    const { start, end } = getDayTimestamps()
+    return await $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
+      headers: { Authorization: `Bearer ${TOKEN}` },
+      params: { startAt: start, endAt: end },
+    })
+  },
+  { lazy: true }
+)
 
-const { data: statsYesterday } = await useAsyncData('statsYesterday', async () => {
-  const yesterday = new Date()
-  yesterday.setDate(yesterday.getDate() - 1)
-  const { start, end } = getDayTimestamps(yesterday)
-  return $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
-    headers: { Authorization: `Bearer ${TOKEN}` },
-    params: { startAt: start, endAt: end },
-  })
-})
+// 昨日
+const { data: statsYesterday } = useAsyncData(
+  'statsYesterday',
+  async () => {
+    const yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    const { start, end } = getDayTimestamps(yesterday)
+    return await $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
+      headers: { Authorization: `Bearer ${TOKEN}` },
+      params: { startAt: start, endAt: end },
+    })
+  },
+  { lazy: true }
+)
 
-const { data: statsTotal } = await useAsyncData('statsTotal', async () => {
-  const createdAtTs = new Date(CREATED_AT).getTime()
-  const now = Date.now()
-  return $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
-    headers: { Authorization: `Bearer ${TOKEN}` },
-    params: { startAt: createdAtTs, endAt: now },
-  })
-})
+// 总量
+const { data: statsTotal } = useAsyncData(
+  'statsTotal',
+  async () => {
+    const createdAtTs = new Date(CREATED_AT).getTime()
+    const now = Date.now()
+    return await $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
+      headers: { Authorization: `Bearer ${TOKEN}` },
+      params: { startAt: createdAtTs, endAt: now },
+    })
+  },
+  { lazy: true }
+)
 
 // 游戏&番剧
 const hoverHero = ref(null)
