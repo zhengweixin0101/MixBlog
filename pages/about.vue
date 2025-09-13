@@ -232,7 +232,7 @@ function handleClick(link) {
           class="author-tag absolute rounded-full bg-white dark:bg-white/15 py-1 px-2 shadow transition-colors duration-300"
           :class="leftTagPosition(i)"
         >
-          {{ tag }}
+        <span class="mb-1 mr-1">{{ tag }}</span>
         </span>
       </div>
       <!-- 中间头像 -->
@@ -252,7 +252,7 @@ function handleClick(link) {
           class="author-tag absolute rounded-full bg-white dark:bg-white/15 py-1 px-2 shadow transition-colors duration-300"
           :class="rightTagPosition(i)"
         >
-          {{ tag }}
+        <span class="mb-1 ml-1">{{ tag }}</span>
         </span>
       </div>
     </div>

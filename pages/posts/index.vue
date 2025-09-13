@@ -120,7 +120,7 @@ const filteredPosts = computed(() => {
                 {{ post.description || '暂无描述' }}
               </p>
 
-              <div class="absolute left-4 bottom-4 text-sm text-gray-400 pointer-events-none flex items-center gap-2">
+              <div class="absolute left-4 bottom-4 text-sm text-gray-400 pointer-events-none flex items-center">
                 <svg
                   stroke="currentColor"
                   fill="none"
@@ -136,7 +136,7 @@ const filteredPosts = computed(() => {
                 </svg>
                 <time
                   :datetime="post.date !== '' ? post.date : null"
-                  class="text-#2f3f5b dark:bg-gradient-to-r dark:text-gradient"
+                  class="text-#2f3f5b dark:bg-gradient-to-r dark:text-gradient ml-0.5"
                 >
                   {{ post.date || '未知日期' }}
                 </time>
