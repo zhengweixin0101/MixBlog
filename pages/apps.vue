@@ -40,12 +40,13 @@ const apps = computed(() => appsConfig.appsData || [])
       </p>
 
       <!-- 卡片列表 -->
-      <ul data-fade class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
-        <li
-          v-for="app in apps"
-          :key="app.link"
-          class="relative w-full h-120px rounded-xl list-none outline-none bg-#fefefe dark:bg-white/10 
-                 shadow-[0_0_2px_rgba(0,0,0,0.2)] hover:shadow-[0_0_0_1px_#00e699] hover:scale-102 active:scale-98 transition-all duration-300"
+      <ul class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
+        <li data-fade
+            v-for="app in apps"
+            :key="app.link"
+            class="relative w-full h-120px rounded-xl list-none outline-none bg-#fefefe dark:bg-white/10 
+                  shadow-[0_0_2px_rgba(0,0,0,0.2)] hover:shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]
+                  transition-all duration-300 group"
         >
           <a
             :href="app.link"
@@ -61,7 +62,12 @@ const apps = computed(() => appsConfig.appsData || [])
               </p>
             </div>
             <div class="-mt-9 ml-4 text-#2f3f5b dark:text-white transition-colors duration-300">
-                <span class="dark:text-gradient">Go to →</span>
+              <span class="relative inline-block dark:text-gradient
+                          after:content-[''] after:absolute after:left-0 after:bottom-0
+                          after:h-[2px] after:w-0 after:bg-gradient-to-r after:from-#00e699 after:to-#00e2d8
+                          after:transition-all after:duration-300 group-hover:after:w-full">
+                Go to →
+              </span>
             </div>
           </a>
         </li>

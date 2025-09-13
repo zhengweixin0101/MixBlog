@@ -119,92 +119,60 @@ const secondHalf = skills.slice(mid)
 
 // 访问数据
 const UMAMI_URL = aboutConfig.umami.url
-const UMAMI_SHARE_URL =  aboutConfig.umami.shareUrl
+const UMAMI_SHARE_URL = aboutConfig.umami.shareUrl
 const WEBSITE_ID = aboutConfig.umami.siteId
 const TOKEN = aboutConfig.umami.token
 const CREATED_AT = aboutConfig.umami.createTime
 
-// 缓存相关
 function getDayTimestamps(date = new Date()) {
-  const start = new Date(date);
-  start.setHours(0, 0, 0, 0);
-  const end = new Date(start);
-  end.setHours(23, 59, 59, 999);
-  return { start: start.getTime(), end: end.getTime() };
+  const start = new Date(date)
+  start.setHours(0, 0, 0, 0)
+  const end = new Date(start)
+  end.setHours(23, 59, 59, 999)
+  return { start: start.getTime(), end: end.getTime() }
 }
 
-const statsToday = ref(null)
-const statsYesterday = ref(null)
-const statsTotal = ref(null)
-const error = ref(null)
+// 今日
+const { data: statsToday } = useAsyncData(
+  'statsToday',
+  async () => {
+    const { start, end } = getDayTimestamps()
+    return await $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
+      headers: { Authorization: `Bearer ${TOKEN}` },
+      params: { startAt: start, endAt: end },
+    })
+  },
+  { lazy: true }
+)
 
-const CACHE_KEY = 'umami_stats'
-const CACHE_DURATION = aboutConfig.cacheDuration || 10 * 60 * 1000
-
-// 获取统计数据
-async function fetchStats() {
-  const now = Date.now()
-  let cached = null
-
-  try {
-    cached = JSON.parse(localStorage.getItem(CACHE_KEY))
-  } catch (e) {
-    cached = null
-  }
-
-  if (cached && now - Number(cached.timestamp) < CACHE_DURATION) {
-    statsToday.value = cached.statsToday
-    statsYesterday.value = cached.statsYesterday
-    statsTotal.value = cached.statsTotal
-    return
-  }
-
-  try {
-    const createdAtTs = new Date(CREATED_AT).getTime()
-
-    // 今日
-    const { start: startToday, end: endToday } = getDayTimestamps()
-    const todayData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${startToday}&endAt=${endToday}`, {
-      headers: { Authorization: `Bearer ${TOKEN}` }
-    }).then(res => res.json())
-
-    // 昨日
+// 昨日
+const { data: statsYesterday } = useAsyncData(
+  'statsYesterday',
+  async () => {
     const yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
-    const { start: startYesterday, end: endYesterday } = getDayTimestamps(yesterday)
-    const yesterdayData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${startYesterday}&endAt=${endYesterday}`, {
-      headers: { Authorization: `Bearer ${TOKEN}` }
-    }).then(res => res.json())
+    const { start, end } = getDayTimestamps(yesterday)
+    return await $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
+      headers: { Authorization: `Bearer ${TOKEN}` },
+      params: { startAt: start, endAt: end },
+    })
+  },
+  { lazy: true }
+)
 
-    // 总量
-    const totalData = await fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats?startAt=${createdAtTs}&endAt=${now}`, {
-      headers: { Authorization: `Bearer ${TOKEN}` }
-    }).then(res => res.json())
-
-    statsToday.value = todayData
-    statsYesterday.value = yesterdayData
-    statsTotal.value = totalData
-    error.value = null
-
-    localStorage.setItem(CACHE_KEY, JSON.stringify({
-      statsToday: todayData,
-      statsYesterday: yesterdayData,
-      statsTotal: totalData,
-      timestamp: now,
-    }))
-  } catch (e) {
-    console.error('API fetch error:', e)
-    error.value = e.message
-  }
-}
-
-onMounted(async () => {
-  try {
-    await fetchStats()
-  } catch (e) {
-    console.error('fetchStats error:', e)
-  }
-})
+// 总量
+const { data: statsTotal } = useAsyncData(
+  'statsTotal',
+  async () => {
+    const createdAtTs = new Date(CREATED_AT).getTime()
+    const now = Date.now()
+    return await $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
+      headers: { Authorization: `Bearer ${TOKEN}` },
+      params: { startAt: createdAtTs, endAt: now },
+    })
+  },
+  { lazy: true }
+)
 
 // 游戏&番剧
 const hoverHero = ref(null)
@@ -232,7 +200,7 @@ function handleClick(link) {
           class="author-tag absolute rounded-full bg-white dark:bg-white/15 py-1 px-2 shadow transition-colors duration-300"
           :class="leftTagPosition(i)"
         >
-          {{ tag }}
+        <span class="mb-1 mr-1">{{ tag }}</span>
         </span>
       </div>
       <!-- 中间头像 -->
@@ -252,7 +220,7 @@ function handleClick(link) {
           class="author-tag absolute rounded-full bg-white dark:bg-white/15 py-1 px-2 shadow transition-colors duration-300"
           :class="rightTagPosition(i)"
         >
-          {{ tag }}
+        <span class="mb-1 ml-1">{{ tag }}</span>
         </span>
       </div>
     </div>
@@ -544,10 +512,16 @@ function handleClick(link) {
             <span class="text-xl lg:text-3xl text-#ea5455 font-bold">{{ aboutConfig.author.work }}</span>
           </div>
         </div>
-        <div class="h-2/3 flex justify-between bg-white dark:bg-white/10 p-5 rounded-2xl shadow-[0_0_2px_rgba(0,0,0,0.2)] min-h-200px md:min-h-0 min-w-full md:min-w-200px relative transition-colors duration-300">
+        <div class="h-2/3 flex justify-between bg-white dark:bg-white/10 p-5 rounded-2xl shadow-[0_0_2px_rgba(0,0,0,0.2)]
+                    min-h-200px md:min-h-0 min-w-full md:min-w-200px relative transition-colors duration-300"
+        >
           <div class="text-xs absolute text-gray-400">性格</div>
           <h2 class="text-2xl font-bold mt-5">{{ aboutConfig.author.personality.name }}<br/><span class="text-#e4ae3a text-4xl">{{ aboutConfig.author.personality.code }}</span></h2>
-          <div class="absolute bottom-4 text-sm text-#999999">在 <a class="text-#999999 no-underline hover:text-white transition-colors duration-200" href="https://www.16personalities.com/" target="_blank" rel="noopener nofollow">16personalities</a> 上了解更多</div>
+          <div class="absolute bottom-4 text-sm text-#999999">
+            在 
+            <a class="text-#999999 no-underline hover:text-white transition-colors duration-200" :href="aboutConfig.author.personality.learnMore" target="_blank" rel="noopener nofollow">16personalities</a>
+            上了解更多
+          </div>
           <div class="absolute justify-center right-0 md:top-3 transition-transform duration-800 hover:-rotate-8">
             <img :src="aboutConfig.author.personality.img" />
           </div>
@@ -585,8 +559,8 @@ function handleClick(link) {
     <div data-fade class="flex flex-wrap md:flex-row gap-4 w-full mx-auto m-5">
       <!-- 番剧 -->
       <div class="flex-1 md:flex-[2_2_0%] p-5 rounded-2xl min-w-full md:min-w-300px min-h-300px relative transition-colors duration-300 overflow-hidden">
-        <div class="absolute left-5 top-5 text-xs text-gray-300 pointer-events-none z-20">番剧</div>
-        <h2 class="absolute left-5 top-10 text-3xl font-bold text-white pointer-events-none z-20">爱好番剧</h2>
+        <div class="absolute left-5 top-5 text-xs text-gray-300 pointer-events-none z-20" style="text-shadow: 0px 0px 5px rgba(0,0,0,1);">番剧</div>
+        <h2 class="absolute left-5 top-10 text-3xl font-bold text-white pointer-events-none z-20" style="text-shadow: 0px 0px 5px rgba(0,0,0,1);">爱好番剧</h2>
 
         <div class="absolute inset-0 -m-5 z-10">
           <div class="absolute inset-0 flex w-[120%] left-1/2 -translate-x-1/2">
@@ -613,8 +587,11 @@ function handleClick(link) {
               <div
                 class="absolute inset-0 transition-transform duration-800 ease-out"
                 :class="hoveredIndex === index ? 'scale-125' : 'scale-115'"
-                :style="{ 
-                  background: `linear-gradient(to top, rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${anime.img}) center / cover no-repeat` 
+                :style="{
+                  background:
+                    $colorMode.value === 'dark'
+                      ? `linear-gradient(rgba(0,0,0,0.15)), url(${anime.img}) center / cover no-repeat`
+                      : `url(${anime.img}) center / cover no-repeat`
                 }"
               ></div>
             </a>
@@ -623,13 +600,14 @@ function handleClick(link) {
       </div>
       <!-- 游戏 -->
       <div 
-        class="flex-1 md:flex-[3_3_0%] p-5 rounded-2xl min-w-full md:min-w-[200px] relative text-white overflow-hidden transition-colors duration-300"
+        class="flex-1 md:flex-[3_3_0%] p-5 rounded-2xl min-w-full md:min-w-200px relative text-white overflow-hidden transition-colors duration-300"
         :style="{ background: `url(${aboutConfig.author.game.img}) top / cover no-repeat` }"
       >
-        <div class="absolute inset-0 bg-gradient-to-t from-[#0c1c2c]/90 to-[#0c1c2c]/50 z-0"></div>
+        <div class="absolute inset-0 z-0 hidden dark:block bg-gradient-to-t from-#000/99 to-#000/0"></div>
+        <div class="absolute inset-0 z-0 block dark:hidden bg-gradient-to-t from-#000/50 to-#000/0"></div>
         <div class="relative z-10">
-          <div class="text-xs text-gray-300">爱好游戏</div>
-          <h2 class="text-4xl font-bold mt-1 mb-50">{{ aboutConfig.author.game.name }}</h2>
+          <div class="text-xs text-gray-300" style="text-shadow: 0px 0px 5px rgba(0,0,0,1);">爱好游戏</div>
+          <h2 class="text-4xl font-bold mt-1 mb-50" style="text-shadow: 0px 0px 5px rgba(0,0,0,1);">{{ aboutConfig.author.game.name }}</h2>
         </div>
         <div class="absolute right-5 bottom-5 text-md text-white/90 z-10" >
           {{ aboutConfig.author.game.id }}
