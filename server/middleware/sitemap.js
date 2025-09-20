@@ -13,10 +13,10 @@ export default defineEventHandler(async (event) => {
         { loc: `${baseUrl}/talks`, lastmod: new Date().toISOString(), changefreq: 'monthly', priority: 0.8 },
         { loc: `${baseUrl}/apps`, lastmod: new Date().toISOString(), changefreq: 'monthly', priority: 0.8 },
         { loc: `${baseUrl}/contact`, lastmod: new Date().toISOString(), changefreq: 'monthly', priority: 0.8 },
-    ];
+    ]
 
     // 文章
-    const articles = await $fetch(siteConfig.postsData.postsList);
+    const articles = await $fetch(siteConfig.postsData.postsList)
     const urls = pages.concat(
         articles.filter(a => a.published).map(a => ({
             loc: `${baseUrl}/posts/${a.slug}`,
@@ -24,11 +24,12 @@ export default defineEventHandler(async (event) => {
             changefreq: 'weekly',
             priority: 0.9
         }))
-    );
+    )
 
-    // 生成
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    // 生成 XML
+    const xml =
+        '<?xml version="1.0" encoding="UTF-8"?>' +
+        `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map(u => `
   <url>
     <loc>${u.loc}</loc>
@@ -36,8 +37,8 @@ ${urls.map(u => `
     <changefreq>${u.changefreq}</changefreq>
     <priority>${u.priority}</priority>
   </url>`).join('')}
-</urlset>`;
+</urlset>`
 
-    setHeader(event, 'Content-Type', 'application/xml');
-    return xml;
-});
+    setHeader(event, 'Content-Type', 'application/xml; charset=UTF-8')
+    return xml
+})
