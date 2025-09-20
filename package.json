@@ -1,17 +1,14 @@
 {
-  "name": "nuxt-app",
+  "name": "blog",
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "npm run generate-sitemap && npm run generate-rss && nuxt build",
+    "build": "nuxt build",
     "dev": "nuxt dev",
-    "generate": "npm run generate-sitemap && npm run generate-rss && npm run generate-post-json && nuxt generate && node scripts/flatten-html.js",
+    "generate": "nuxt generate",
     "start": "nuxt start -p $PORT",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "generate-post-json": "node scripts/generate-post-json.js",
-    "generate-sitemap": "node scripts/generate-sitemap.js",
-    "generate-rss": "node scripts/generate-rss.js",
     "upload": "node scripts/upload-md.js"
   },
   "dependencies": {
