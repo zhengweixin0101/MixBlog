@@ -99,24 +99,24 @@
           <hr class="mt-3 border-dashed border-t border-gray-300 dark:border-gray-600" />
 
           <!-- 日期 定位 标签 -->
-          <div class="flex justify-between text-gray-400 text-sm flex-wrap gap-y-2 mt-2">
-            <div class="flex gap-1 items-center">
+          <div class="flex justify-between text-gray-400 text-xs flex-wrap gap-y-2 mt-2">
+            <div class="flex gap-1.5 items-center">
               <!-- 日期 -->
-              <span class="flex items-center px-1.5 py-0.5 text-xs rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">
-                <i class="iconfont icon-zhong"></i> <span class="mb-0.2">{{ formatDate(memo.displayTime) }}</span>
+              <span class="flex items-center px-1.5 py-1 rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">
+                <i class="iconfont icon-zhong"></i><span class="ml-0.5">{{ formatDate(memo.displayTime) }}</span>
               </span>
               <!-- 定位 -->
-              <span v-if="memo.location?.placeholder" class="flex items-center px-1.5 py-0.5 text-xs rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">
-                <i class="iconfont icon-dingwei"></i> <span class="mb-0.2">{{ memo.location.placeholder }}</span>
+              <span v-if="memo.location?.placeholder" class="flex items-center px-1.5 py-1 rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">
+                <i class="iconfont icon-dingwei"></i><span class="ml-0.5">{{ memo.location.placeholder }}</span>
               </span>
             </div>
             <div class="flex flex-wrap gap-1.5">
               <span
                 v-for="(tag, idx) in memo.tags"
                 :key="idx"
-                class="flex items-center px-1.5 py-0.5 text-xs rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300"
+                class="flex items-center px-1.5 py-1 rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300"
               >
-                <span class="mb-0.3">{{ tag }}</span>
+                <span>{{ tag }}</span>
               </span>
 
             </div>
