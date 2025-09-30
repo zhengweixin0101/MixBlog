@@ -90,19 +90,19 @@ onBeforeUnmount(() => {
     v-show="visible"
     ref="menuRef"
     id="rightMenu"
-    class="fixed z-10002 bg-#fefefe dark:bg-white/10 dark:backdrop-blur-md text-gray-800 dark:text-gray-100 rounded-lg shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)] p-1"
+    class="fixed z-10002 bg-#fefefe dark:bg-white/10 dark:backdrop-blur-md text-gray-800 dark:text-gray-100 rounded-lg shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)] p-1.5"
     :style="{ top: y + 'px', left: x + 'px' }"
   >
-    <div class="flex justify-between p-2">
-      <i class="iconfont icon-arrow-left text-lg text-#2f3f5b/80 dark:text-white cursor-pointer px-2" @click="goBack"></i>
-      <i class="iconfont icon-arrow-right text-lg text-#2f3f5b/80 dark:text-white cursor-pointer px-2" @click="goForward"></i>
-      <i class="iconfont icon-arrow-rotate-right text-lg text-#2f3f5b/80 dark:text-white cursor-pointer px-2" @click="refreshPage"></i>
-      <i class="iconfont icon-arrow-up text-lg text-#2f3f5b/80 dark:text-white cursor-pointer px-2" @click="scrollToTop"></i>
+    <div class="flex justify-between gap-1 p-1">
+      <i class="iconfont icon-arrow-left text-lg text-#2f3f5b/80 dark:text-white dark:hover:text-gray-700 cursor-pointer p-1 px-2 hover:bg-#00e699/50 dark:hover:bg-#00e699 rounded-lg transition-colors duration-130" @click="goBack"></i>
+      <i class="iconfont icon-arrow-right text-lg text-#2f3f5b/80 dark:text-white dark:hover:text-gray-700 cursor-pointer p-1 px-2 hover:bg-#00e699/50 dark:hover:bg-#00e699 rounded-lg transition-colors duration-130" @click="goForward"></i>
+      <i class="iconfont icon-arrow-rotate-right text-lg text-#2f3f5b/80 dark:text-white dark:hover:text-gray-700 cursor-pointer p-1 px-2 hover:bg-#00e699/50 dark:hover:bg-#00e699 rounded-lg transition-colors duration-130" @click="refreshPage"></i>
+      <i class="iconfont icon-arrow-up text-lg text-#2f3f5b/80 dark:text-white dark:hover:text-gray-700 cursor-pointer p-1 px-2 hover:bg-#00e699/50 dark:hover:bg-#00e699 rounded-lg transition-colors duration-130" @click="scrollToTop"></i>
     </div>
-    <div class="border border-dashed border-gray-300 dark:border-white/20 mb-1"></div>
-    <div class="flex flex-col gap-2 px-4 p-2">
-      <span @click="goHome" class="cursor-pointer"><i class="iconfont icon-home text-lg text-#2f3f5b/80 dark:text-white mr-2"></i>返回首页</span>
-      <span @click="shufflePost" class="cursor-pointer"><i class="iconfont icon-shuffle text-lg text-#2f3f5b/80 dark:text-white mr-2"></i>随便逛逛</span>
+    <div class="border border-dashed border-gray-300 dark:border-white/20 m-1"></div>
+    <div class="flex flex-col p-1">
+      <span @click="goHome" class="cursor-pointer pl-2 p-1.5 text-#2f3f5b/90 dark:text-white dark:hover:text-gray-700 hover:bg-#00e699/50 dark:hover:bg-#00e699 rounded-lg transition-colors duration-130"><i class="iconfont icon-home text-lg mr-2"></i>返回首页</span>
+      <span @click="shufflePost" class="cursor-pointer pl-2 p-1.5 text-#2f3f5b/90 dark:text-white dark:hover:text-gray-700 hover:bg-#00e699/50 dark:hover:bg-#00e699 rounded-lg transition-colors duration-130"><i class="iconfont icon-shuffle text-lg mr-2"></i>随便逛逛</span>
     </div>
   </div>
 </template>
