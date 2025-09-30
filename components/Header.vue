@@ -62,7 +62,7 @@ function toggleTheme() {
               class="flex items-center space-x-1 no-underline whitespace-nowrap"
               :class="{
                 'text-#2f3f5b dark:text-gradient': isActive(item),
-                'text-#2f3f5b hover:bg-#00e699/20 dark:hover:bg-transparent dark:text-white dark:hover:brightness-75 cursor-pointer': !isActive(item)
+                'text-#2f3f5b hover:bg-#00e699/20 dark:hover:bg-transparent dark:text-white dark:hover:brightness-75 cursor-pointer transition-colors duration-200 dark:transition-none': !isActive(item)
               }"
             >
               <i :class="['iconfont', item.icon, { 'text-#2f3f5b dark:text-gradient': isActive(item) }]" ></i>
