@@ -118,9 +118,9 @@
               >
                 <span>{{ tag }}</span>
               </span>
-
             </div>
           </div>
+          
         </li>
       </ul>
 
