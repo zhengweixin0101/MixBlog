@@ -14,14 +14,9 @@ body {
   scroll-behavior: smooth;
   color-scheme: light dark;
   forced-color-adjust: none;
-  /* 禁止选中 */
-  -webkit-user-select: none;
-  /* Chrome/Safari */
-  -moz-user-select: none;
-  /* Firefox */
-  -ms-user-select: none;
-  /* IE/Edge */
-  user-select: none;
+
+  /* 保留换行符 */
+  white-space: pre-line;
 }
 
 html.dark {
@@ -30,17 +25,6 @@ html.dark {
 
 html.light {
   color-scheme: light;
-}
-
-/* 文章允许选择 */
-.article-content {
-  -webkit-user-select: text;
-  /* Chrome/Safari */
-  -moz-user-select: text;
-  /* Firefox */
-  -ms-user-select: text;
-  /* IE/Edge */
-  user-select: text;
 }
 
 /* 浮现动画 */

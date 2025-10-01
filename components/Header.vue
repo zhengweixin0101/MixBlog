@@ -1,13 +1,16 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useRoute, useColorMode } from '#imports'
+import { ref, onMounted, onBeforeUnmount, useRoute, useColorMode } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
+
+import { useNotification } from '~/composables/useNotification'
+const notification = useNotification()
 
 const route = useRoute()
 const colorMode = useColorMode()
 
 const isMenuOpen = ref(false)
 const menuButton = ref(null)
+const mounted = ref(false)
 
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value
@@ -42,7 +45,12 @@ onBeforeUnmount(() => {
 
 function toggleTheme() {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+  notification.show(`已为您切换为${colorMode.value === 'dark' ? '浅色' : '深色'}模式`)
 }
+
+onMounted(() => {
+  mounted.value = true
+})
 </script>
 
 <template>
@@ -84,11 +92,14 @@ function toggleTheme() {
         <button
           @click="toggleTheme"
           aria-label="切换主题"
-          class="w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center select-none cursor-pointer"
+          class="relative w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center select-none cursor-pointer"
           type="button"
         >
+          <i class="absolute iconfont icon-a-Frame47 text-lg" v-show="!mounted"></i>
+          <client-only class="absolute">
             <i v-if="colorMode.value === 'dark'" class="iconfont icon-a-Frame47 text-lg"></i>
             <i v-else class="iconfont icon-a-Frame48 text-lg"></i>
+          </client-only>
         </button>
       </div>
     </nav>

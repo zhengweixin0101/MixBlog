@@ -1,6 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { useHead, useRoute } from '#imports'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, useHead, useRoute } from '#imports'
 import { marked } from 'marked'
 import dayjs from 'dayjs'
 import hljs from 'highlight.js'
@@ -315,7 +314,7 @@ const formattedDate = computed(() => {
           <div class="flex items-center justify-center py-20"></div>
         </div>
       </div>
-      <div  data-fade>
+      <div data-fade>
         <Comment />
       </div>
     </div>

@@ -47,7 +47,7 @@
               <!-- 代码块 -->
               <pre
                 v-else-if="node.type === 'CODE_BLOCK'"
-                class="bg-gray-100 dark:bg-white/10 dark:border-gray-700 rounded-lg p-2 text-sm font-mono text-#1f2937 dark:text-gray-200 overflow-x-auto shadow-inner select-text"
+                class="bg-gray-100 dark:bg-white/10 dark:border-gray-700 rounded-lg p-2 text-sm font-mono text-#1f2937 dark:text-gray-200 overflow-x-auto shadow-inner"
               ><code>{{ node.codeBlockNode.content }}</code></pre>
 
               <!-- 任务列表 -->
@@ -118,9 +118,9 @@
               >
                 <span>{{ tag }}</span>
               </span>
-
             </div>
           </div>
+          
         </li>
       </ul>
 
@@ -135,7 +135,7 @@
         </button>
       </div>
 
-      <div data-fade id="comment">
+      <div data-fade>
         <Comment />
       </div>
     </section>
@@ -143,8 +143,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, computed } from 'vue'
-import { useHead } from '#imports'
+import { ref, onMounted, nextTick, useHead } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
 import Comment from '@/components/Comment.vue'
 

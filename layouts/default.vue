@@ -15,6 +15,7 @@
       </div>
     </div>
     <ContextMenu />
+    <GlobalNotification />
   </div>
   <Background />
 </template>

@@ -1,6 +1,5 @@
 <script setup>
-import { computed } from 'vue'
-import { useHead } from '#imports'
+import { computed, useHead } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
 import { appsConfig } from '@/siteConfig/apps.js'
 

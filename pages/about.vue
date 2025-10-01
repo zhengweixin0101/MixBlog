@@ -1,7 +1,5 @@
 <script setup>
-import { onMounted, ref, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
-import { useHead } from '#imports'
+import { onMounted, ref, onBeforeUnmount, useHead, useRouter } from '#imports'
 import gsap from 'gsap'
 
 import { aboutConfig } from '@/siteConfig/about.js'
@@ -174,6 +172,15 @@ const { data: statsTotal } = useAsyncData(
   { lazy: true }
 )
 
+const statItems = [
+  { label: '今日人数', valueKey: 'visitors', source: statsToday },
+  { label: '昨日人数', valueKey: 'visitors', source: statsYesterday },
+  { label: '本月访问', valueKey: 'pageviews', source: statsTotal },
+  { label: '今日访问', valueKey: 'pageviews', source: statsToday },
+  { label: '昨日访问', valueKey: 'pageviews', source: statsYesterday },
+  { label: '总访问量', valueKey: 'pageviews', source: statsTotal },
+]
+
 // 游戏&番剧
 const hoverHero = ref(null)
 
@@ -295,85 +302,38 @@ function handleClick(link) {
 
     <div data-fade class="flex flex-col md:flex-row gap-4 w-full mx-auto m-5">
       <!-- 技能 -->
-      <div class="flex-1 md:w-1/2 overflow-hidden bg-white dark:bg-white/10 p-5 rounded-2xl shadow-[0_0_2px_rgba(0,0,0,0.2)]
-                  min-w-full md:min-w-[200px] relative transition-colors duration-300"
-      >
-        <div class="text-xs absolute text-gray-400">技能</div>
-        <h2 class="text-3xl font-bold mt-5">开启创造力</h2>
-        <!-- 第一行图标流 -->
-        <div class="flex gap-3 animate-scroll-left whitespace-nowrap mt-8">
-          <div
-            v-for="(skill, i) in firstHalf"
-            :key="'row1-' + i"
-            class="flex items-center justify-center rounded-2xl shadow aspect-square flex-[0_0_80px]"
-            :style="{ backgroundColor: skill.color }"
-          >
-            <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
-          </div>
-          <div
-            v-for="(skill, i) in firstHalf"
-            :key="'row1-copy-' + i"
-            class="flex items-center justify-center rounded-2xl shadow aspect-square flex-[0_0_80px]"
-            :style="{ backgroundColor: skill.color }"
-          >
-            <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
-          </div>
-          <div
-            v-for="(skill, i) in firstHalf"
-            :key="'row1-copy-' + i"
-            class="flex items-center justify-center rounded-2xl shadow aspect-square flex-[0_0_80px]"
-            :style="{ backgroundColor: skill.color }"
-          >
-            <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
-          </div>
-          <div
-            v-for="(skill, i) in firstHalf"
-            :key="'row1-copy-' + i"
-            class="flex items-center justify-center rounded-2xl shadow aspect-square flex-[0_0_80px]"
-            :style="{ backgroundColor: skill.color }"
-          >
-            <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
+      <div class="flex-1 md:flex-[11_11_0%] overflow-hidden bg-white dark:bg-white/10 rounded-2xl shadow-[0_0_2px_rgba(0,0,0,0.2)] min-w-full md:min-w-[200px] relative transition-colors duration-300">
+        <div class="text-xs absolute text-gray-400 p-5">技能</div>
+        <h2 class="text-3xl font-bold mt-5 p-5">开启创造力</h2>
+
+        <!-- 第一行 -->
+        <div class="skill-row-wrapper mt-2">
+          <div class="skill-row">
+            <div v-for="(skill, i) in firstHalf" :key="'row1-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
+              <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
+            </div>
+            <div v-for="(skill, i) in firstHalf" :key="'row1-copy-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
+              <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
+            </div>
           </div>
         </div>
-        <!-- 第二行图标流，反向滚动 -->
-        <div class="flex gap-3 animate-scroll-right whitespace-nowrap mt-4">
-          <div
-            v-for="(skill, i) in secondHalf"
-            :key="'row2-' + i"
-            class="flex items-center justify-center rounded-2xl shadow aspect-square flex-[0_0_80px]"
-            :style="{ backgroundColor: skill.color }"
-          >
-            <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
-          </div>
-          <div
-            v-for="(skill, i) in secondHalf"
-            :key="'row2-copy-' + i"
-            class="flex items-center justify-center rounded-2xl shadow aspect-square flex-[0_0_80px]"
-            :style="{ backgroundColor: skill.color }"
-          >
-            <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
-          </div>
-          <div
-            v-for="(skill, i) in secondHalf"
-            :key="'row2-copy-' + i"
-            class="flex items-center justify-center rounded-2xl shadow aspect-square flex-[0_0_80px]"
-            :style="{ backgroundColor: skill.color }"
-          >
-            <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
-          </div>
-          <div
-            v-for="(skill, i) in secondHalf"
-            :key="'row2-copy-' + i"
-            class="flex items-center justify-center rounded-2xl shadow aspect-square flex-[0_0_80px]"
-            :style="{ backgroundColor: skill.color }"
-          >
-            <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
+
+        <!-- 第二行反向滚动 -->
+        <div class="skill-row-wrapper mt-4">
+          <div class="skill-row skill-row-reverse">
+            <div v-for="(skill, i) in secondHalf" :key="'row2-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
+              <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
+            </div>
+            <div v-for="(skill, i) in secondHalf" :key="'row2-copy-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
+              <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
+            </div>
           </div>
         </div>
       </div>
+
       <!-- 偏好 -->
       <div
-        class="flex-1 md:w-1/2 p-5 rounded-2xl bg-cover min-w-full md:min-w-[200px] relative transition-colors duration-300"
+        class="flex-1 md:flex-[10_10_0%] p-5 rounded-2xl bg-cover min-w-full md:min-w-[200px] relative transition-colors duration-300"
         :style="{ backgroundImage: `url(${aboutConfig.author.preference.img})` }"
       >
         <div class="text-xs absolute text-gray-300">关注偏好</div>
@@ -384,7 +344,7 @@ function handleClick(link) {
 
     <div data-fade class="flex flex-wrap justify-center gap-4 w-full mx-auto m-5">
       <!-- 访问统计 -->
-      <div 
+      <div
         class="flex-1 md:flex-[2_2_0%] p-5 rounded-2xl min-w-full md:min-w-200px h-300px relative text-white overflow-hidden transition-colors duration-300"
         :style="{ background: `url(${aboutConfig.umami.cover}) top / cover no-repeat` }"
       >
@@ -395,99 +355,36 @@ function handleClick(link) {
           <h2 class="text-3xl font-bold mt-1 text-white">访问统计</h2>
           <!-- 统计信息 -->
           <div class="grid grid-cols-3 text-2xl mt-8 mb-5 gap-y-4">
-            <!-- 今日人数 -->
-            <div>
-              <div class="text-sm text-gray-300">今日人数</div>
+            <div v-for="stat in statItems" :key="stat.label">
+              <div class="text-sm text-gray-300">{{ stat.label }}</div>
               <div class="font-extrabold h-10 relative">
-                <!-- 透明占位文字保证高度一致 -->
-                <span class="opacity-0">{{ statsToday ? statsToday.visitors.value : '0000' }}</span>
-                
-                <template v-if="!statsToday">
+                <span class="opacity-0">
+                  {{ stat.source?.value?.[stat.valueKey]?.value || '0000' }}
+                </span>
+                <template v-if="!stat.source">
                   <div class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"></div>
                 </template>
                 <template v-else>
-                  <span class="absolute left-0 top-1/2 -translate-y-1/2">{{ statsToday.visitors.value }}</span>
-                </template>
-              </div>
-            </div>
-
-            <!-- 昨日人数 -->
-            <div>
-              <div class="text-sm text-gray-300">昨日人数</div>
-              <div class="font-extrabold h-10 relative">
-                <span class="opacity-0">{{ statsYesterday ? statsYesterday.visitors.value : '0000' }}</span>
-                <template v-if="!statsYesterday">
-                  <div class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"></div>
-                </template>
-                <template v-else>
-                  <span class="absolute left-0 top-1/2 -translate-y-1/2">{{ statsYesterday.visitors.value }}</span>
-                </template>
-              </div>
-            </div>
-
-            <!-- 本月访问 -->
-            <div>
-              <div class="text-sm text-gray-300">本月访问</div>
-              <div class="font-extrabold h-10 relative">
-                <span class="opacity-0">{{ statsTotal ? statsTotal.pageviews.value : '00000' }}</span>
-                <template v-if="!statsTotal">
-                  <div class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-20 h-6"></div>
-                </template>
-                <template v-else>
-                  <span class="absolute left-0 top-1/2 -translate-y-1/2">{{ statsTotal.pageviews.value }}</span>
-                </template>
-              </div>
-            </div>
-
-            <!-- 今日访问 -->
-            <div>
-              <div class="text-sm text-gray-300">今日访问</div>
-              <div class="font-extrabold h-10 relative">
-                <span class="opacity-0">{{ statsToday ? statsToday.pageviews.value : '0000' }}</span>
-                <template v-if="!statsToday">
-                  <div class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"></div>
-                </template>
-                <template v-else>
-                  <span class="absolute left-0 top-1/2 -translate-y-1/2">{{ statsToday.pageviews.value }}</span>
-                </template>
-              </div>
-            </div>
-
-            <!-- 昨日访问 -->
-            <div>
-              <div class="text-sm text-gray-300">昨日访问</div>
-              <div class="font-extrabold h-10 relative">
-                <span class="opacity-0">{{ statsYesterday ? statsYesterday.pageviews.value : '0000' }}</span>
-                <template v-if="!statsYesterday">
-                  <div class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"></div>
-                </template>
-                <template v-else>
-                  <span class="absolute left-0 top-1/2 -translate-y-1/2">{{ statsYesterday.pageviews.value }}</span>
-                </template>
-              </div>
-            </div>
-
-            <!-- 总访问量 -->
-            <div>
-              <div class="text-sm text-gray-300">总访问量</div>
-              <div class="font-extrabold h-10 relative">
-                <span class="opacity-0">{{ statsTotal ? statsTotal.pageviews.value : '00000' }}</span>
-                <template v-if="!statsTotal">
-                  <div class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-20 h-6"></div>
-                </template>
-                <template v-else>
-                  <span class="absolute left-0 top-1/2 -translate-y-1/2">{{ statsTotal.pageviews.value }}</span>
+                  <span class="absolute left-0 top-1/2 -translate-y-1/2">
+                    {{ stat.source?.value?.[stat.valueKey]?.value || '0000' }}
+                  </span>
                 </template>
               </div>
             </div>
           </div>
-          <div>
-            <p class="text-sm text-white/50">统计信息来自 
-              <a :href=UMAMI_SHARE_URL target="_blank" rel="noopener nofollow" class="text-sm text-white/50 no-underline hover:text-white transition-colors duration-200">Umami</a>
-            </p>
-          </div>
+
+          <!-- 来源信息 -->
+          <p class="text-sm text-white/50">
+            统计信息来自 
+            <a :href="UMAMI_SHARE_URL" target="_blank" rel="noopener nofollow"
+              class="text-sm text-white/50 no-underline hover:text-white transition-colors duration-200">
+              Umami
+            </a>
+          </p>
+
+          <!-- 底部跳转 -->
           <div class="absolute right-0 -bottom-1 text-white rounded-full bg-white/20 hover:bg-white/30 px-2 py-1 transition-colors duration-300">
-            <NuxtLink to="/posts" class="no-underline">
+            <NuxtLink to="/posts" class="no-underline flex items-center">
               <i class="color-white iconfont icon-ans-icon-arrow-circle-right"></i>
               <span class="text-white ml-2">文章列表</span>
             </NuxtLink>
@@ -682,19 +579,47 @@ function handleClick(link) {
 .slide-leave-active { transition: transform 0.2s ease, opacity 0.2s ease; }
 
 /* 技能卡片动画 */
+.skill-row-wrapper {
+  overflow: hidden;
+  width: 100%;
+}
+
+.skill-row {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  animation: scroll-left 30s linear infinite;
+  will-change: transform;
+}
+
+.skill-row-reverse {
+  animation: scroll-right 30s linear infinite;
+}
+
+.skill-item {
+  flex: 0 0 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  box-shadow: 0 0 2px rgba(0,0,0,0.2);
+}
+
 @keyframes scroll-left {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
+
 @keyframes scroll-right {
   0%   { transform: translateX(-50%); }
   100% { transform: translateX(0); }
 }
-.animate-scroll-left {
-  animation: scroll-left 30s linear infinite;
-}
-.animate-scroll-right {
-  animation: scroll-right 30s linear infinite;
+
+@media (max-width: 768px) {
+  .skill-row, .skill-row-reverse {
+    animation-duration: 60s;
+  }
 }
 
 /* MAX动画 */

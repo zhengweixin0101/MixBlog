@@ -4,10 +4,11 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, nextTick } from 'vue'
 import { siteConfig } from '@/siteConfig/main.js'
 
-onMounted(() => {
+onMounted(async () => {
+  await nextTick()
   const script = document.createElement('script')
   script.src = 'https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.min.js'
   script.async = true
@@ -16,7 +17,7 @@ onMounted(() => {
   script.onload = () => {
     twikoo.init({
       envId: siteConfig.thirdParty.twikooEnvId,
-      el: '#tcomment',
+      el: '#tcomment'
     })
   }
 })
@@ -24,69 +25,240 @@ onMounted(() => {
 
 
 <style>
-.twikoo .tk-meta-input input:focus, textarea:focus, .el-textarea textarea:focus {
-    outline: none;
-    border-color: #2dc866;
+/* 输入框样式 */
+.el-input-group {
+  border-radius: 12px;
+  border: 0.1px solid #2f3f5b30;
+  transition: all 0.3s ease;
 }
 
-html.dark .twikoo .tk-meta-input input:focus, textarea:focus, .el-textarea textarea:focus {
-  border-color: #2dc86690 !important;
+.el-input-group:focus-within {
+  border: 1.5px solid #2f3f5b99;
 }
 
-.tk-send:not(.is-disabled) {
-  background-color: #2dc866 !important;
-  border-color: #2dc866 !important;
-  color: #ffffff !important;
+html.dark .el-input-group {
+  border-color: #ffffff30;
 }
 
-.tk-send:not(.is-disabled):hover {
-  background-color: #2dc86699 !important;
-  border-color: #2dc86699 !important;
+html.dark .el-input-group:focus-within {
+  border-color: #ffffff99;
 }
 
-.tk-send.is-disabled {
-  background-color: #2dc866 !important;
-  border-color: #2dc866 !important;
-  color: #ffffff !important;
-  opacity: 0.5;
-  cursor: not-allowed;
+.twikoo .el-input-group__prepend {
+  border-radius: 12px 0 0 12px;
+  border: none;
 }
 
-.tk-preview:hover, .tk-preview:focus {
-  border-color: #2dc866 !important;
-  color: #2dc866 !important;
+.twikoo .el-input__inner {
+  border-radius: 0 12px 12px 0;
+  border: none;
 }
 
+.el-textarea__inner {
+  border-radius: 12px !important;
+}
+
+.el-textarea__inner:focus-within {
+  border: 1.5px solid #2f3f5b99 !important;
+}
+
+html.dark .el-textarea__inner:focus-within {
+  border: 1.5px solid #ffffff99 !important;
+}
+
+/* 表情面板样式 */
+.OwO-body {
+  border-radius: 12px !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(8px) !important;
+  transition: all 0.2s ease;
+  cursor: default;
+  transform: translateY(-20px);
+}
+
+.OwO.OwO-open .OwO-body {
+  display: block;
+  animation: showOwO 0.3s cubic-bezier(0.42, 0, 0.3, 1.11) forwards;
+}
+
+@keyframes showOwO {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+html.dark .OwO-body {
+  background-color: rgba(000, 000, 000, 0.8) !important;
+}
+
+.OwO-item {
+  min-height: 30px;
+  cursor: pointer;
+  border-radius: 8px !important;
+  padding: 4px !important;
+}
+
+html.dark .OwO-item {
+  color: #FFF !important;
+}
+
+.OwO-item:hover {
+  box-shadow: 0 0 8px rgba(0,0,0,0.3) !important;
+}
+
+.OwO-bar {
+  display: flex !important;
+  justify-content: center !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 0 0 12px 12px !important;
+  padding: 4px 0;
+  margin-top: 4px;
+}
+
+html.dark .OwO-bar {
+  background-color: rgba(000, 000, 000, 0.6) !important;
+}
+
+.OwO-packages li {
+  border-radius: 8px !important;
+  transition: all 0.2s ease;
+}
+
+html.dark .OwO-packages li {
+  color: white;
+}
+
+.OwO-packages li.OwO-package-active,
+.OwO-packages li:hover {
+  background-color: #14c087 !important;
+  color: #fff;
+}
+
+html.dark .OwO-packages li.OwO-package-active,
+html.dark .OwO-packages li:hover {
+  background: none !important;
+  color: #14c087;
+}
+
+/* 按钮样式 */
 .tk-comments-title svg, .tk-action svg {
-  fill: #2dc866 !important;
+  fill: #2f3f5b !important;
+}
+
+html.dark .tk-comments-title svg, html.dark .tk-action svg {
+  fill: #ffffffdb !important;
+}
+
+.tk-preview,
+.tk-send {
+  border-radius: 8px !important;
+}
+
+/* 评论区样式 */
+.tk-avatar {
+  border-radius: 12px !important;
+  box-shadow: 0 0 3px rgba(0,0,0,0.3);
+}
+
+.tk-replies .tk-avatar {
+  border-radius: 6px !important;
+}
+
+
+.el-loading-spinner .circular .path {
+  stroke: #2f3f5b;
+}
+
+html.dark .el-loading-spinner .circular .path {
+  stroke: #ffffff;
+}
+
+.tk-ruser,
+.tk-action-count,
+.tk-extra-text,
+.tk-actions a {
+  color: #2f3f5b;
+}
+
+html.dark .tk-ruser,
+html.dark .tk-action-count,
+html.dark .tk-extra-text,
+html.dark .tk-actions a {
+  color: #FFFFFF;
 }
 
 .tk-extras {
-  fill: 0 0 rgb(0 0 0 / 0) !important;
+margin-top: -15px;
 }
 
-.tk-tag-green {
-  color: #2dc866 !important;
-  border-color: #2dc866 !important;
+.tk-extra {
+  padding: 5px;
+  border-radius: 8px;
+  box-shadow: 0 0 2px rgba(0,0,0,0.3);
 }
 
-.tk-action-count {
-  color: #2dc866 !important;
+html.dark .tk-extra {
+  box-shadow: 0 0 2px rgba(255,255,255,0.3);
 }
 
-.tk-time {
-  opacity: 0.8 !important;
+html.dark .tk-extra-text {
+  color: #FFF;
 }
 
-.tk-ruser {
-  color: #2f3f5b;
-  text-decoration: none;
-  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+.tk-icon svg path {
+  fill: #2f3f5b;
 }
 
-html.dark .tk-ruser {
-  color: #fff;
-  text-decoration: none;
+html.dark .tk-icon svg path {
+  fill: #FFF;
+}
+
+.tk-comment {
+  padding: 1rem;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 0 3px rgba(0,0,0,0.3);
+}
+
+html.dark .tk-comment {
+  background: #ffffff10;
+  box-shadow: 0 0 1px rgba(255,255,255,1);
+}
+
+.tk-replies .tk-comment {
+  box-shadow: none;
+  background: none;
+  border-top: 2px dashed rgba(0,0,0,0.1);
+}
+
+html.dark .tk-replies .tk-comment {
+  box-shadow: none;
+  background: none;
+  border-top: 2px dashed rgba(255, 255, 255, 0.1);
+}
+
+.twikoo .tk-footer {
+  display: none;
+}
+
+/* 评论内容样式 */
+.tk-content blockquote {
+  background-color: rgba(255, 255, 255, 0.02);
+  padding: 0rem 1rem;
+  margin-bottom: -15px;
+  border-radius: 12px;
+  font-style: italic;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+html.dark .tk-content blockquote {
+  background: rgba(255, 255, 255, 0.01);
+  box-shadow: inset 0 0 2px rgba(255, 255, 255, 0.2);
 }
 
 .tk-content img {
@@ -95,9 +267,5 @@ html.dark .tk-ruser {
   display: block;
   cursor: pointer;
   max-width: 100px !important;
-}
-
-.twikoo .tk-footer {
-  display: none;
 }
 </style>
