@@ -47,7 +47,7 @@
               <!-- 代码块 -->
               <pre
                 v-else-if="node.type === 'CODE_BLOCK'"
-                class="bg-gray-100 dark:bg-white/10 dark:border-gray-700 rounded-lg p-2 text-sm font-mono text-#1f2937 dark:text-gray-200 overflow-x-auto shadow-inner select-text"
+                class="bg-gray-100 dark:bg-white/10 dark:border-gray-700 rounded-lg p-2 text-sm font-mono text-#1f2937 dark:text-gray-200 overflow-x-auto shadow-inner"
               ><code>{{ node.codeBlockNode.content }}</code></pre>
 
               <!-- 任务列表 -->

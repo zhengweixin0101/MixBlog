@@ -17,24 +17,32 @@ const colorMode = useColorMode()
 
 const menuType = ref('default')
 const targetElement = ref(null)
+const selectedText = ref('')
 
 const showMenu = async (event) => {
   event.preventDefault()
-
   const el = event.target
-  const parentLink = el.closest('a')
 
-  if (parentLink?.dataset.fancybox) {
-    menuType.value = 'image'
-    targetElement.value = parentLink.querySelector('img') || el
-  }
-  else if (el.tagName === 'IMG') {
-    menuType.value = 'image'
+  selectedText.value = ''
+
+  if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable) {
     targetElement.value = el
+    selectedText.value = el.value.substring(el.selectionStart, el.selectionEnd)
+    menuType.value = selectedText.value ? 'input-selected' : 'input'
   }
-  else if (parentLink && el !== parentLink) {
+  else if (window.getSelection()?.toString()) {
+    const sel = window.getSelection()
+    selectedText.value = sel.toString()
+    targetElement.value = el
+    menuType.value = 'selection'
+  }
+  else if (el.tagName === 'IMG' || el.closest('a[data-fancybox]')) {
+    menuType.value = 'image'
+    targetElement.value = el.tagName === 'IMG' ? el : el.querySelector('img')
+  }
+  else if (el.closest('a')) {
     menuType.value = 'link'
-    targetElement.value = parentLink
+    targetElement.value = el.closest('a')
   }
   else {
     menuType.value = 'default'
@@ -47,13 +55,12 @@ const showMenu = async (event) => {
   const menu = menuRef.value
   if (!menu) return
 
+  let posX = event.clientX
+  let posY = event.clientY
   const menuWidth = menu.offsetWidth
   const menuHeight = menu.offsetHeight
   const pageWidth = window.innerWidth
   const pageHeight = window.innerHeight
-
-  let posX = event.clientX
-  let posY = event.clientY
 
   if (posX + menuWidth > pageWidth) posX = pageWidth - menuWidth - 5
   if (posY + menuHeight > pageHeight) posY = pageHeight - menuHeight - 5
@@ -174,6 +181,49 @@ const copyLink = async () => {
   }
 }
 
+// 输入框菜单功能
+const cutText = () => {
+  if (!targetElement.value) return
+  targetElement.value.select()
+  document.execCommand('cut')
+  hideMenu()
+}
+
+const copyText = () => {
+  if (!targetElement.value) return
+  if (menuType.value === 'selection' && selectedText.value) {
+    navigator.clipboard.writeText(selectedText.value)
+  } else {
+    targetElement.value.select()
+    document.execCommand('copy')
+  }
+  notification.show('已复制!')
+  hideMenu()
+}
+
+const pasteText = () => {
+  if (!targetElement.value) return
+  navigator.clipboard.readText().then(text => {
+    const el = targetElement.value
+    const start = el.selectionStart
+    const end = el.selectionEnd
+    el.setRangeText(text, start, end, 'end')
+  })
+  hideMenu()
+}
+
+// 选中文本功能
+function search() {
+  if (!selectedText.value) {
+    notification.show('请选择文本！', 'warning')
+    return
+  }
+  const query = encodeURIComponent(selectedText.value)
+  const url = `https://www.bing.com/search?q=${query}`
+  window.open(url, '_blank')
+  hideMenu()
+}
+
 // 事件绑定
 onMounted(() => {
   window.addEventListener('contextmenu', showMenu)
@@ -253,6 +303,29 @@ onBeforeUnmount(() => {
         <span class="rightMenu-item-2" @click="copyLink">
           <i class="iconfont icon-link text-lg mr-2"></i>复制链接
         </span>
+      </div>
+    </template>
+
+    <!-- 输入框 -->
+    <template v-else-if="menuType === 'input'">
+      <div class="flex flex-col p-1">
+        <span @click="pasteText" class="rightMenu-item-2"><i class="iconfont icon-paste text-lg mr-2"></i>粘贴</span>
+      </div>
+    </template>
+
+    <template v-if="menuType === 'input-selected'">
+      <div class="flex flex-col p-1">
+        <span @click="pasteText" class="rightMenu-item-2"><i class="iconfont icon-paste text-lg mr-2"></i>粘贴</span>
+        <span @click="copyText" class="rightMenu-item-2"><i class="iconfont icon-copy text-lg mr-2"></i>复制</span>
+        <span @click="cutText" class="rightMenu-item-2"><i class="iconfont icon-cut text-lg mr-2"></i>剪切</span>
+      </div>
+    </template>
+    
+    <!-- 选中 -->
+    <template v-else-if="menuType === 'selection'">
+      <div class="flex flex-col p-1">
+        <span @click="copyText" class="rightMenu-item-2"><i class="iconfont icon-copy text-lg mr-2"></i>复制</span>
+        <span @click="search" class="rightMenu-item-2"><i class="iconfont icon-search text-lg mr-2"></i>必应搜索</span>
       </div>
     </template>
   </div>
