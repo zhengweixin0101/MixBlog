@@ -24,6 +24,22 @@ onMounted(() => {
 
 
 <style>
+/* Twikoo 评论区 blockquote 样式 */
+.twikoo .tk-content blockquote {
+  background-color: rgba(60,60,67,0.02);
+  padding: 0rem 1rem;
+  margin: 1px;
+  border-radius: 12px;
+  font-style: italic;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark 模式 */
+html.dark .twikoo .tk-content blockquote {
+  background: rgba(60,60,67,0.1);
+  box-shadow: 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
 .twikoo .tk-meta-input input:focus, textarea:focus, .el-textarea textarea:focus {
     outline: none;
     border-color: #2dc866;
@@ -76,6 +92,11 @@ html.dark .twikoo .tk-meta-input input:focus, textarea:focus, .el-textarea texta
 
 .tk-time {
   opacity: 0.8 !important;
+}
+
+.tk-actions a {
+  color: #ffffff !important;
+  opacity: 0.8;
 }
 
 .tk-ruser {
