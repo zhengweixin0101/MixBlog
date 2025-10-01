@@ -366,7 +366,7 @@ function handleClick(link) {
                 </template>
                 <template v-else>
                   <span class="absolute left-0 top-1/2 -translate-y-1/2">
-                    {{ stat.source.value[stat.valueKey]?.value }}
+                    {{ stat.source?.value?.[stat.valueKey]?.value || '0000' }}
                   </span>
                 </template>
               </div>
