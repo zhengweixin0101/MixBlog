@@ -1,7 +1,5 @@
 <script setup>
-import { onMounted, ref, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
-import { useHead } from '#imports'
+import { onMounted, ref, onBeforeUnmount, useHead, useRouter } from '#imports'
 import gsap from 'gsap'
 
 import { aboutConfig } from '@/siteConfig/about.js'

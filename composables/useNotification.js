@@ -7,7 +7,7 @@ const state = reactive({
 let idCounter = 0
 
 export function useNotification() {
-    function show(message, type = 'info', duration = 3000, closable = false) {
+    function show(message, type = 'info', duration = 2000, closable = false) {
         const id = idCounter++
         state.toasts.push({
             id,

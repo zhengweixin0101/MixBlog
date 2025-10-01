@@ -1,7 +1,9 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onBeforeUnmount, nextTick, useRouter, useRoute, useColorMode } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
+
+import { useNotification } from '~/composables/useNotification'
+const notification = useNotification()
 
 const visible = ref(false)
 const x = ref(0)
@@ -9,7 +11,9 @@ const y = ref(0)
 const menuRef = ref(null)
 const loading = ref(false)
 
+const route = useRoute()
 const router = useRouter()
+const colorMode = useColorMode()
 
 // 显示右键菜单
 const showMenu = async (event) => {
@@ -39,6 +43,9 @@ const showMenu = async (event) => {
 const hideMenu = () => {
   visible.value = false
 }
+
+// 状态
+const isHome = computed(() => route.path === '/')
 
 // 浏览器操作
 const goBack = () => { window.history.back(); hideMenu() }
@@ -74,6 +81,24 @@ const shufflePost = async () => {
   }
 }
 
+//复制地址
+const copyAddress = async () => {
+  try {
+    await navigator.clipboard.writeText(window.location.href)
+    notification.show(`复制成功!`)
+  } catch (err) {
+    notification.show(`复制失败!`, 'error')
+  } finally {
+    hideMenu()
+  }
+}
+
+//模式切换
+function toggleTheme() {
+  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+  notification.show(`已为您切换为${colorMode.value === 'dark' ? '浅色' : '深色'}模式`)
+}
+
 // 事件绑定
 onMounted(() => {
   window.addEventListener('contextmenu', showMenu)
@@ -106,8 +131,13 @@ onBeforeUnmount(() => {
     </div>
     <div class="border border-dashed border-gray-300 dark:border-white/20 m-1"></div>
     <div class="flex flex-col p-1">
-      <span @click="goHome" class="rightMenu-item-2"><i class="iconfont icon-home text-lg mr-2"></i>返回首页</span>
+      <span v-if="!isHome" @click="goHome" class="rightMenu-item-2"><i class="iconfont icon-home text-lg mr-2"></i>返回首页</span>
       <span @click="shufflePost" class="rightMenu-item-2"><i class="iconfont icon-shuffle text-lg mr-2"></i>随便逛逛</span>
+    </div>
+    <div class="border border-dashed border-gray-300 dark:border-white/20 m-1"></div>
+    <div class="flex flex-col p-1">
+      <span @click="copyAddress" class="rightMenu-item-2"><i class="iconfont icon-copy text-lg mr-2"></i>复制地址</span>
+      <span @click="toggleTheme" class="rightMenu-item-2"><i class="iconfont icon-circle-half-stroke text-lg mr-2"></i>{{colorMode.value === 'dark' ? '浅色' : '深色'}}模式</span>
     </div>
   </div>
 </template>
