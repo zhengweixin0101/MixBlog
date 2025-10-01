@@ -306,10 +306,12 @@ onBeforeUnmount(() => {
         <span @click="copyAddress" class="rightMenu-item-2">
           <i class="iconfont icon-copy text-lg mr-2"></i>复制地址
         </span>
-        <span @click="toggleTheme" class="rightMenu-item-2">
-          <i class="iconfont icon-circle-half-stroke text-lg mr-2"></i>
-          {{colorMode.value === 'dark' ? '浅色' : '深色'}}模式
-        </span>
+        <client-only>
+          <span @click="toggleTheme" class="rightMenu-item-2">
+            <i class="iconfont icon-circle-half-stroke text-lg mr-2"></i>
+            {{colorMode.value === 'dark' ? '浅色' : '深色'}}模式
+          </span>
+        </client-only>
       </div>
     </template>
 
