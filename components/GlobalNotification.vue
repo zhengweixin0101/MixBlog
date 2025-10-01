@@ -7,16 +7,16 @@
         class="relative px-4 py-2 rounded-lg flex items-center justify-between min-w-50 min-h-10 mb-2 overflow-hidden transition-all duration-300"
         :class="{
           'bg-#fefefe dark:bg-white/20 text-#2f3f5b dark:text-white font-medium shadow-[0_0_2px_rgba(0,0,0,0.2)]': toast.type === 'info',
-          'bg-green-500': toast.type === 'success',
-          'bg-red-500': toast.type === 'error',
-          'bg-yellow-500': toast.type === 'warning'
+          'bg-green-500 text-white': toast.type === 'success',
+          'bg-red-500 text-white': toast.type === 'error',
+          'bg-yellow-500 text-white': toast.type === 'warning'
         }"
       >
-        <span>{{ toast.message }}</span>
+        <span class="z-1">{{ toast.message }}</span>
 
         <span
           v-if="toast.closable"
-          class="ml-2 text-white font-bold hover:text-gray-200 cursor-pointer"
+          class="z-1 ml-2 text-white font-bold hover:text-gray-200 cursor-pointer"
           @click="notification.remove(toast.id)"
         >×</span>
 
