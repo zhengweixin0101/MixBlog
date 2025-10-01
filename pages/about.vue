@@ -302,7 +302,7 @@ function handleClick(link) {
 
     <div data-fade class="flex flex-col md:flex-row gap-4 w-full mx-auto m-5">
       <!-- 技能 -->
-      <div class="flex-1 md:flex-[11_11_0%] overflow-hidden bg-white dark:bg-white/10 rounded-2xl shadow-md min-w-full md:min-w-[200px] relative transition-colors duration-300">
+      <div class="flex-1 md:flex-[11_11_0%] overflow-hidden bg-white dark:bg-white/10 rounded-2xl shadow-[0_0_2px_rgba(0,0,0,0.2)] min-w-full md:min-w-[200px] relative transition-colors duration-300">
         <div class="text-xs absolute text-gray-400 p-5">技能</div>
         <h2 class="text-3xl font-bold mt-5 p-5">开启创造力</h2>
 

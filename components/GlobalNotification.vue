@@ -6,7 +6,7 @@
         :key="toast.id"
         class="relative px-4 py-2 rounded-lg flex items-center justify-between min-w-50 min-h-10 mb-2 overflow-hidden transition-all duration-300"
         :class="{
-          'bg-#fefefe dark:bg-white/20 text-#2f3f5b dark:text-white font-medium shadow-[0_0_2px_rgba(0,0,0,0.2)]': toast.type === 'info',
+          'bg-#fefefe dark:bg-white/10 text-#2f3f5b dark:text-white font-medium dark:backdrop-blur-md shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]': toast.type === 'info',
           'bg-green-500 text-white': toast.type === 'success',
           'bg-red-500 text-white': toast.type === 'error',
           'bg-yellow-500 text-white': toast.type === 'warning'
