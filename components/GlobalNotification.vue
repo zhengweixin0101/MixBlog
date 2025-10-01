@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed top-4 right-4 z-50 flex flex-col gap-4">
+  <div class="fixed bottom-2 right-4 z-50 flex-col gap-4">
     <transition-group name="toast" tag="div">
       <div
         v-for="toast in notification.state.toasts"
@@ -21,7 +21,13 @@
         >×</span>
 
         <div
-          class="absolute inset-0 bg-white/20 origin-left animate-progress"
+          class="absolute inset-0 origin-left animate-progress"
+          :class="{
+            'bg-black/5 dark:bg-white/20': toast.type === 'info',
+            'bg-green-300': toast.type === 'success',
+            'bg-red-300': toast.type === 'error',
+            'bg-yellow-300': toast.type === 'warning'
+          }"
           :style="{ animationDuration: toast.duration + 'ms' }"
         ></div>
       </div>

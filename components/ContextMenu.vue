@@ -7,7 +7,11 @@ const visible = ref(false)
 const x = ref(0)
 const y = ref(0)
 const menuRef = ref(null)
+const loading = ref(false)
 
+const router = useRouter()
+
+// 显示右键菜单
 const showMenu = async (event) => {
   event.preventDefault()
   visible.value = true
@@ -31,20 +35,19 @@ const showMenu = async (event) => {
   y.value = posY
 }
 
+// 隐藏菜单
 const hideMenu = () => {
   visible.value = false
 }
 
-// 绑定操作
+// 浏览器操作
 const goBack = () => { window.history.back(); hideMenu() }
 const goForward = () => { window.history.forward(); hideMenu() }
 const refreshPage = () => { window.location.reload(); hideMenu() }
 const scrollToTop = () => { window.scrollTo({ top: 0, behavior: 'smooth' }); hideMenu() }
-const goHome = () => {  window.location.href = '/' }
+const goHome = () => { router.push('/'); hideMenu() }
 
 // 随机文章
-const router = useRouter()
-const loading = ref(false)
 const shufflePost = async () => {
   loading.value = true
   try {
@@ -67,9 +70,11 @@ const shufflePost = async () => {
     console.error('Failed to fetch posts:', err)
   } finally {
     loading.value = false
+    hideMenu()
   }
 }
 
+// 事件绑定
 onMounted(() => {
   window.addEventListener('contextmenu', showMenu)
   window.addEventListener('click', hideMenu)
@@ -94,15 +99,15 @@ onBeforeUnmount(() => {
     :style="{ top: y + 'px', left: x + 'px' }"
   >
     <div class="flex justify-between gap-1 p-1">
-      <i class="iconfont icon-arrow-left text-lg text-#2f3f5b/80 dark:text-white dark:hover:text-gray-700 cursor-pointer p-1 px-2 hover:bg-#00e699/50 dark:hover:bg-#00e699 rounded-lg transition-colors duration-130" @click="goBack"></i>
-      <i class="iconfont icon-arrow-right text-lg text-#2f3f5b/80 dark:text-white dark:hover:text-gray-700 cursor-pointer p-1 px-2 hover:bg-#00e699/50 dark:hover:bg-#00e699 rounded-lg transition-colors duration-130" @click="goForward"></i>
-      <i class="iconfont icon-arrow-rotate-right text-lg text-#2f3f5b/80 dark:text-white dark:hover:text-gray-700 cursor-pointer p-1 px-2 hover:bg-#00e699/50 dark:hover:bg-#00e699 rounded-lg transition-colors duration-130" @click="refreshPage"></i>
-      <i class="iconfont icon-arrow-up text-lg text-#2f3f5b/80 dark:text-white dark:hover:text-gray-700 cursor-pointer p-1 px-2 hover:bg-#00e699/50 dark:hover:bg-#00e699 rounded-lg transition-colors duration-130" @click="scrollToTop"></i>
+      <i class="iconfont icon-arrow-left rightMenu-item-1" @click="goBack"></i>
+      <i class="iconfont icon-arrow-right rightMenu-item-1" @click="goForward"></i>
+      <i class="iconfont icon-arrow-rotate-right rightMenu-item-1" @click="refreshPage"></i>
+      <i class="iconfont icon-arrow-up rightMenu-item-1" @click="scrollToTop"></i>
     </div>
     <div class="border border-dashed border-gray-300 dark:border-white/20 m-1"></div>
     <div class="flex flex-col p-1">
-      <span @click="goHome" class="cursor-pointer pl-2 p-1.5 text-#2f3f5b/90 dark:text-white dark:hover:text-gray-700 hover:bg-#00e699/50 dark:hover:bg-#00e699 rounded-lg transition-colors duration-130"><i class="iconfont icon-home text-lg mr-2"></i>返回首页</span>
-      <span @click="shufflePost" class="cursor-pointer pl-2 p-1.5 text-#2f3f5b/90 dark:text-white dark:hover:text-gray-700 hover:bg-#00e699/50 dark:hover:bg-#00e699 rounded-lg transition-colors duration-130"><i class="iconfont icon-shuffle text-lg mr-2"></i>随便逛逛</span>
+      <span @click="goHome" class="rightMenu-item-2"><i class="iconfont icon-home text-lg mr-2"></i>返回首页</span>
+      <span @click="shufflePost" class="rightMenu-item-2"><i class="iconfont icon-shuffle text-lg mr-2"></i>随便逛逛</span>
     </div>
   </div>
 </template>
