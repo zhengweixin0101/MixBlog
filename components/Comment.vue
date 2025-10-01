@@ -4,10 +4,11 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, nextTick } from 'vue'
 import { siteConfig } from '@/siteConfig/main.js'
 
-onMounted(() => {
+onMounted(async () => {
+  await nextTick()
   const script = document.createElement('script')
   script.src = 'https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.min.js'
   script.async = true
@@ -16,7 +17,7 @@ onMounted(() => {
   script.onload = () => {
     twikoo.init({
       envId: siteConfig.thirdParty.twikooEnvId,
-      el: '#tcomment',
+      el: '#tcomment'
     })
   }
 })
