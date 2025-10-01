@@ -190,22 +190,44 @@ const copyLink = async () => {
 // 输入框菜单功能
 const cutText = () => {
   if (!targetElement.value) return
-  targetElement.value.select()
-  document.execCommand('cut')
-  hideMenu()
+  const el = targetElement.value
+
+  if ('value' in el) {
+    navigator.clipboard.writeText(el.value)
+      .then(() => {
+        el.value = ''
+        hideMenu()
+      })
+      .catch(() => {
+        notification.show('复制失败，请向开发者反馈问题!', 'error')
+      })
+  }
 }
 
 const copyText = () => {
   if (!targetElement.value) return
+  let textToCopy = ''
   if (menuType.value === 'selection' && selectedText.value) {
-    navigator.clipboard.writeText(selectedText.value)
+    textToCopy = selectedText.value
   } else {
-    targetElement.value.select()
-    document.execCommand('copy')
+    const el = targetElement.value
+    if ('value' in el) {
+      textToCopy = el.value
+      notification.show('复制成功!')
+    } else {
+      textToCopy = el.innerText || el.textContent
+      notification.show('复制成功，请遵循开源协议!')
+    }
   }
-  notification.show('已复制!')
-  hideMenu()
+  navigator.clipboard.writeText(textToCopy)
+    .then(() => {
+      hideMenu()
+    })
+    .catch(() => {
+      notification.show('复制失败，请向开发者反馈问题!', 'error')
+    })
 }
+
 
 const pasteText = () => {
   if (!targetElement.value) return
@@ -235,7 +257,7 @@ const quoteToTwikoo = () => {
 
   const commentBox = document.querySelector('.tk-input textarea.el-textarea__inner')
   if (!commentBox) {
-    notification.show('评论框未找到', 'error')
+    notification.show('评论框未找到!', 'error')
     return
   }
 
@@ -367,15 +389,9 @@ onBeforeUnmount(() => {
 
     <template v-else-if="menuType === 'selection-with-twikoo'">
       <div class="flex flex-col p-1">
-        <span @click="copyText" class="rightMenu-item-2">
-          <i class="iconfont icon-copy text-lg mr-2"></i>复制
-        </span>
-        <span @click="search" class="rightMenu-item-2">
-          <i class="iconfont icon-search text-lg mr-2"></i>必应搜索
-        </span>
-        <span @click="quoteToTwikoo" class="rightMenu-item-2">
-          <i class="iconfont icon-comment-medical1 text-lg mr-2"></i>引用到评论
-        </span>
+        <span @click="copyText" class="rightMenu-item-2"><i class="iconfont icon-copy text-lg mr-2"></i>复制</span>
+        <span @click="search" class="rightMenu-item-2"><i class="iconfont icon-search text-lg mr-2"></i>必应搜索</span>
+        <span @click="quoteToTwikoo" class="rightMenu-item-2"><i class="iconfont icon-comment-medical1 text-lg mr-2"></i>引用到评论</span>
       </div>
     </template>
   </div>
