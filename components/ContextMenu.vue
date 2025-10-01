@@ -34,7 +34,13 @@ const showMenu = async (event) => {
     const sel = window.getSelection()
     selectedText.value = sel.toString()
     targetElement.value = el
-    menuType.value = 'selection'
+
+    const commentBox = document.querySelector('.tk-input textarea.el-textarea__inner')
+    if (commentBox) {
+      menuType.value = 'selection-with-twikoo'
+    } else {
+      menuType.value = 'selection'
+    }
   }
   else if (el.tagName === 'IMG' || el.closest('a[data-fancybox]')) {
     menuType.value = 'image'
@@ -224,6 +230,30 @@ function search() {
   hideMenu()
 }
 
+const quoteToTwikoo = () => {
+  if (!selectedText.value) return
+
+  const commentBox = document.querySelector('.tk-input textarea.el-textarea__inner')
+  if (!commentBox) {
+    notification.show('评论框未找到', 'error')
+    return
+  }
+
+  const el = commentBox
+  const start = el.selectionStart
+  const end = el.selectionEnd
+
+  const quoteText = selectedText.value
+    .split('\n')
+    .map(line => `> ${line}`)
+    .join('\n') + '\n' + '\n'
+
+  el.setRangeText(quoteText, start, end, 'end')
+  el.focus()
+  notification.show('已引用到评论区！你无需删除空行，直接评论以获取最佳展示效果。', 'success', 10000, true)
+  hideMenu()
+}
+
 // 事件绑定
 onMounted(() => {
   window.addEventListener('contextmenu', showMenu)
@@ -326,6 +356,20 @@ onBeforeUnmount(() => {
       <div class="flex flex-col p-1">
         <span @click="copyText" class="rightMenu-item-2"><i class="iconfont icon-copy text-lg mr-2"></i>复制</span>
         <span @click="search" class="rightMenu-item-2"><i class="iconfont icon-search text-lg mr-2"></i>必应搜索</span>
+      </div>
+    </template>
+
+    <template v-else-if="menuType === 'selection-with-twikoo'">
+      <div class="flex flex-col p-1">
+        <span @click="copyText" class="rightMenu-item-2">
+          <i class="iconfont icon-copy text-lg mr-2"></i>复制
+        </span>
+        <span @click="search" class="rightMenu-item-2">
+          <i class="iconfont icon-search text-lg mr-2"></i>必应搜索
+        </span>
+        <span @click="quoteToTwikoo" class="rightMenu-item-2">
+          <i class="iconfont icon-quote text-lg mr-2"></i>引用到评论
+        </span>
       </div>
     </template>
   </div>

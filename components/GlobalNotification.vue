@@ -16,7 +16,7 @@
 
         <span
           v-if="toast.closable"
-          class="z-1 ml-2 text-white font-bold hover:text-gray-200 cursor-pointer"
+          class="z-1 ml-5 text-white font-bold hover:text-gray-200 cursor-pointer"
           @click="notification.remove(toast.id)"
         >×</span>
 
@@ -24,9 +24,9 @@
           class="absolute inset-0 origin-left animate-progress"
           :class="{
             'bg-black/5 dark:bg-white/20': toast.type === 'info',
-            'bg-green-300': toast.type === 'success',
-            'bg-red-300': toast.type === 'error',
-            'bg-yellow-300': toast.type === 'warning'
+            'bg-green-400': toast.type === 'success',
+            'bg-red-400': toast.type === 'error',
+            'bg-yellow-400': toast.type === 'warning'
           }"
           :style="{ animationDuration: toast.duration + 'ms' }"
         ></div>
