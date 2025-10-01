@@ -374,7 +374,7 @@ onBeforeUnmount(() => {
           <i class="iconfont icon-search text-lg mr-2"></i>必应搜索
         </span>
         <span @click="quoteToTwikoo" class="rightMenu-item-2">
-          <i class="iconfont icon-quote text-lg mr-2"></i>引用到评论
+          <i class="iconfont icon-comment-medical1 text-lg mr-2"></i>引用到评论
         </span>
       </div>
     </template>
