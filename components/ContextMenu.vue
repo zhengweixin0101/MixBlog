@@ -250,6 +250,10 @@ const quoteToTwikoo = () => {
 
   el.setRangeText(quoteText, start, end, 'end')
   el.focus()
+
+  const event = new Event('input', { bubbles: true })
+  el.dispatchEvent(event)
+
   notification.show('已引用到评论区！你无需删除空行，直接评论以获取最佳展示效果。', 'success', 10000, true)
   hideMenu()
 }
