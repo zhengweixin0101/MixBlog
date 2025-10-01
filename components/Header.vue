@@ -3,6 +3,9 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useColorMode } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
 
+import { useNotification } from '~/composables/useNotification'
+const notification = useNotification()
+
 const route = useRoute()
 const colorMode = useColorMode()
 
@@ -42,6 +45,7 @@ onBeforeUnmount(() => {
 
 function toggleTheme() {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+  notification.show(`已为您切换为${colorMode.value === 'dark' ? '亮色' : '暗色'}模式`, 'info', 2000)
 }
 </script>
 
