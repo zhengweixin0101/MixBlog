@@ -216,7 +216,7 @@ const copyText = () => {
       notification.show('复制成功!')
     } else {
       textToCopy = el.innerText || el.textContent
-      notification.show('复制成功，请遵循开源协议!')
+      notification.show('复制成功，请遵循版权协议!')
     }
   }
   navigator.clipboard.writeText(textToCopy)
