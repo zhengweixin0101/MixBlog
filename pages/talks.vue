@@ -135,7 +135,7 @@
         </button>
       </div>
 
-      <div data-fade id="comment">
+      <div data-fade>
         <Comment />
       </div>
     </section>
