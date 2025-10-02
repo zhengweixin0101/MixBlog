@@ -22,7 +22,7 @@ const selectedTag = ref('')
 
 // 读取文章列表
 const { data: postsRaw } = await useAsyncData('posts-list', () =>
-  $fetch(siteConfig.postsData.postsList),
+  $fetch(`${siteConfig.apiUrl}/api/article/list`),
   { server: true } // 只在服务端执行
 )
 

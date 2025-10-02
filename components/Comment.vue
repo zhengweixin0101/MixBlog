@@ -1,5 +1,9 @@
 <template>
-  <div class="w-full border border-dashed border-gray-500 mt-10 mb-15"></div>
+  <div class="w-full border border-dashed border-gray-500 mt-10 mb-8"></div>
+  <span class="inline-flex items-center text-2xl font-bold mb-2">
+    <span class="iconfont icon-comment mr-2"></span>
+    评论
+  </span>
   <div id="tcomment"></div>
 </template>
 
@@ -25,11 +29,14 @@ onMounted(async () => {
 
 
 <style>
+.tk-comments {
+  transition: all 0.3s ease;
+}
+
 /* 输入框样式 */
 .el-input-group {
   border-radius: 12px;
   border: 0.1px solid #2f3f5b30;
-  transition: all 0.3s ease;
 }
 
 .el-input-group:focus-within {
@@ -222,12 +229,11 @@ html.dark .tk-icon svg path {
   padding: 1rem;
   border-radius: 12px;
   background: #ffffff;
-  box-shadow: 0 0 3px rgba(0,0,0,0.3);
+  box-shadow: 0 0 2px rgba(0,0,0,0.2);
 }
 
 html.dark .tk-comment {
   background: #ffffff10;
-  box-shadow: 0 0 1px rgba(255,255,255,1);
 }
 
 .tk-replies .tk-comment {
@@ -250,7 +256,7 @@ html.dark .tk-replies .tk-comment {
 .tk-content blockquote {
   background-color: rgba(255, 255, 255, 0.02);
   padding: 0rem 1rem;
-  margin-bottom: -15px;
+  margin-bottom: -5px;
   border-radius: 12px;
   font-style: italic;
   box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);

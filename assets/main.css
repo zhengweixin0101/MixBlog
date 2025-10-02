@@ -27,6 +27,16 @@ html.light {
   color-scheme: light;
 }
 
+/* 选中文本 */
+::selection {
+  background-color: #00e69950;
+}
+
+::-moz-selection {
+  background-color: #ffcc00;
+  color: #000000;
+}
+
 /* 浮现动画 */
 [data-fade] {
   opacity: 0;

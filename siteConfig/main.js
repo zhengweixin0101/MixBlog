@@ -1,4 +1,5 @@
 export const siteConfig = {
+    apiUrl: 'https://article.api.zhengweixin.top',
     title: "ShinX's Blog",
     description: "This is ShinX’s blog, created by a student and a gamer.",
     keywords: "ShinX,zhengweixin,blog,ShinX的个人主页,ShinX的个人网站,ShinX的博客",
@@ -31,13 +32,8 @@ export const siteConfig = {
         { label: 'About', href: '/about', icon: 'icon-guanyu' },
     ],
 
-    postsData: {
-        postsList: "https://article.api.zhengweixin.top/api/list",
-        postContent: "https://article.api.zhengweixin.top/api/article?slug=",
-    },
-
     thirdParty: {
-        iconfont: '//at.alicdn.com/t/c/font_4401174_ci1gey1v4y.css',
+        iconfont: '//at.alicdn.com/t/c/font_4401174_1bumnsz2m83j.css',
         twikooEnvId: "https://twikoo.api.zhengweixin.top/.netlify/functions/twikoo",
         memosApi: "https://memos.zhengweixin.top/api/v1/memos",
         umami: {

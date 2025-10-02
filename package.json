@@ -9,7 +9,6 @@
     "start": "nuxt start -p $PORT",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "upload": "node scripts/upload-md.js"
   },
   "dependencies": {
     "@fancyapps/ui": "^6.0.22",
