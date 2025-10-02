@@ -93,7 +93,7 @@ const goHome = () => { router.push('/'); hideMenu() }
 const shufflePost = async () => {
   loading.value = true
   try {
-    const posts = await $fetch(`${siteConfig.postsData.postsList}?fields=slug`)
+    const posts = await $fetch(`${siteConfig.apiUrl}/api/article/list?fields=slug`)
 
     if (!Array.isArray(posts) || posts.length === 0) {
       console.warn('No posts available to shuffle.')

@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
     ]
 
     // 文章
-    const articles = await $fetch(siteConfig.postsData.postsList)
+    const articles = await $fetch(`${siteConfig.apiUrl}/api/article/list`)
     const urls = pages.concat(
         articles.filter(a => a.published).map(a => ({
             loc: `${baseUrl}/posts/${a.slug}`,

@@ -2,16 +2,16 @@ import { $fetch } from 'ofetch'
 import { siteConfig } from '@/siteConfig/main.js'
 
 export default defineEventHandler(async (event) => {
-    if (event.req.url !== '/rss.xml') return
+  if (event.req.url !== '/rss.xml') return
 
-    const baseUrl = siteConfig.url
-    const feedUrl = `${baseUrl}/rss.xml`
+  const baseUrl = siteConfig.url
+  const feedUrl = `${baseUrl}/rss.xml`
 
-    const articles = await $fetch(siteConfig.postsData.postsList)
+  const articles = await $fetch(`${siteConfig.apiUrl}/api/article/list`)
 
-    const items = articles
-        .filter((a) => a.published)
-        .map((a) => `
+  const items = articles
+    .filter((a) => a.published)
+    .map((a) => `
       <item>
         <title><![CDATA[${a.title}]]></title>
         <link>${baseUrl}/article/${a.slug}</link>
@@ -19,14 +19,14 @@ export default defineEventHandler(async (event) => {
         <pubDate>${new Date(a.date).toUTCString()}</pubDate>
         <description><![CDATA[${a.description}]]></description>
         ${a.tags?.length
-                ? a.tags.map((tag) => `<category><![CDATA[${tag}]]></category>`).join('')
-                : ''
-            }
+        ? a.tags.map((tag) => `<category><![CDATA[${tag}]]></category>`).join('')
+        : ''
+      }
       </item>
     `)
-        .join('')
+    .join('')
 
-    const rss = `<?xml version="1.0" encoding="UTF-8"?>
+  const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title><![CDATA[${siteConfig.title} RSS]]></title>
@@ -39,6 +39,6 @@ export default defineEventHandler(async (event) => {
   </channel>
 </rss>`
 
-    event.res.setHeader('Content-Type', 'application/xml; charset=utf-8')
-    return rss
+  event.res.setHeader('Content-Type', 'application/xml; charset=utf-8')
+  return rss
 })
