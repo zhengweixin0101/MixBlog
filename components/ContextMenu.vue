@@ -209,6 +209,7 @@ const copyText = () => {
   let textToCopy = ''
   if (menuType.value === 'selection' && selectedText.value) {
     textToCopy = selectedText.value
+    notification.show('复制成功，请遵循版权协议!')
   } else {
     const el = targetElement.value
     if ('value' in el) {
