@@ -77,10 +77,14 @@ function wrapImagesWithLinks(html) {
     const srcMatch = imgTag.match(/src="([^"]+)"/)
     if (!srcMatch) return match
     const src = srcMatch[1]
-    const lazyImgTag = imgTag.replace('<img', '<img loading="lazy"')
+    const lazyImgTag = imgTag.replace(
+      '<img',
+      '<img loading="lazy" class="fade-in-image" onload="this.style.opacity=1" style="opacity:0;transition:opacity 0.3s ease-in-out;"'
+    )
     return `<p><a href="${src}" data-fancybox="gallery">${lazyImgTag}</a></p>`
   })
 }
+
 function addFancyboxAttributesToAnchors(html) {
   return html.replace(/<a([^>]+?)>(\s*<img[^>]+?>\s*)<\/a>/g, (match, aAttrs, imgTag) => {
     if (/data-fancybox=/.test(aAttrs)) return match
