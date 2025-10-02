@@ -302,7 +302,7 @@ onBeforeUnmount(() => {
     v-show="visible"
     ref="menuRef"
     id="rightMenu"
-    class="fixed z-10002 bg-#fefefe dark:bg-white/10 dark:backdrop-blur-md text-gray-800 dark:text-gray-100 rounded-lg 
+    class="fixed z-10002 bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-md text-gray-800 dark:text-gray-100 rounded-lg 
            shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)] p-1.5"
     :style="{ top: y + 'px', left: x + 'px' }"
   >
