@@ -158,6 +158,21 @@ const { data: statsYesterday } = useAsyncData(
   { lazy: true }
 )
 
+// 本月
+const { data: statsMonth } = useAsyncData(
+  'statsMonth',
+  async () => {
+    const now = new Date()
+    const start = new Date(now.getFullYear(), now.getMonth(), 1).getTime()
+    const end = now.getTime()
+    return await $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
+      headers: { Authorization: `Bearer ${TOKEN}` },
+      params: { startAt: start, endAt: end },
+    })
+  },
+  { lazy: true }
+)
+
 // 总量
 const { data: statsTotal } = useAsyncData(
   'statsTotal',
@@ -175,7 +190,7 @@ const { data: statsTotal } = useAsyncData(
 const statItems = [
   { label: '今日人数', valueKey: 'visitors', source: statsToday },
   { label: '昨日人数', valueKey: 'visitors', source: statsYesterday },
-  { label: '本月访问', valueKey: 'pageviews', source: statsTotal },
+  { label: '本月访问', valueKey: 'pageviews', source: statsMonth },
   { label: '今日访问', valueKey: 'pageviews', source: statsToday },
   { label: '昨日访问', valueKey: 'pageviews', source: statsYesterday },
   { label: '总访问量', valueKey: 'pageviews', source: statsTotal },
@@ -410,7 +425,8 @@ function handleClick(link) {
           </div>
         </div>
         <div class="h-2/3 flex justify-between bg-white dark:bg-white/10 p-5 rounded-2xl shadow-[0_0_2px_rgba(0,0,0,0.2)]
-                    min-h-200px md:min-h-0 min-w-full md:min-w-200px relative transition-colors duration-300"
+                    min-h-200px md:min-h-0 min-w-full md:min-w-200px relative transition-colors duration-300
+                    group"
         >
           <div class="text-xs absolute text-gray-400">性格</div>
           <h2 class="text-2xl font-bold mt-5">{{ aboutConfig.author.personality.name }}<br/><span class="text-#e4ae3a text-4xl">{{ aboutConfig.author.personality.code }}</span></h2>
@@ -419,7 +435,7 @@ function handleClick(link) {
             <a class="text-#999999 no-underline hover:text-white transition-colors duration-200" :href="aboutConfig.author.personality.learnMore" target="_blank" rel="noopener nofollow">16personalities</a>
             上了解更多
           </div>
-          <div class="absolute justify-center right-0 md:top-3 transition-transform duration-800 hover:-rotate-8">
+          <div class="absolute justify-center right-0 md:top-3 transition-transform duration-800 group-hover:-rotate-8">
             <img :src="aboutConfig.author.personality.img" />
           </div>
         </div>
@@ -585,6 +601,7 @@ function handleClick(link) {
 }
 
 .skill-row {
+  padding: 1px;
   display: flex;
   gap: 12px;
   width: max-content;
