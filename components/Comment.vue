@@ -59,10 +59,20 @@ html.dark .el-input-group:focus-within {
 .twikoo .el-input__inner {
   border-radius: 0 12px 12px 0;
   border: none;
+  background-color: #fff !important;
+}
+
+html.dark .twikoo .el-input__inner {
+  background-color: #ffffff10 !important;
 }
 
 .el-textarea__inner {
   border-radius: 12px !important;
+  background-color: #fff !important;
+}
+
+html.dark .el-textarea__inner {
+  background-color: #ffffff10 !important;
 }
 
 .el-textarea__inner:focus-within {
@@ -168,7 +178,7 @@ html.dark .tk-comments-title svg, html.dark .tk-action svg {
 
 /* 评论区样式 */
 .tk-avatar {
-  border-radius: 12px !important;
+  border-radius: 999px !important;
   box-shadow: 0 0 3px rgba(0,0,0,0.3);
 }
 
