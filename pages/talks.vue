@@ -19,100 +19,57 @@
       <!-- Masonry 容器 -->
       <ul ref="masonryContainer" class="mt-8 list-none">
         <li data-fade
-          v-for="memo in memos"
-          :key="memo.name"
+          v-for="talk in talks"
+          :key="talk.id"
           class="break-inside-avoid mb-5 rounded-xl px-4 pt-4 pb-2 bg-white dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] transition-color duration-300"
         >
-          <!-- 富文本内容渲染 -->
-          <div class="text-#2f3f5b dark:text-white text-base">
-            <template v-for="(node, idx) in memo.nodes" :key="idx">
-              <!-- 段落 -->
-              <p v-if="node.type === 'PARAGRAPH'" class="whitespace-pre-line leading-relaxed">
-                <template v-for="child in node.paragraphNode.children" :key="child.type + idx">
-                  <!-- 文本 -->
-                  <span v-if="child.type === 'TEXT'">{{ child.textNode.content }}</span>
-                  <!-- 链接 -->
-                  <a
-                    v-else-if="child.type === 'LINK'"
-                    :href="child.linkNode.url"
-                    target="_blank"
-                    rel="noopener noreferrer nofollow"
-                    class="text-#2f3f5b dark:text-white underline hover:opacity-60 px-0.5"
-                  >
-                    {{ child.linkNode.text }}
-                  </a>
-                </template>
-              </p>
-
-              <!-- 代码块 -->
-              <pre
-                v-else-if="node.type === 'CODE_BLOCK'"
-                class="bg-gray-100 dark:bg-white/10 dark:border-gray-700 rounded-lg p-2 text-sm font-mono text-#1f2937 dark:text-gray-200 overflow-x-auto shadow-inner"
-              ><code>{{ node.codeBlockNode.content }}</code></pre>
-
-              <!-- 任务列表 -->
-              <ul v-else-if="node.type === 'LIST'" class="list-none space-y-0.5">
-                <template v-for="(child, childIdx) in node.listNode.children" :key="child.type + childIdx">
-                  <li v-if="child.type === 'TASK_LIST_ITEM'" class="flex items-center gap-1">
-                    <label class="leading-snug flex items-center">
-                      <input
-                        type="checkbox"
-                        :id="`checkbox-${memo.name}-${childIdx}`" 
-                        :checked="child.taskListItemNode.complete"
-                        class="custom-checkbox mr-1 mt-0.5"
-                        disabled
-                      />
-                      <template v-for="c in child.taskListItemNode.children">
-                        <span
-                          v-if="c.type === 'TEXT'"
-                          :class="child.taskListItemNode.complete ? 'line-through opacity-70' : ''"
-                        >
-                          {{ c.textNode.content }}
-                        </span>
-                      </template>
-                    </label>
-                  </li>
-                </template>
-              </ul>
-            </template>
+          <div class="text-#2f3f5b dark:text-white text-base whitespace-pre-line leading-relaxed">
+            <!-- 内容 -->
+            <span v-html="renderContent(talk)"></span>
 
             <!-- 图片 -->
-            <template v-if="memo.resources?.length">
-              <div class="flex flex-wrap gap-4 mt-3">
-                <a
-                  v-for="res in memo.resources"
-                  :key="res.name"
-                  :href="res.externalLink"
-                  :data-fancybox="`gallery-${memo.name}`"
-                >
-                  <img
-                    :src="res.externalLink"
-                    :alt="res.filename"
-                    class="w-16 h-16 object-cover rounded-lg cursor-pointer shadow-[0_0_8px_0_rgba(0,0,0,0.2)]"
-                  />
-                </a>
-              </div>
-            </template>
+            <div v-if="talk.imgs?.length" class="flex flex-wrap gap-4 mt-3">
+              <a
+                v-for="(img, idx) in getImgBlocks(talk)"
+                :key="idx"
+                :href="img.url"
+                :data-fancybox="`gallery-${talk.id}`"
+              >
+                <img
+                  :src="img.url"
+                  :alt="img.alt"
+                  class="w-16 h-16 object-cover rounded-lg cursor-pointer shadow-[0_0_8px_0_rgba(0,0,0,0.2)]"
+                />
+              </a>
+            </div>
           </div>
 
           <!-- 分割线 -->
           <hr class="mt-3 border-dashed border-t border-gray-300 dark:border-gray-600" />
 
-          <!-- 日期 定位 标签 -->
           <div class="flex justify-between text-gray-400 text-xs flex-wrap gap-y-2 mt-2">
-            <div class="flex gap-1.5 items-center">
-              <!-- 日期 -->
+            <div class="flex items-center gap-1.5">
+              <!-- 时间 -->
               <span class="flex items-center px-1.5 py-1 rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">
-                <i class="iconfont icon-zhong"></i><span class="ml-0.5">{{ formatDate(memo.displayTime) }}</span>
+                <i class="iconfont icon-zhong"></i><span class="ml-0.5">{{ formatDate(talk.created_at) }}</span>
               </span>
-              <!-- 定位 -->
-              <span v-if="memo.location?.placeholder" class="flex items-center px-1.5 py-1 rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">
-                <i class="iconfont icon-dingwei"></i><span class="ml-0.5">{{ memo.location.placeholder }}</span>
-              </span>
+              <!-- 链接 -->
+              <div v-if="talk.links?.length" class="flex items-center px-1.5 py-1 rounded-full bg-red-300/20 transition-colors duration-300">
+                <a
+                  v-for="(link, idx) in talk.links"
+                  :key="idx"
+                  :href="link.url"
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  class="text-#f56c6c no-underline hover:opacity-60 px-0.5 transition-opacity duration-200"
+                >
+                  <i class="iconfont icon-link text-12px"></i><span class="ml-1">{{ link.text }}</span>
+                </a>
+              </div>
             </div>
             <div class="flex flex-wrap gap-1.5">
               <span
-                v-for="(tag, idx) in memo.tags"
+                v-for="(tag, idx) in talk.tags"
                 :key="idx"
                 class="flex items-center px-1.5 py-1 rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300"
               >
@@ -124,12 +81,12 @@
         </li>
       </ul>
 
-      <!-- 加载更多按钮 -->
-      <div data-fade v-if="!finished" class="mt-4 flex justify-center">
+      <!-- 加载更多 -->
+      <div v-if="!finished" class="mt-4 flex justify-center">
         <button
           class="px-4 py-2 bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 hover:opacity-70 rounded-full transition-all duration-300 cursor-pointer shadow-none border-none"
           :disabled="loading"
-          @click="fetchMemos(nextPageToken)"
+          @click="fetchTalks"
         >
           {{ loading ? '加载中...' : '加载更多' }}
         </button>
@@ -158,7 +115,7 @@ useHead({
   titleTemplate: `说说 | ${siteConfig.title}`,
   meta: [
     { name: 'description', content: `share my life.` },
-    { name: 'keywords', content: `${siteConfig.keywords},说说,memos` },
+    { name: 'keywords', content: `${siteConfig.keywords},说说,talks` },
     { property: 'og:title', content: `说说 | ${siteConfig.title}` },
     { property: 'og:description', content: `share my life.` },
     { property: 'og:url', content: `${siteConfig.url}/talks` },
@@ -170,7 +127,7 @@ useHead({
 // 格式化时间
 dayjs.extend(utc)
 dayjs.extend(timezone)
-const formatDate = (date) => dayjs(date).tz('Asia/Shanghai').format('YYYY-MM-DD   HH:mm')
+const formatDate = (date) => dayjs(date).tz('Asia/Shanghai').format('YYYY-MM-DD HH:mm')
 
 // Masonry 容器
 const masonryContainer = ref(null)
@@ -188,60 +145,107 @@ async function initMasonry() {
       waitForImages: true,
       margin: 14,
       columns: 2,
-      breakAt: {
-        640: 1,
-      },
+      breakAt: { 820: 1 },
     })
   }
 }
 
 // 请求数据
-const memos = ref([])
-const nextPageToken = ref(null)
+const talks = ref([])
+const page = ref(1)
+const pageSize = 20
 const loading = ref(false)
 const finished = ref(false)
 
-const MEMOS_API = siteConfig.thirdParty.memosApi
+const TALKS_API = `${siteConfig.apiUrl}/api/talks/get`
 
 // 首屏数据
-const { data: initialData } = await useAsyncData('memos', async () => {
+const { data: initialData } = await useAsyncData('talks', async () => {
   try {
-    return await $fetch(`${MEMOS_API}?pageSize=10`)
+    return await $fetch(`${TALKS_API}?page=1&pageSize=${pageSize}`)
   } catch (e) {
-    console.error('Fetch memos failed', e)
-    return { memos: [], nextPageToken: null }
+    console.error('Fetch talks failed', e)
+    return { data: [], totalPages: 0 }
   }
 }, { server: true })
 
-memos.value = initialData.value.memos || []
-nextPageToken.value = initialData.value.nextPageToken || null
-if (!nextPageToken.value) finished.value = true
+talks.value = initialData.value.data || []
+if (initialData.value.totalPages <= 1) finished.value = true
 
 // 加载更多
-async function fetchMemos(pageToken = '') {
+async function fetchTalks() {
   if (loading.value || finished.value) return
   loading.value = true
   try {
-    const res = await $fetch(`${MEMOS_API}?pageSize=10&pageToken=${pageToken}`)
-    memos.value.push(...(res.memos || []))
-    nextPageToken.value = res.nextPageToken || null
-    if (!res.nextPageToken) finished.value = true
+    const res = await $fetch(`${TALKS_API}?page=${page.value + 1}&pageSize=${pageSize}`)
+    talks.value.push(...(res.data || []))
+    page.value++
+    if (page.value >= res.totalPages) finished.value = true
     nextTick().then(() => initMasonry())
   } catch (e) {
-    console.error('Fetch memos failed', e)
+    console.error('Fetch talks failed', e)
   } finally {
     loading.value = false
   }
 }
 
-onMounted(() => {
-  // 初始化 Masonry
-  nextTick().then(() => initMasonry())
+// 转义 HTML 防止 XSS
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, function(m) { return ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  })[m]})
+}
 
-  // 初始化 Fancybox
-  Fancybox.bind('[data-fancybox]', {
-    Hash: false
+//获取图片数量
+function getImgBlocks(talk) {
+  if (!talk.content) return []
+  const matches = [...talk.content.matchAll(/<talkImg>(.*?)<\/talkImg>/g)]
+  return matches.map(match => {
+    const alt = match[1]
+    const imgObj = talk.imgs.find(i => i.alt === alt)
+    return imgObj || { url: '', alt }
   })
+}
+
+//渲染内容
+function renderContent(talk) {
+  let html = talk.content
+
+  // 移除 <talkImg> 标签 和 <talkLink> 标签
+  html = html.replace(/\n*<talkImg>.*?<\/talkImg>/g, '')
+  html = html.replace(/\n*<talkLink>.*?<\/talkLink>/g, '')
+
+  // 代码块
+  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+    lang = lang || 'text';
+    return `<div class="w-full px-2 py-1 flex flex-row justify-between items-center text-amber-500 dark:text-zinc-400"></div><pre class="my-1 bg-gray-100 dark:bg-white/10 dark:border-gray-700 rounded-lg p-2 text-sm font-mono text-#1f2937 dark:text-gray-200 shadow-inner" style="white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word;"><code>${escapeHtml(code)}</code></pre>`
+  })
+
+  // 任务列表
+  let taskIdCounter = 1;
+  html = html.replace(
+    /((?:- \[(?: |x)\] .+\n?)+)/g,
+    (match) => {
+      const items = match.trim().split('\n').map(line => {
+        const [, status, task] = /- \[( |x)\] (.+)/.exec(line)
+        const checked = status === 'x' ? 'checked' : ''
+        const id = `task-${talk.id}-${taskIdCounter++}`
+        return `<li class="flex items-center gap-1"><label for="${id}" class="leading-snug flex items-center"><input id="${id}" type="checkbox" class="custom-checkbox mr-1 mt-0.5" disabled ${checked} /><span ${checked ? 'class="line-through opacity-70"' : ''}>${task}</span></label></li>`
+      }).join('')
+      return `<ul class="list-none my-1">${items}</ul>`
+    }
+  )
+
+  return html
+}
+
+onMounted(() => {
+  nextTick().then(() => initMasonry())
+  Fancybox.bind('[data-fancybox]', { Hash: false })
 })
 </script>
 
