@@ -181,7 +181,10 @@ function applyClientEnhancements() {
       if (codeBlocks.length) {
         codeBlocks.forEach(block => hljs.highlightElement(block))
       }
-      Fancybox.bind('[data-fancybox="gallery"]')
+      // 初始化 Fancybox
+      Fancybox.bind('[data-fancybox="gallery"]', {
+        Hash: false,
+      })
     })
   })
 }
