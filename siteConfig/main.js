@@ -1,5 +1,5 @@
 export const siteConfig = {
-    apiUrl: 'https://article.api.zhengweixin.top',
+    apiUrl: 'https://blog.api.zhengweixin.top',
     title: "ShinX's Blog",
     description: "This is ShinX’s blog, created by a student and a gamer.",
     keywords: "ShinX,zhengweixin,blog,ShinX的个人主页,ShinX的个人网站,ShinX的博客",
