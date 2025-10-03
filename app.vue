@@ -46,10 +46,6 @@ useHead({
       defer: true,
       'data-website-id': siteConfig.thirdParty.umami.siteID,
     },
-    {
-      src: '//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js',
-      async: true,
-    },
   ],
 })
 </script>
