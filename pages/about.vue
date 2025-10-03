@@ -1,9 +1,11 @@
 <script setup>
-import { onMounted, ref, onBeforeUnmount, useHead, useRouter } from '#imports'
+import { onMounted, ref, onBeforeUnmount, useHead, useRouter, useColorMode } from '#imports'
 import gsap from 'gsap'
 
 import { aboutConfig } from '@/siteConfig/about.js'
 import { siteConfig } from '@/siteConfig/main.js'
+
+const colorMode = useColorMode()
 
 //head
 useHead({
@@ -506,7 +508,7 @@ function handleClick(link) {
                 :class="hoveredIndex === index ? 'scale-125' : 'scale-115'"
                 :style="{
                   background:
-                    $colorMode.value === 'dark'
+                    colorMode.value === 'dark'
                       ? `linear-gradient(rgba(0,0,0,0.15)), url(${anime.img}) center / cover no-repeat`
                       : `url(${anime.img}) center / cover no-repeat`
                 }"
