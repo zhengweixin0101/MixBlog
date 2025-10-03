@@ -1,13 +1,13 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, useRoute, useColorMode } from '#imports'
+import { ref, onMounted, useRoute, useColorMode } from '#imports'
+import { onClickOutside } from '@vueuse/core'
 import { siteConfig } from '@/siteConfig/main.js'
-
 import { useNotification } from '~/composables/useNotification'
-const notification = useNotification()
 
+const notification = useNotification()
 const route = useRoute()
 const colorMode = useColorMode()
-
+const menuRef = ref(null)
 const isMenuOpen = ref(false)
 const menuButton = ref(null)
 const mounted = ref(false)
@@ -21,31 +21,16 @@ function isActive(item) {
   return route.path === item.href
 }
 
-// 点击空白区域关闭菜单
-function handleClickOutside(event) {
-  const menu = document.getElementById('mobile-menu')
-  if (
-    isMenuOpen.value &&
-    menu &&
-    !menu.contains(event.target) &&
-    menuButton.value &&
-    !menuButton.value.contains(event.target)
-  ) {
+onClickOutside(menuRef, (e) => {
+  if (isMenuOpen.value && !menuButton.value?.contains(e.target)) {
     isMenuOpen.value = false
   }
-}
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
-
-onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside)
 })
 
 function toggleTheme() {
-  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
-  notification.show(`已为您切换为${colorMode.value === 'dark' ? '浅色' : '深色'}模式`)
+  const next = colorMode.value === 'dark' ? 'light' : 'dark'
+  colorMode.preference = next
+  notification.show(`已为您切换为${next === 'dark' ? '深色' : '浅色'}模式`)
 }
 
 onMounted(() => {
@@ -106,8 +91,9 @@ onMounted(() => {
 
     <Transition name="fade-slide">
       <div
-        id="mobile-menu"
         v-if="isMenuOpen"
+        ref="menuRef"
+        id="mobile-menu"
         class="md:hidden fixed top-[68px] left-4 w-1/4 min-w-[160px] mt-1 rounded-xl shadow-xl border border-white/10 backdrop-blur-md bg-white/60 dark:bg-[#1a1a1a]/60 z-40 overflow-hidden"
       >
         <ul class="flex flex-col divide-y divide-white/10 dark:divide-white/10">

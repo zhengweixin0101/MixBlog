@@ -13,6 +13,7 @@
   "dependencies": {
     "@fancyapps/ui": "^6.0.22",
     "@nuxtjs/color-mode": "^3.5.2",
+    "@vueuse/core": "^13.9.0",
     "dayjs": "^1.11.13",
     "gray-matter": "^4.0.3",
     "gsap": "^3.13.0",
