@@ -31,10 +31,14 @@ function rightTagPosition(index) {
 const tips = aboutConfig.author.tips
 const current = ref(0)
 
+let tipsInterval = null
 onMounted(() => {
-  setInterval(() => {
+  tipsInterval = setInterval(() => {
     current.value = (current.value + 1) % tips.length
-  }, 2000)
+  }, 1500)
+})
+onBeforeUnmount(() => {
+  clearInterval(tipsInterval)
 })
 
 // 欢迎卡片
