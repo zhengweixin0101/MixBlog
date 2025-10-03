@@ -145,7 +145,7 @@ async function initMasonry() {
       waitForImages: true,
       margin: 14,
       columns: 2,
-      breakAt: { 640: 1 },
+      breakAt: { 820: 1 },
     })
   }
 }
@@ -221,18 +221,20 @@ function renderContent(talk) {
 
   // 代码块
   html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
-    const languageClass = lang ? `language-${lang}` : ''
-    return `<pre class="my-1 bg-gray-100 dark:bg-white/10 dark:border-gray-700 rounded-lg p-2 text-sm font-mono text-#1f2937 dark:text-gray-200 overflow-x-auto shadow-inner"><code class="${languageClass}">${escapeHtml(code)}</code></pre>`
+    lang = lang || 'text';
+    return `<div class="w-full px-2 py-1 flex flex-row justify-between items-center text-amber-500 dark:text-zinc-400"></div><pre class="my-1 bg-gray-100 dark:bg-white/10 dark:border-gray-700 rounded-lg p-2 text-sm font-mono text-#1f2937 dark:text-gray-200 shadow-inner" style="white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word;"><code>${escapeHtml(code)}</code></pre>`
   })
 
   // 任务列表
+  let taskIdCounter = 1;
   html = html.replace(
     /((?:- \[(?: |x)\] .+\n?)+)/g,
     (match) => {
       const items = match.trim().split('\n').map(line => {
         const [, status, task] = /- \[( |x)\] (.+)/.exec(line)
         const checked = status === 'x' ? 'checked' : ''
-        return `<li class="flex items-center gap-1"><label class="leading-snug flex items-center"><input type="checkbox" class="custom-checkbox mr-1 mt-0.5" disabled ${checked} /><span ${checked ? 'class="line-through opacity-70"' : ''}>${task}</span></label></li>`
+        const id = `task-${talk.id}-${taskIdCounter++}`
+        return `<li class="flex items-center gap-1"><label for="${id}" class="leading-snug flex items-center"><input id="${id}" type="checkbox" class="custom-checkbox mr-1 mt-0.5" disabled ${checked} /><span ${checked ? 'class="line-through opacity-70"' : ''}>${task}</span></label></li>`
       }).join('')
       return `<ul class="list-none my-1">${items}</ul>`
     }
