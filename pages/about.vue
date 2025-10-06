@@ -340,7 +340,7 @@ function handleClick(link) {
         </div>
 
         <!-- 第二行反向滚动 -->
-        <div class="skill-row-wrapper mt-4">
+        <div class="skill-row-wrapper mt-4 mb-6">
           <div class="skill-row skill-row-reverse">
             <div v-for="(skill, i) in secondHalf" :key="'row2-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
               <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
@@ -407,7 +407,7 @@ function handleClick(link) {
           <div class="absolute right-0 -bottom-1 text-white rounded-full bg-white/20 hover:bg-white/30 px-2 py-1 transition-colors duration-300">
             <NuxtLink to="/posts" class="no-underline flex items-center">
               <i class="color-white iconfont icon-ans-icon-arrow-circle-right"></i>
-              <span class="text-white ml-2">文章列表</span>
+              <span class="text-white ml-1">文章列表</span>
             </NuxtLink>
           </div>
         </div>
