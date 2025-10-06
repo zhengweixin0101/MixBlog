@@ -53,6 +53,10 @@
               <span class="flex items-center px-1.5 py-1 rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">
                 <i class="iconfont icon-zhong"></i><span class="ml-0.5">{{ formatDate(talk.created_at) }}</span>
               </span>
+              <!-- 位置 -->
+              <span v-if="talk.location?.length" class="flex items-center px-1.5 py-1 rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">
+                <i class="iconfont icon-dingwei1"></i><span class="ml-0.5">{{ talk.location }}</span>
+              </span>
               <!-- 链接 -->
               <div v-if="talk.links?.length" class="flex items-center px-1.5 py-1 rounded-full bg-red-300/20 transition-colors duration-300">
                 <a
