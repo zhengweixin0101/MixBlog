@@ -1,16 +1,6 @@
 export const appsConfig = {
     appsData: [
         {
-            name: '个人网盘',
-            description: '存储我的文件，也有资源分享',
-            link: 'https://pan.zhengweixin.top',
-        },
-        {
-            name: 'Memos',
-            description: '我的备忘录&说说',
-            link: 'https://memos.zhengweixin.top/u/admin',
-        },
-        {
             name: 'Umami',
             description: '自建访问统计',
             link: 'https://statistics.zhengweixin.top/share/6FBrEjH0q8vcrGxh/zhengweixin.top',
@@ -44,11 +34,6 @@ export const appsConfig = {
             name: '在线工具箱',
             description: '一个简易的在线工具箱',
             link: 'https://tool.zhengweixin.top',
-        },
-        {
-            name: '床图',
-            description: '自建床图，需要可私我给权限',
-            link: 'https://img.zhengweixin.top',
         },
     ],
 }
