@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick, useRouter, useRoute, useColorMode } from '#imports'
+import NProgress from 'nprogress'
 import { siteConfig } from '@/siteConfig/main.js'
 import { useNotification } from '~/composables/useNotification'
 
@@ -9,7 +10,6 @@ const visible = ref(false)
 const x = ref(0)
 const y = ref(0)
 const menuRef = ref(null)
-const loading = ref(false)
 
 const route = useRoute()
 const router = useRouter()
@@ -91,7 +91,9 @@ const scrollToTop = () => { window.scrollTo({ top: 0, behavior: 'smooth' }); hid
 const goHome = () => { router.push('/'); hideMenu() }
 
 const shufflePost = async () => {
-  loading.value = true
+  NProgress.start()
+  await nextTick()
+
   try {
     const posts = await $fetch(`${siteConfig.apiUrl}/api/article/list?fields=slug`)
 
@@ -111,7 +113,6 @@ const shufflePost = async () => {
   } catch (err) {
     console.error('Failed to fetch posts:', err)
   } finally {
-    loading.value = false
     hideMenu()
   }
 }
