@@ -202,6 +202,13 @@ const statItems = [
   { label: '总访问量', valueKey: 'pageviews', source: statsTotal },
 ]
 
+const getValue = (stat) => stat?.source?.value?.[stat.valueKey]?.value ?? ''
+
+const isLoaded = (stat) => {
+  const val = stat?.source?.value?.[stat.valueKey]?.value
+  return val !== undefined && val !== null
+}
+
 // 游戏&番剧
 const hoverHero = ref(null)
 
@@ -378,18 +385,22 @@ function handleClick(link) {
           <div class="grid grid-cols-3 text-2xl mt-8 mb-5 gap-y-4">
             <div v-for="stat in statItems" :key="stat.label">
               <div class="text-sm text-gray-300">{{ stat.label }}</div>
-              <div class="font-extrabold h-10 relative">
-                <span class="opacity-0">
-                  {{ stat.source?.value?.[stat.valueKey]?.value || '0000' }}
-                </span>
-                <template v-if="!stat.source">
-                  <div class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"></div>
-                </template>
-                <template v-else>
-                  <span class="absolute left-0 top-1/2 -translate-y-1/2">
-                    {{ stat.source?.value?.[stat.valueKey]?.value || '0000' }}
+              <div class="font-extrabold h-10 relative overflow-hidden">
+                <span class="opacity-0 select-none">0000</span>
+                <transition name="fade">
+                  <div
+                    v-if="!isLoaded(stat)"
+                    class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"
+                  ></div>
+                </transition>
+                <transition name="fade">
+                  <span
+                    v-if="isLoaded(stat)"
+                    class="absolute left-0 top-1/2 -translate-y-1/2"
+                  >
+                    {{ getValue(stat) }}
                   </span>
-                </template>
+                </transition>
               </div>
             </div>
           </div>
