@@ -38,7 +38,6 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
   toc: { type: Array, default: () => [] },
-  title: { type: String, default: '' }
 })
 
 const currentId = ref('')
