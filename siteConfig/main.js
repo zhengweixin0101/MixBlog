@@ -35,7 +35,6 @@ export const siteConfig = {
     thirdParty: {
         iconfont: '//at.alicdn.com/t/c/font_4401174_cwoabm2ax9h.css',
         twikooEnvId: "https://twikoo.api.zhengweixin.top/.netlify/functions/twikoo",
-        busuanzi: '//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js',
         umami: {
             js: 'https://statistics.zhengweixin.top/script.js',
             siteID: '7441ce23-3587-41b6-8919-e42932fc65d7',

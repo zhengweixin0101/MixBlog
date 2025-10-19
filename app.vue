@@ -46,10 +46,6 @@ useHead({
       defer: true,
       'data-website-id': siteConfig.thirdParty.umami.siteID,
     },
-    {
-      src: siteConfig.thirdParty.busuanzi,
-      async: true,
-    },
   ],
 })
 </script>
