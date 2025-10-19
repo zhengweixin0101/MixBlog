@@ -129,10 +129,7 @@ const TOKEN = aboutConfig.umami.token
 const CREATED_AT = aboutConfig.umami.createTime
 
 function getDayTimestamps(date = new Date()) {
-  const offset = 8 * 60 * 60 * 1000
-  const utc = date.getTime() + date.getTimezoneOffset() * 60000
-  const beijingTime = new Date(utc + offset)
-  const start = new Date(beijingTime)
+  const start = new Date(date)
   start.setHours(0, 0, 0, 0)
   const end = new Date(start)
   end.setHours(23, 59, 59, 999)
@@ -149,7 +146,7 @@ const { data: statsToday } = useAsyncData(
       params: { startAt: start, endAt: end },
     })
   },
-  { lazy: true }
+  { lazy: true, server: false }
 )
 
 // 昨日
@@ -164,7 +161,7 @@ const { data: statsYesterday } = useAsyncData(
       params: { startAt: start, endAt: end },
     })
   },
-  { lazy: true }
+  { lazy: true, server: false }
 )
 
 // 本月
@@ -179,7 +176,7 @@ const { data: statsMonth } = useAsyncData(
       params: { startAt: start, endAt: end },
     })
   },
-  { lazy: true }
+  { lazy: true, server: false }
 )
 
 // 总量
@@ -193,7 +190,7 @@ const { data: statsTotal } = useAsyncData(
       params: { startAt: createdAtTs, endAt: now },
     })
   },
-  { lazy: true }
+  { lazy: true, server: false }
 )
 
 const statItems = [
@@ -214,17 +211,7 @@ const isLoaded = (stat) => {
 
 // 游戏&番剧
 const hoverHero = ref(null)
-
 const hoveredIndex = ref(null)
-const router = useRouter()
-function handleClick(link) {
-  if (!link) return;
-  if (link.startsWith('http')) {
-    window.open(link, '_blank')
-  } else {
-    router.push(link)
-  }
-}
 </script>
 
 <template>
@@ -390,11 +377,14 @@ function handleClick(link) {
               <div class="text-sm text-gray-300">{{ stat.label }}</div>
               <div class="font-extrabold h-10 relative overflow-hidden">
                 <span class="opacity-0 select-none">0000</span>
-                <div v-if="!isLoaded(stat)" class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"></div>
+                <div
+                  class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded w-16 h-6 transition-opacity duration-500"
+                  :class="{ 'opacity-100 animate-pulse': !isLoaded(stat), 'opacity-0': isLoaded(stat) }"
+                ></div>
                 <transition name="fade">
                   <span
-                    v-if="isLoaded(stat)"
-                    class="absolute left-0 top-1/2 -translate-y-1/2"
+                    class="absolute left-0 top-1/2 -translate-y-1/2 transition-opacity duration-500"
+                    :class="{ 'opacity-0': !isLoaded(stat), 'opacity-100': isLoaded(stat) }"
                   >
                     {{ getValue(stat) }}
                   </span>
