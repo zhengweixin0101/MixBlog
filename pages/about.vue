@@ -211,17 +211,7 @@ const isLoaded = (stat) => {
 
 // 游戏&番剧
 const hoverHero = ref(null)
-
 const hoveredIndex = ref(null)
-const router = useRouter()
-function handleClick(link) {
-  if (!link) return;
-  if (link.startsWith('http')) {
-    window.open(link, '_blank')
-  } else {
-    router.push(link)
-  }
-}
 </script>
 
 <template>
