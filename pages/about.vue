@@ -138,7 +138,7 @@ function getDayTimestamps(date = new Date()) {
 
 // 今日
 const { data: statsToday } = useAsyncData(
-  'statsToday',
+  `statsToday-${Date.now()}`,
   async () => {
     const { start, end } = getDayTimestamps()
     return await $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
@@ -151,7 +151,7 @@ const { data: statsToday } = useAsyncData(
 
 // 昨日
 const { data: statsYesterday } = useAsyncData(
-  'statsYesterday',
+  `statsYesterday-${Date.now()}`,
   async () => {
     const yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
@@ -166,7 +166,7 @@ const { data: statsYesterday } = useAsyncData(
 
 // 本月
 const { data: statsMonth } = useAsyncData(
-  'statsMonth',
+  `statsMonth-${Date.now()}`,
   async () => {
     const now = new Date()
     const start = new Date(now.getFullYear(), now.getMonth(), 1).getTime()
@@ -181,7 +181,7 @@ const { data: statsMonth } = useAsyncData(
 
 // 总量
 const { data: statsTotal } = useAsyncData(
-  'statsTotal',
+  `statsTotal-${Date.now()}`,
   async () => {
     const createdAtTs = new Date(CREATED_AT).getTime()
     const now = Date.now()
@@ -379,15 +379,13 @@ function handleClick(link) {
             <div v-for="stat in statItems" :key="stat.label">
               <div class="text-sm text-gray-300">{{ stat.label }}</div>
               <div class="font-extrabold h-10 relative">
-                <span class="opacity-0">
-                  {{ stat.source?.value?.[stat.valueKey]?.value || '0000' }}
-                </span>
+                <span class="opacity-0">0000</span>
                 <template v-if="!stat.source">
                   <div class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"></div>
                 </template>
                 <template v-else>
                   <span class="absolute left-0 top-1/2 -translate-y-1/2">
-                    {{ stat.source?.value?.[stat.valueKey]?.value || '0000' }}
+                    {{ stat.source?.value?.[stat.valueKey]?.value}}
                   </span>
                 </template>
               </div>
