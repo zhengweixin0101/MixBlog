@@ -146,7 +146,7 @@ const { data: statsToday } = useAsyncData(
       params: { startAt: start, endAt: end },
     })
   },
-  { lazy: true }
+  { lazy: true, server: false }
 )
 
 // 昨日
@@ -161,7 +161,7 @@ const { data: statsYesterday } = useAsyncData(
       params: { startAt: start, endAt: end },
     })
   },
-  { lazy: true }
+  { lazy: true, server: false }
 )
 
 // 本月
@@ -176,7 +176,7 @@ const { data: statsMonth } = useAsyncData(
       params: { startAt: start, endAt: end },
     })
   },
-  { lazy: true }
+  { lazy: true, server: false }
 )
 
 // 总量
@@ -190,7 +190,7 @@ const { data: statsTotal } = useAsyncData(
       params: { startAt: createdAtTs, endAt: now },
     })
   },
-  { lazy: true }
+  { lazy: true, server: false }
 )
 
 const statItems = [
@@ -387,11 +387,14 @@ function handleClick(link) {
               <div class="text-sm text-gray-300">{{ stat.label }}</div>
               <div class="font-extrabold h-10 relative overflow-hidden">
                 <span class="opacity-0 select-none">0000</span>
-                <div v-if="!isLoaded(stat)" class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"></div>
+                <div
+                  class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded w-16 h-6 transition-opacity duration-500"
+                  :class="{ 'opacity-100 animate-pulse': !isLoaded(stat), 'opacity-0': isLoaded(stat) }"
+                ></div>
                 <transition name="fade">
                   <span
-                    v-if="isLoaded(stat)"
-                    class="absolute left-0 top-1/2 -translate-y-1/2"
+                    class="absolute left-0 top-1/2 -translate-y-1/2 transition-opacity duration-500"
+                    :class="{ 'opacity-0': !isLoaded(stat), 'opacity-100': isLoaded(stat) }"
                   >
                     {{ getValue(stat) }}
                   </span>
