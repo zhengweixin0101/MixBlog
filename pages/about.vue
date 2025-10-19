@@ -129,10 +129,7 @@ const TOKEN = aboutConfig.umami.token
 const CREATED_AT = aboutConfig.umami.createTime
 
 function getDayTimestamps(date = new Date()) {
-  const offset = 8 * 60 * 60 * 1000
-  const utc = date.getTime() + date.getTimezoneOffset() * 60000
-  const beijingTime = new Date(utc + offset)
-  const start = new Date(beijingTime)
+  const start = new Date(date)
   start.setHours(0, 0, 0, 0)
   const end = new Date(start)
   end.setHours(23, 59, 59, 999)
