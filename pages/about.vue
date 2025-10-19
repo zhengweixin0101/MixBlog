@@ -387,12 +387,7 @@ function handleClick(link) {
               <div class="text-sm text-gray-300">{{ stat.label }}</div>
               <div class="font-extrabold h-10 relative overflow-hidden">
                 <span class="opacity-0 select-none">0000</span>
-                <transition name="fade">
-                  <div
-                    v-if="!isLoaded(stat)"
-                    class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"
-                  ></div>
-                </transition>
+                <div v-if="!isLoaded(stat)" class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded animate-pulse w-16 h-6"></div>
                 <transition name="fade">
                   <span
                     v-if="isLoaded(stat)"
