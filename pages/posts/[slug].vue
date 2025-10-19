@@ -317,7 +317,9 @@ const formattedDate = computed(() => {
           <article v-html="post.content" class="article-content whitespace-normal break-words"></article>
         </section>
         <div data-fade class="sticky top-30 flex-shrink-0 hidden md:block self-start">
-          <Sidebar :toc="post.toc" :title="post.frontmatter.title" />
+          <div>
+            <Sidebar :toc="(post.toc && post.toc.length) ? post.toc : [{ id: 'no-toc', text: '暂无标题', tag: 'H2' }]" />
+          </div>
           <div class="flex items-center justify-center py-20"></div>
         </div>
       </div>
