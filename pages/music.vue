@@ -1,17 +1,17 @@
 <template>
-  <div class="h-screen pt-20 flex flex-col select-none">
-    <div class="flex flex-1 min-h-0">
-      <aside class="musicList p-1 w-65 border-r border-gray-200 dark:border-gray-700 overflow-y-auto relative" ref="listEl" @scroll="onScrollList">
-        <ul class="space-y-1">
+  <div v-fade-in class="h-screen pt-20 flex flex-col select-none">
+    <div data-fade class="flex flex-1 min-h-0">
+      <aside class="musicList p-1 w-65 overflow-y-auto relative" ref="listEl" @scroll="onScrollList">
+        <ul class="space-y-2">
           <li
             v-for="(item, idx) in list || []"
             :key="item.musicFull || item.path || idx"
             @click="playIndex(idx)"
             :class="[ 
-              'flex items-center p-2 rounded-lg cursor-pointer transition',
+              'flex items-center p-2 rounded-lg cursor-pointer transition bg-#fefefe dark:bg-white/10 transition-all duration-300',
               idx === currentIndex
-                ? 'bg-sky-100 dark:bg-sky-800/40 ring-1 ring-sky-400'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                ? 'shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]'
+                : 'shadow-[0_0_2px_rgba(0,0,0,0.2)]'
             ]"
           >
             <img
@@ -20,8 +20,8 @@
               class="w-12 h-12 rounded-md mr-3 object-cover"
             />
             <div class="min-w-0 flex-1">
-              <div class="font-semibold truncate">{{ item.title }}</div>
-              <div class="text-gray-500 dark:text-gray-400 text-sm truncate">
+              <div class="transition-color duration-300 font-semibold truncate ">{{ item.title }}</div>
+              <div class="text-sm transition-color duration-300 truncate">
                 {{ item.artist }}<span v-if="item.album"> — {{ item.album }}</span>
               </div>
             </div>
@@ -33,8 +33,8 @@
         class="lyrics flex-1 overflow-y-auto p-6 text-center"
         ref="lyricsEl"
       >
-        <div v-if="!currentItem" class="text-gray-400 mt-20">请选择歌曲播放</div>
-        <div v-else-if="!lyrics?.length" class="text-gray-400 mt-20">暂无歌词</div>
+        <div v-if="!currentItem" class="mt-20">请选择歌曲播放</div>
+        <div v-else-if="!lyrics?.length" class="mt-20">暂无歌词</div>
         <div v-else class="space-y-2">
           <div
             v-for="(line, i) in lyrics"
@@ -42,7 +42,7 @@
             :class="[ 
               'transition-all duration-300 text-base',
               i === currentLyricIndex
-                ? 'text-sky-600 dark:text-sky-400 font-semibold scale-105'
+                ? 'text-#00e699 dark:text-#00e699 font-semibold scale-105'
                 : 'text-gray-600 dark:text-gray-300'
             ]"
           >
@@ -52,13 +52,11 @@
       </div>
     </div>
 
-    <div
-      class="border-t border-gray-200 dark:border-gray-700 p-4 flex flex-col items-center gap-3"
-    >
-      <div class="flex items-center w-full text-sm text-gray-700 dark:text-gray-300 gap-2">
+    <div data-fade class="m-5 flex flex-col items-center gap-3" >
+      <div class="flex items-center w-full text-sm gap-2">
         <span class="w-12 text-right">{{ formatTime(currentTime) }}</span>
         <input
-          class="flex-1 h-1.5 rounded-full bg-gray-200 dark:bg-gray-700 appearance-none cursor-pointer accent-sky-500"
+          class="flex-1 h-1.5 rounded-full bg-gray/20 dark:bg-white/10 appearance-none cursor-pointer accent-gray dark:accent-white transition-color duration-300"
           type="range"
           min="0"
           :max="duration"
@@ -74,21 +72,27 @@
         <button
           @click="prev"
           :disabled="!list?.length"
-          class="px-5 py-2 rounded-full bg-gradient-to-r from-sky-500 to-cyan-500 text-white font-medium hover:opacity-90 active:scale-95 disabled:opacity-40"
+          class="px-5 py-2 rounded-full border border-white text-[#2f3f5b] dark:text-white transition-colors bg-transparent
+                 shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]
+                 hover:scale-105 transition-transform transition-shadow duration-300"
         >
           上一首
         </button>
         <button
           @click="togglePlay"
           :disabled="!list?.length"
-          class="px-7 py-2 rounded-full bg-gradient-to-r from-sky-500 to-cyan-500 text-white font-medium hover:opacity-90 active:scale-95 disabled:opacity-40"
+          class="px-5 py-2 rounded-full border border-white text-[#2f3f5b] dark:text-white transition-colors bg-transparent
+                 shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]
+                 hover:scale-105 transition-transform transition-shadow duration-300"
         >
           {{ isPlaying ? '暂停' : '播放' }}
         </button>
         <button
           @click="next"
           :disabled="!list?.length"
-          class="px-5 py-2 rounded-full bg-gradient-to-r from-sky-500 to-cyan-500 text-white font-medium hover:opacity-90 active:scale-95 disabled:opacity-40"
+          class="px-5 py-2 rounded-full border border-white text-[#2f3f5b] dark:text-white transition-colors bg-transparent
+                 shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]
+                 hover:scale-105 transition-transform transition-shadow duration-300"
         >
           下一首
         </button>
@@ -321,7 +325,11 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style scoped>
+<style>
+html {
+  overflow-y: scroll;
+}
+
 /* 滚动条样式 */
 .musicList {
   scrollbar-width: thin;
