@@ -10,7 +10,7 @@
           <div class="flex-1 relative z-10 px-3 min-h-screen">
             <NuxtPage />
           </div>
-          <Footer />
+          <Footer v-if="!route.meta.hideFooter" />
         </div>
       </div>
     </div>
@@ -19,3 +19,8 @@
   </div>
   <Background />
 </template>
+
+<script setup>
+import { useRoute } from 'vue-router'
+const route = useRoute()
+</script>
