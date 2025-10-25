@@ -7,7 +7,7 @@
           <li
             v-for="(item, idx) in list || []"
             :key="item.musicFull || item.path || idx"
-            @click="playIndex(idx)"
+            @click="playIndex(idx, false, false)"
             :class="[ 
               'flex items-center p-2 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
               idx === currentIndex
@@ -58,9 +58,6 @@
         <div
           class="lyrics flex-1 overflow-y-auto p-6 text-center"
           ref="lyricsEl"
-          @wheel.prevent
-          @touchmove.prevent
-          @keydown.prevent
           tabindex="-1"
         >
           <div v-if="!currentItem" class="mt-20">请选择歌曲播放</div>
@@ -203,6 +200,7 @@ const seekValue = ref(0)
 const lyrics = ref([])
 const currentLyricIndex = ref(-1)
 const lyricsEl = ref(null)
+const listEl = ref(null)
 const shuffleList = ref([])
 const shuffleIndex = ref(0)
 
@@ -242,7 +240,7 @@ async function loadList() {
 }
 
 // 播放
-function playIndex(i, forcePlay = false) {
+function playIndex(i, forcePlay = false, shouldScroll = true) {
   const audioEl = audio.value
   if (!audioEl) return
   const item = list.value?.[i]
@@ -273,6 +271,10 @@ function playIndex(i, forcePlay = false) {
   currentTime.value = 0
   loadLyrics(item).catch(console.warn)
   audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
+  
+  if (shouldScroll) {
+    scrollToCurrentItem()
+  }
 }
 
 // 播放/暂停
@@ -337,12 +339,12 @@ const playMode = ref('loop')
 
 function togglePlayMode() {
   if (playMode.value === 'loop') {
-    playMode.value = 'single'
-    notification.show(`已切换到单曲循环模式`)
-  } else if (playMode.value === 'single') {
     playMode.value = 'shuffle'
     generateShuffleList()
     notification.show(`已切换到随机播放模式`)
+  } else if (playMode.value === 'shuffle') {
+    playMode.value = 'single'
+    notification.show(`已切换到单曲循环模式`)
   } else {
     playMode.value = 'loop'
     notification.show(`已切换到循环播放模式`)
@@ -462,6 +464,10 @@ function formatTime(sec) {
 
 // 歌词滚动
 let scrollTimer = null
+let lyricsWheelHandler = null
+let lyricsTouchHandler = null
+let lyricsKeyHandler = null
+
 async function scrollLyrics() {
   const el = lyricsEl.value
   if (!el) return
@@ -491,6 +497,39 @@ async function scrollLyrics() {
   scrollTimer = requestAnimationFrame(animate)
 }
 
+// 音乐列表滚动
+async function scrollToCurrentItem() {
+  const listElement = listEl.value
+  if (!listElement || currentIndex.value < 0) return
+  
+  await nextTick()
+  
+  const currentItemEl = listElement.querySelector(`li:nth-child(${currentIndex.value + 1})`)
+  if (!currentItemEl) return
+  
+  const listRect = listElement.getBoundingClientRect()
+  const itemRect = currentItemEl.getBoundingClientRect()
+  const isVisible = itemRect.top >= listRect.top && itemRect.bottom <= listRect.bottom
+
+  if (isVisible) return
+  
+  const target = listElement.scrollTop + (itemRect.bottom - listRect.bottom) + 20
+  
+  const start = listElement.scrollTop
+  const distance = target - start
+  const duration = 500
+  const startTime = performance.now()
+  
+  function animate(now) {
+    const progress = Math.min((now - startTime) / duration, 1)
+    const ease = 1 - Math.pow(1 - progress, 3)
+    listElement.scrollTop = start + distance * ease
+    if (progress < 1) requestAnimationFrame(animate)
+  }
+  
+  requestAnimationFrame(animate)
+}
+
 onMounted(async () => {
   await loadList()
   await nextTick()
@@ -506,12 +545,25 @@ onMounted(async () => {
   audioEl.addEventListener('loadedmetadata', onLoadedMetadata)
   audioEl.addEventListener('ended', onEnded)
 
+  const lyricsElement = lyricsEl.value
+  if (lyricsElement) {
+    lyricsWheelHandler = (e) => e.preventDefault()
+    lyricsTouchHandler = (e) => e.preventDefault()
+    lyricsKeyHandler = (e) => e.preventDefault()
+    
+    lyricsElement.addEventListener('wheel', lyricsWheelHandler, { passive: false })
+    lyricsElement.addEventListener('touchmove', lyricsTouchHandler, { passive: false })
+    lyricsElement.addEventListener('keydown', lyricsKeyHandler)
+  }
+
   const item = list.value[idx]
   currentIndex.value = idx
   await loadLyrics(item)
 
   audioEl.src = item.musicFull
   audioEl.load()
+
+  scrollToCurrentItem()
 
   audioEl.play().then(() => {
     isPlaying.value = true
@@ -526,6 +578,13 @@ onBeforeUnmount(() => {
     audioEl.removeEventListener('timeupdate', onTimeUpdate)
     audioEl.removeEventListener('loadedmetadata', onLoadedMetadata)
     audioEl.removeEventListener('ended', onEnded)
+  }
+  
+  const lyricsElement = lyricsEl.value
+  if (lyricsElement && lyricsWheelHandler && lyricsTouchHandler && lyricsKeyHandler) {
+    lyricsElement.removeEventListener('wheel', lyricsWheelHandler)
+    lyricsElement.removeEventListener('touchmove', lyricsTouchHandler)
+    lyricsElement.removeEventListener('keydown', lyricsKeyHandler)
   }
 })
 </script>
