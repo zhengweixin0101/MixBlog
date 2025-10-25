@@ -6,14 +6,13 @@ export default defineEventHandler(async (event) => {
 
     const baseUrl = siteConfig.url
 
-    // 页面
-    const pages = [
-        { loc: baseUrl, lastmod: new Date().toISOString(), changefreq: 'monthly', priority: 1.0 },
-        { loc: `${baseUrl}/posts`, lastmod: new Date().toISOString(), changefreq: 'monthly', priority: 0.8 },
-        { loc: `${baseUrl}/talks`, lastmod: new Date().toISOString(), changefreq: 'monthly', priority: 0.8 },
-        { loc: `${baseUrl}/apps`, lastmod: new Date().toISOString(), changefreq: 'monthly', priority: 0.8 },
-        { loc: `${baseUrl}/contact`, lastmod: new Date().toISOString(), changefreq: 'monthly', priority: 0.8 },
-    ]
+    // 从 siteConfig 获取页面配置
+    const pages = siteConfig.navItems.map(item => ({
+        loc: `${baseUrl}${item.href}`,
+        lastmod: new Date().toISOString(),
+        changefreq: 'monthly',
+        priority: item.href === '/' ? 1.0 : 0.8
+    }))
 
     // 文章
     const articles = await $fetch(`${siteConfig.apiUrl}/api/article/list`)
