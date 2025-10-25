@@ -84,19 +84,19 @@
     <!-- 底部控制栏 -->
     <div
       data-fade
-      class="my-4 py-3 px-4 flex items-center gap-4 rounded-lg bg-#fefefe dark:bg-white/10 transition-all duration-300 flex-wrap justify-between"
+      class="my-4 p-5 flex items-center gap-4 rounded-lg bg-#fefefe dark:bg-white/10 duration-300 flex-wrap justify-between"
     >
       <!-- 左侧播放控制 -->
       <div class="flex items-center gap-4">
-        <button @click="prev" :disabled="!list?.length" class="p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-white/10 transition">
+        <button @click="prev" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
           <i class="iconfont icon-backward"></i>
         </button>
 
-        <button @click="togglePlay" :disabled="!list?.length" class="p-3 rounded-full bg-#00e699 text-white hover:scale-110 transition-transform">
+        <button @click="togglePlay" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
           <i :class="isPlaying ? 'iconfont icon-pause' : 'iconfont icon-play'"></i>
         </button>
 
-        <button @click="next" :disabled="!list?.length" class="p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-white/10 transition">
+        <button @click="next" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
           <i class="iconfont icon-forward"></i>
         </button>
       </div>
@@ -121,7 +121,7 @@
       <!-- 右侧功能 -->
       <div class="flex items-center gap-4">
         <!-- 播放模式 -->
-        <button @click="togglePlayMode" class="p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-white/10 transition">
+        <button @click="togglePlayMode" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
           <i :class="{
             'iconfont icon-repeat': playMode === 'loop',
             'iconfont icon-repeat-1': playMode === 'single',
@@ -130,7 +130,7 @@
         </button>
 
         <!-- 静音按钮 -->
-        <button @click="toggleMute" class="p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-white/10 transition">
+        <button @click="toggleMute" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
           <i :class="muted ? 'iconfont icon-16gf-volumeCross' : 'iconfont icon-20gf-volumeHigh'"></i>
         </button>
 
@@ -138,7 +138,7 @@
         <button
           v-if="currentItem?.musicFull"
           @click="downloadMusic"
-          class="p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-white/10 transition"
+          class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all"
         >
           <i class="iconfont icon-download"></i>
         </button>
