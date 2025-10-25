@@ -69,7 +69,7 @@
               :class="[ 
                 'lyric-line text-5 transition-all duration-300',
                 i === currentLyricIndex
-                  ? 'current text-#00e699 dark:text-#00e699 font-semibold scale-115'
+                  ? 'current text-gradient font-semibold scale-115'
                   : 'text-gray-600 dark:text-white'
               ]"
               :style="i === currentLyricIndex ? { filter: 'none' } : { filter: 'blur(1px)' }"
