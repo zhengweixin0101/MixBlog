@@ -1,7 +1,8 @@
 <template>
   <div v-fade-in class="h-screen pt-20 flex flex-col select-none">
     <div data-fade class="flex flex-1 min-h-0">
-      <aside class="musicList w-65 overflow-y-auto relative" ref="listEl" @scroll="onScrollList">
+      <!-- 左侧列表 -->
+      <aside class="musicList w-65 overflow-y-auto relative hidden md:block" ref="listEl" @scroll="onScrollList">
         <ul class="space-y-2 p-1">
           <li
             v-for="(item, idx) in list || []"
@@ -29,7 +30,9 @@
         </ul>
       </aside>
 
+      <!-- 右侧播放界面 -->
       <div class="flex-1 flex flex-col min-h-0 ml-1 rounded-lg bg-#fefefe dark:bg-white/10 transition-all duration-300">
+        <!-- 封面 -->
         <div v-if="currentItem" class="mt-20 p-6 text-center">
           <div class="cover-wrap w-40 h-40 rounded-full overflow-hidden shadow-xl flex items-center justify-center mx-auto">
             <img
@@ -50,6 +53,8 @@
             </div>
           </div>
         </div>
+
+        <!-- 歌词 -->
         <div
           class="lyrics flex-1 overflow-y-auto p-6 text-center"
           ref="lyricsEl"
@@ -79,11 +84,31 @@
       </div>
     </div>
 
-    <div data-fade class="my-4 py-4 flex flex-col items-center gap-3 rounded-lg bg-#fefefe dark:bg-white/10 transition-all duration-300" >
-      <div class="flex items-center w-full text-sm gap-2">
-        <span class="w-12 text-right">{{ formatTime(currentTime) }}</span>
+    <!-- 底部控制栏 -->
+    <div
+      data-fade
+      class="my-4 py-3 px-4 flex items-center gap-4 rounded-lg bg-#fefefe dark:bg-white/10 transition-all duration-300 flex-wrap justify-between"
+    >
+      <!-- 左侧播放控制 -->
+      <div class="flex items-center gap-4">
+        <button @click="prev" :disabled="!list?.length" class="p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-white/10 transition">
+          <i class="iconfont icon-backward"></i>
+        </button>
+
+        <button @click="togglePlay" :disabled="!list?.length" class="p-3 rounded-full bg-#00e699 text-white hover:scale-110 transition-transform">
+          <i :class="isPlaying ? 'iconfont icon-pause' : 'iconfont icon-play'"></i>
+        </button>
+
+        <button @click="next" :disabled="!list?.length" class="p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-white/10 transition">
+          <i class="iconfont icon-forward"></i>
+        </button>
+      </div>
+
+      <!-- 中间进度 -->
+      <div class="flex-1 flex items-center gap-2 mx-2 min-w-[200px]">
+        <span class="text-xs w-10 text-right">{{ formatTime(currentTime) }}</span>
         <input
-          class="flex-1 h-1.5 rounded-full bg-gray/20 dark:bg-white/10 appearance-none cursor-pointer accent-gray dark:accent-white transition-color duration-300"
+          class="flex-1 h-1.5 rounded-full bg-gray/20 dark:bg-white/10 appearance-none cursor-pointer accent-gray dark:accent-white"
           type="range"
           min="0"
           :max="duration"
@@ -91,38 +116,34 @@
           v-model.number="seekValue"
           @input="onSeekInput"
           @change="onSeekChange"
-          :style="{ background: `linear-gradient(to right, #00e699 0%, #00e699 ${seekValue/duration*100}%, #D9D9D9 ${seekValue/duration*100}%, #D9D9D9 100%)`}"
+          :style="{ background: `linear-gradient(to right, #00e699 0%, #00e699 ${seekValue/duration*100}%, #D9D9D9 ${seekValue/duration*100}%, #D9D9D9 100%)` }"
         />
-        <span class="w-12">{{ formatTime(duration) }}</span>
+        <span class="text-xs w-10">{{ formatTime(duration) }}</span>
       </div>
 
-      <div class="flex justify-center gap-6">
-        <button
-          @click="prev"
-          :disabled="!list?.length"
-          class="px-5 py-2 rounded-full border border-white text-[#2f3f5b] dark:text-white transition-colors bg-transparent
-                 shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]
-                 hover:scale-105 transition-transform transition-shadow duration-300"
-        >
-          上一首
+      <!-- 右侧功能 -->
+      <div class="flex items-center gap-4">
+        <!-- 播放模式 -->
+        <button @click="togglePlayMode" class="p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-white/10 transition">
+          <i :class="{
+            'iconfont icon-repeat': playMode === 'loop',
+            'iconfont icon-repeat-1': playMode === 'single',
+            'iconfont icon-shuffle1': playMode === 'shuffle'
+          }"></i>
         </button>
-        <button
-          @click="togglePlay"
-          :disabled="!list?.length"
-          class="px-5 py-2 rounded-full border border-white text-[#2f3f5b] dark:text-white transition-colors bg-transparent
-                 shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]
-                 hover:scale-105 transition-transform transition-shadow duration-300"
-        >
-          {{ isPlaying ? '暂停' : '播放' }}
+
+        <!-- 静音按钮 -->
+        <button @click="toggleMute" class="p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-white/10 transition">
+          <i :class="muted ? 'iconfont icon-16gf-volumeCross' : 'iconfont icon-20gf-volumeHigh'"></i>
         </button>
+
+        <!-- 下载按钮 -->
         <button
-          @click="next"
-          :disabled="!list?.length"
-          class="px-5 py-2 rounded-full border border-white text-[#2f3f5b] dark:text-white transition-colors bg-transparent
-                 shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]
-                 hover:scale-105 transition-transform transition-shadow duration-300"
+          v-if="currentItem?.musicFull"
+          @click="downloadMusic"
+          class="p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-white/10 transition"
         >
-          下一首
+          <i class="iconfont icon-download"></i>
         </button>
       </div>
     </div>
@@ -178,6 +199,8 @@ const seekValue = ref(0)
 const lyrics = ref([])
 const currentLyricIndex = ref(-1)
 const lyricsEl = ref(null)
+const shuffleList = ref([])
+const shuffleIndex = ref(0)
 
 // 加载列表
 async function fetchJson(url) {
@@ -247,16 +270,96 @@ function togglePlay() {
 
 // 上一首
 function prev() {
-  if (!list.value || list.value.length === 0) return
-  const idx = currentIndex.value > 0 ? currentIndex.value - 1 : list.value.length - 1
-  playIndex(idx)
+  if (!list.value?.length) return;
+
+  let idx = currentIndex.value;
+
+  if (playMode.value === 'single') {
+    idx = currentIndex.value;
+  } else if (playMode.value === 'shuffle') {
+    if (!shuffleList.value.length) generateShuffleList();
+    shuffleIndex.value =
+      (shuffleIndex.value - 1 + shuffleList.value.length) % shuffleList.value.length;
+    idx = shuffleList.value[shuffleIndex.value];
+  } else {
+    idx = currentIndex.value > 0 ? currentIndex.value - 1 : list.value.length - 1;
+  }
+
+  playIndex(idx);
+  if (audio.value) audio.value.play().catch(console.warn);
 }
 
 // 下一首
-function next() {
-  if (!list.value || list.value.length === 0) return
-  const idx = (currentIndex.value + 1) % list.value.length
-  playIndex(idx)
+function next(auto = false) {
+  if (!list.value?.length) return;
+
+  let idx = currentIndex.value;
+
+  if (playMode.value === 'single') {
+    idx = currentIndex.value;
+  } else if (playMode.value === 'shuffle') {
+    if (!shuffleList.value.length) generateShuffleList();
+    shuffleIndex.value = (shuffleIndex.value + 1) % shuffleList.value.length;
+    idx = shuffleList.value[shuffleIndex.value];
+  } else {
+    idx = (currentIndex.value + 1) % list.value.length;
+  }
+
+  playIndex(idx);
+
+  if (!auto && audio.value) audio.value.play().catch(console.warn);
+}
+
+function onEnded() {
+  next(true)
+}
+
+// 播放模式：loop（循环播放）/ single（单曲循环）/ shuffle（随机播放）
+const playMode = ref('loop')
+
+function togglePlayMode() {
+  if (playMode.value === 'loop') {
+    playMode.value = 'single'
+  } else if (playMode.value === 'single') {
+    playMode.value = 'shuffle'
+    generateShuffleList()
+  } else {
+    playMode.value = 'loop'
+  }
+}
+
+// 生成随机列表
+function generateShuffleList() {
+  if (!list.value?.length) return;
+
+  const indices = list.value.map((_, i) => i);
+
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+
+  shuffleIndex.value = currentIndex.value >= 0 ? indices.indexOf(currentIndex.value) : 0;
+
+  shuffleList.value = indices;
+}
+
+// 音量控制
+const muted = ref(false)
+function toggleMute() {
+  if (audio.value) audio.value.muted = muted.value = !muted.value
+}
+
+// 下载歌曲
+function downloadMusic() {
+  const item = currentItem.value
+  if (!item?.musicFull) return
+  const link = document.createElement('a')
+  link.href = item.musicFull
+  link.download = `${item.title || 'music'}.mp3`
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
 }
 
 // 加载歌词
@@ -323,12 +426,6 @@ function onLoadedMetadata() {
   duration.value = audioEl.duration || 0
 }
 
-// 歌曲结束
-function onEnded() {
-  isPlaying.value = false
-  next()
-}
-
 // 进度条
 function onSeekInput() { currentTime.value = seekValue.value }
 function onSeekChange() { if(audio.value) audio.value.currentTime = seekValue.value }
@@ -372,20 +469,33 @@ async function scrollLyrics() {
   scrollTimer = requestAnimationFrame(animate)
 }
 
-// 生命周期
 onMounted(async () => {
   await loadList()
   await nextTick()
+
+  if (!list.value?.length) return
+  let idx = Math.floor(Math.random() * list.value.length)
+  if (playMode.value === 'shuffle') generateShuffleList()
+
   const audioEl = audio.value
-  if (audioEl) {
-    audioEl.addEventListener('timeupdate', onTimeUpdate)
-    audioEl.addEventListener('loadedmetadata', onLoadedMetadata)
-    audioEl.addEventListener('ended', onEnded)
-  }
-  if (list.value && list.value.length > 0) {
-    const idx = Math.floor(Math.random() * list.value.length)
-    playIndex(idx)
-  }
+  if (!audioEl) return
+
+  audioEl.addEventListener('timeupdate', onTimeUpdate)
+  audioEl.addEventListener('loadedmetadata', onLoadedMetadata)
+  audioEl.addEventListener('ended', onEnded)
+
+  const item = list.value[idx]
+  currentIndex.value = idx
+  await loadLyrics(item)
+
+  audioEl.src = item.musicFull
+  audioEl.load()
+
+  audioEl.play().then(() => {
+    isPlaying.value = true
+  }).catch(() => {
+    console.warn('首次自动播放被阻止，需要用户交互')
+  })
 })
 
 onBeforeUnmount(() => {
