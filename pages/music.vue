@@ -1,14 +1,14 @@
 <template>
   <div v-fade-in class="h-screen pt-20 flex flex-col select-none">
     <div data-fade class="flex flex-1 min-h-0">
-      <aside class="musicList p-1 w-65 overflow-y-auto relative" ref="listEl" @scroll="onScrollList">
-        <ul class="space-y-2">
+      <aside class="musicList w-65 overflow-y-auto relative" ref="listEl" @scroll="onScrollList">
+        <ul class="space-y-2 p-1">
           <li
             v-for="(item, idx) in list || []"
             :key="item.musicFull || item.path || idx"
             @click="playIndex(idx)"
             :class="[ 
-              'flex items-center p-2 rounded-lg cursor-pointer transition bg-#fefefe dark:bg-white/10 transition-all duration-300',
+              'flex items-center p-2 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
               idx === currentIndex
                 ? 'shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]'
                 : 'shadow-[0_0_2px_rgba(0,0,0,0.2)]'
@@ -22,37 +22,64 @@
             <div class="min-w-0 flex-1">
               <div class="transition-color duration-300 font-semibold truncate ">{{ item.title }}</div>
               <div class="text-sm transition-color duration-300 truncate">
-                {{ item.artist }}<span v-if="item.album"> — {{ item.album }}</span>
+                {{ item.artist }}<span v-if="item.album"> - {{ item.album }}</span>
               </div>
             </div>
           </li>
         </ul>
       </aside>
 
-      <div
-        class="lyrics flex-1 overflow-y-auto p-6 text-center"
-        ref="lyricsEl"
-      >
-        <div v-if="!currentItem" class="mt-20">请选择歌曲播放</div>
-        <div v-else-if="!lyrics?.length" class="mt-20">暂无歌词</div>
-        <div v-else class="space-y-2">
-          <div
-            v-for="(line, i) in lyrics"
-            :key="i"
-            :class="[ 
-              'transition-all duration-300 text-base',
-              i === currentLyricIndex
-                ? 'text-#00e699 dark:text-#00e699 font-semibold scale-105'
-                : 'text-gray-600 dark:text-gray-300'
-            ]"
-          >
-            {{ line.text }}
+      <div class="flex-1 flex flex-col min-h-0 ml-1 rounded-lg bg-#fefefe dark:bg-white/10 transition-all duration-300">
+        <div v-if="currentItem" class="mt-20 p-6 text-center">
+          <div class="cover-wrap w-40 h-40 rounded-full overflow-hidden shadow-xl flex items-center justify-center mx-auto">
+            <img
+              v-if="currentItem.coverFull"
+              :src="currentItem.coverFull"
+              :alt="currentItem.title || 'cover'"
+              class="block w-full h-full object-cover origin-center animate-spin"
+              :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '20s' }"
+            />
+            <div v-else class="w-full h-full flex items-center justify-center text-sm text-gray-500">
+              无封面
+            </div>
+          </div>
+          <div class="mt-3 text-center w-full px-4">
+            <div class="text-6 font-bold truncate transition-color duration-300">{{ currentItem.title }}</div>
+            <div class="text-sm transition-color duration-300 text-gray-600 dark:text-gray-300 truncate">
+              {{ currentItem.artist }}<span v-if="currentItem.album"> - {{ currentItem.album }}</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="lyrics flex-1 overflow-y-auto p-6 text-center"
+          ref="lyricsEl"
+          @wheel.prevent
+          @touchmove.prevent
+          @keydown.prevent
+          tabindex="-1"
+        >
+          <div v-if="!currentItem" class="mt-20">请选择歌曲播放</div>
+          <div v-else-if="!lyrics?.length" class="mt-20">暂无歌词</div>
+          <div v-else class="space-y-2">
+            <div
+              v-for="(line, i) in lyrics"
+              :key="i"
+              :class="[ 
+                'lyric-line text-5 transition-all duration-300',
+                i === currentLyricIndex
+                  ? 'current text-#00e699 dark:text-#00e699 font-semibold scale-115'
+                  : 'text-gray-600 dark:text-white'
+              ]"
+              :style="i === currentLyricIndex ? { filter: 'none' } : { filter: 'blur(1px)' }"
+            >
+              {{ line.text }}
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div data-fade class="m-5 flex flex-col items-center gap-3" >
+    <div data-fade class="my-4 py-4 flex flex-col items-center gap-3 rounded-lg bg-#fefefe dark:bg-white/10 transition-all duration-300" >
       <div class="flex items-center w-full text-sm gap-2">
         <span class="w-12 text-right">{{ formatTime(currentTime) }}</span>
         <input
@@ -64,6 +91,7 @@
           v-model.number="seekValue"
           @input="onSeekInput"
           @change="onSeekChange"
+          :style="{ background: `linear-gradient(to right, #00e699 0%, #00e699 ${seekValue/duration*100}%, #D9D9D9 ${seekValue/duration*100}%, #D9D9D9 100%)`}"
         />
         <span class="w-12">{{ formatTime(duration) }}</span>
       </div>
@@ -99,7 +127,7 @@
       </div>
     </div>
 
-    <audio ref="audio" preload="metadata"></audio>
+    <audio ref="audio" preload="metadata" autoplay></audio>
   </div>
 </template>
 
@@ -259,11 +287,17 @@ function onTimeUpdate() {
 
   if (lyrics.value && lyrics.value.length > 0) {
     const t = audioEl.currentTime
-    let i = -1
+    let i = 0
     for (let j = lyrics.value.length - 1; j >= 0; j--) {
-      if (t >= lyrics.value[j].time) { i = j; break }
+      if (t >= lyrics.value[j].time) { 
+        i = j
+        break
+      }
     }
-    if (i !== currentLyricIndex.value) { currentLyricIndex.value = i; scrollLyrics() }
+    if (i !== currentLyricIndex.value) { 
+      currentLyricIndex.value = i
+      scrollLyrics() 
+    }
   }
 }
 
@@ -293,25 +327,49 @@ function formatTime(sec) {
 }
 
 // 歌词滚动
-function scrollLyrics() {
+let scrollTimer = null
+async function scrollLyrics() {
   const el = lyricsEl.value
   if (!el) return
+  await nextTick()
+
   const cur = el.querySelector('.lyric-line.current')
-  if (cur) {
-    const top = cur.offsetTop - el.clientHeight / 2 + cur.clientHeight / 2
-    el.scrollTo({ top, behavior: 'smooth' })
+  if (!cur) return
+
+  const elRect = el.getBoundingClientRect()
+  const curRect = cur.getBoundingClientRect()
+  const target = el.scrollTop + (curRect.top - elRect.top) - (el.clientHeight / 2 - cur.offsetHeight / 2)
+
+  const start = el.scrollTop
+  const distance = target - start
+  const duration = 700
+  const startTime = performance.now()
+
+  if (scrollTimer) cancelAnimationFrame(scrollTimer)
+
+  function animate(now) {
+    const progress = Math.min((now - startTime) / duration, 1)
+    const ease = 1 - Math.pow(1 - progress, 3)
+    el.scrollTop = start + distance * ease
+    if (progress < 1) scrollTimer = requestAnimationFrame(animate)
   }
+
+  scrollTimer = requestAnimationFrame(animate)
 }
 
 // 生命周期
 onMounted(async () => {
-  loadList()
+  await loadList()
   await nextTick()
   const audioEl = audio.value
   if (audioEl) {
     audioEl.addEventListener('timeupdate', onTimeUpdate)
     audioEl.addEventListener('loadedmetadata', onLoadedMetadata)
     audioEl.addEventListener('ended', onEnded)
+  }
+  if (list.value && list.value.length > 0) {
+    const idx = Math.floor(Math.random() * list.value.length)
+    playIndex(idx)
   }
 })
 
@@ -328,6 +386,7 @@ onBeforeUnmount(() => {
 <style>
 html {
   overflow-y: scroll;
+  scrollbar-color: rgba(60, 60, 67, 0) transparent;
 }
 
 /* 滚动条样式 */
@@ -337,12 +396,13 @@ html {
 }
 
 .lyrics {
-  overflow: auto; /* 保留滚动 */
-  scrollbar-width: none; /* Firefox 隐藏滚动条 */
-  -ms-overflow-style: none; /* IE 10+ */
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior: contain;
 }
 
 .lyrics::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
+  display: none;
 }
 </style>
