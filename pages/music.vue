@@ -154,8 +154,12 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick, computed, useHead } from '#imports'
+
 import { musicConfig } from '../siteConfig/music'
 import { siteConfig } from '../siteConfig/main'
+
+import { useNotification } from '~/composables/useNotification'
+const notification = useNotification()
 
 //head
 useHead({
@@ -320,11 +324,14 @@ const playMode = ref('loop')
 function togglePlayMode() {
   if (playMode.value === 'loop') {
     playMode.value = 'single'
+    notification.show(`已切换到单曲循环模式`)
   } else if (playMode.value === 'single') {
     playMode.value = 'shuffle'
     generateShuffleList()
+    notification.show(`已切换到随机播放模式`)
   } else {
     playMode.value = 'loop'
+    notification.show(`已切换到循环播放模式`)
   }
 }
 
@@ -360,6 +367,7 @@ function downloadMusic() {
   document.body.appendChild(link)
   link.click()
   link.remove()
+  notification.show(`已尝试下载，请注意查看！`)
 }
 
 // 加载歌词
