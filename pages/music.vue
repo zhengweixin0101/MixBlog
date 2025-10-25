@@ -242,15 +242,26 @@ async function loadList() {
 }
 
 // 播放
-function playIndex(i) {
+function playIndex(i, forcePlay = false) {
   const audioEl = audio.value
   if (!audioEl) return
   const item = list.value?.[i]
   if (!item || !item.musicFull) return console.warn('no music url for item', i)
 
-  if (currentIndex.value === i) {
-    if (audioEl.paused) audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
-    else { audioEl.pause(); isPlaying.value = false }
+  if (currentIndex.value === i && !forcePlay) {
+    if (playMode.value === 'single') {
+      currentIndex.value = i
+      audioEl.src = item.musicFull
+      lyrics.value = []
+      currentLyricIndex.value = -1
+      seekValue.value = 0
+      currentTime.value = 0
+      loadLyrics(item).catch(console.warn)
+      audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
+    } else {
+      if (audioEl.paused) audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
+      else { audioEl.pause(); isPlaying.value = false }
+    }
     return
   }
 
@@ -279,7 +290,7 @@ function prev() {
   let idx = currentIndex.value;
 
   if (playMode.value === 'single') {
-    idx = currentIndex.value;
+    idx = currentIndex.value > 0 ? currentIndex.value - 1 : list.value.length - 1;
   } else if (playMode.value === 'shuffle') {
     if (!shuffleList.value.length) generateShuffleList();
     shuffleIndex.value =
@@ -290,7 +301,6 @@ function prev() {
   }
 
   playIndex(idx);
-  if (audio.value) audio.value.play().catch(console.warn);
 }
 
 // 下一首
@@ -300,7 +310,11 @@ function next(auto = false) {
   let idx = currentIndex.value;
 
   if (playMode.value === 'single') {
-    idx = currentIndex.value;
+    if (auto) {
+      idx = currentIndex.value;
+    } else {
+      idx = (currentIndex.value + 1) % list.value.length;
+    }
   } else if (playMode.value === 'shuffle') {
     if (!shuffleList.value.length) generateShuffleList();
     shuffleIndex.value = (shuffleIndex.value + 1) % shuffleList.value.length;
