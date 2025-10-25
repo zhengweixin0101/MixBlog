@@ -132,8 +132,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick, computed, useHead } from '#imports'
 import { musicConfig } from '../siteConfig/music'
+import { siteConfig } from '../siteConfig/main'
+
+//head
+useHead({
+  titleTemplate: `Music | ${siteConfig.title}`,
+  meta: [
+    { name: 'description', content: `This is the music page of ${siteConfig.title}.` },
+    { name: 'keywords', content: `${siteConfig.keywords},音乐,Music` },
+    { property: 'og:title', content: `Music | ${siteConfig.title}` },
+    { property: 'og:description', content: `This is the music page of ${siteConfig.title}.` },
+    { property: 'og:url', content: `${siteConfig.url}/music` },
+    { name: 'twitter:title', content: `Music | ${siteConfig.title}` },
+    { name: 'twitter:description', content: `This is the music page of ${siteConfig.title}.` },
+  ],
+})
 
 definePageMeta({
   hideFooter: true
