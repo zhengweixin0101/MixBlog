@@ -1,5 +1,30 @@
 <template>
-  <div v-fade-in class="h-screen pt-20 flex flex-col select-none">
+  <div v-show="isLoading" class="h-screen pt-20 flex items-center justify-center select-none">
+    <div class="animate-pulse w-full max-w-5xl p-6">
+      <div class="flex gap-4">
+        <aside class="hidden md:block w-65 space-y-3 pr-4">
+          <div v-for="n in 6" :key="'s-list-' + n" class="h-12 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
+        </aside>
+        <div class="flex-1">
+          <div class="flex flex-col items-center">
+            <div class="w-40 h-40 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+          </div>
+          <div class="mt-6 space-y-2">
+            <div v-for="n in 8" :key="'s-lyric-' + n" class="h-3 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-6 flex items-center justify-center">
+        <svg class="animate-spin h-10 w-10 text-#00e699" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+        </svg>
+        <span class="ml-3 text-base text-gray-600 dark:text-gray-300">加载中...</span>
+      </div>
+    </div>
+  </div>
+
+  <div v-show="!isLoading" v-fade-in class="h-screen pt-20 flex flex-col select-none">
     <div data-fade class="flex flex-1 min-h-0">
       <!-- 左侧列表 -->
       <aside class="musicList w-65 overflow-y-auto relative hidden md:block" ref="listEl" @scroll="onScrollList">
@@ -187,7 +212,7 @@ function joinUrl(base, path) {
 
 // 状态
 const list = ref([])
-const loading = ref(false)
+const isLoading = ref(true)
 const error = ref('')
 const currentIndex = ref(-1)
 const currentItem = computed(() => (currentIndex.value >= 0 ? list.value?.[currentIndex.value] || null : null))
@@ -212,7 +237,6 @@ async function fetchJson(url) {
 }
 
 async function loadList() {
-  loading.value = true
   error.value = ''
   try {
     const listUrl = joinUrl(musicConfig.listFile.basic, musicConfig.listFile.path)
@@ -234,8 +258,6 @@ async function loadList() {
   } catch (e) {
     error.value = e.message || String(e)
     list.value = []
-  } finally {
-    loading.value = false
   }
 }
 
@@ -530,6 +552,17 @@ async function scrollToCurrentItem() {
   requestAnimationFrame(animate)
 }
 
+function onPlay() { 
+  isLoading.value = false
+}
+
+watch(isLoading, async (val) => {
+  if (!val && list.value?.length) {
+    await nextTick()
+    scrollToCurrentItem()
+  }
+})
+
 onMounted(async () => {
   await loadList()
   await nextTick()
@@ -544,6 +577,7 @@ onMounted(async () => {
   audioEl.addEventListener('timeupdate', onTimeUpdate)
   audioEl.addEventListener('loadedmetadata', onLoadedMetadata)
   audioEl.addEventListener('ended', onEnded)
+  audioEl.addEventListener('play', onPlay)
 
   const lyricsElement = lyricsEl.value
   if (lyricsElement) {
@@ -563,8 +597,6 @@ onMounted(async () => {
   audioEl.src = item.musicFull
   audioEl.load()
 
-  scrollToCurrentItem()
-
   audioEl.play().then(() => {
     isPlaying.value = true
   }).catch(() => {
@@ -578,6 +610,7 @@ onBeforeUnmount(() => {
     audioEl.removeEventListener('timeupdate', onTimeUpdate)
     audioEl.removeEventListener('loadedmetadata', onLoadedMetadata)
     audioEl.removeEventListener('ended', onEnded)
+    audioEl.removeEventListener('play', onPlay)
   }
   
   const lyricsElement = lyricsEl.value
