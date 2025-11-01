@@ -71,7 +71,7 @@
                   ? 'current text-gradient font-semibold scale-115'
                   : 'text-gray-600 dark:text-white'
               ]"
-              :style="i === currentLyricIndex ? { filter: 'none' } : { filter: 'blur(1px)' }"
+              :style="i === currentLyricIndex ? { filter: 'none' } : { filter: 'blur(1.5px)' }"
             >
               {{ line.text }}
             </div>
