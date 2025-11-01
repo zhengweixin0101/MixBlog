@@ -31,8 +31,7 @@
       </aside>
 
       <!-- 右侧播放界面 -->
-      <div class="flex-1 flex flex-col min-h-0 ml-1 rounded-lg bg-#fefefe dark:bg-white/10 transition-all duration-300">
-        <!-- 封面 -->
+      <div class="flex-1 flex flex-col min-h-0 ml-1 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] transition-all duration-300">
         <div v-if="currentItem" class="mt-20 p-6 text-center">
           <div class="cover-wrap w-40 h-40 rounded-full overflow-hidden shadow-xl flex items-center justify-center mx-auto">
             <img
@@ -84,7 +83,7 @@
     <!-- 底部控制栏 -->
     <div
       data-fade
-      class="my-4 p-5 flex items-center gap-4 rounded-lg bg-#fefefe dark:bg-white/10 duration-300 flex-wrap justify-between"
+      class="my-4 p-5 flex items-center gap-4 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] duration-300 flex-wrap justify-between"
     >
       <!-- 左侧播放控制 -->
       <div class="flex items-center gap-4">
@@ -587,18 +586,7 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style>
-html {
-  overflow-y: scroll;
-  scrollbar-color: rgba(60, 60, 67, 0) transparent;
-}
-
-/* 滚动条样式 */
-.musicList {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(60, 60, 67, 0.4) transparent;
-}
-
+<style scoped>
 .lyrics {
   overflow: auto;
   scrollbar-width: none;
