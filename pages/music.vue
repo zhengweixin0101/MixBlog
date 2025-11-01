@@ -187,7 +187,6 @@ function joinUrl(base, path) {
 
 // 状态
 const list = ref([])
-const loading = ref(false)
 const error = ref('')
 const currentIndex = ref(-1)
 const currentItem = computed(() => (currentIndex.value >= 0 ? list.value?.[currentIndex.value] || null : null))
@@ -212,7 +211,6 @@ async function fetchJson(url) {
 }
 
 async function loadList() {
-  loading.value = true
   error.value = ''
   try {
     const listUrl = joinUrl(musicConfig.listFile.basic, musicConfig.listFile.path)
@@ -234,10 +232,10 @@ async function loadList() {
   } catch (e) {
     error.value = e.message || String(e)
     list.value = []
-  } finally {
-    loading.value = false
   }
 }
+
+await loadList()
 
 // 播放
 function playIndex(i, forcePlay = false, shouldScroll = true) {
