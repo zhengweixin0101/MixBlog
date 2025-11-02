@@ -1,5 +1,5 @@
 <template>
-  <div v-fade-in class="h-screen pt-20 flex flex-col select-none">
+  <div v-if="!isFullscreen" v-fade-in class="h-screen pt-20 flex flex-col select-none">
     <div data-fade class="flex flex-1 min-h-0">
       <!-- 左侧列表 -->
       <aside class="musicList w-65 overflow-y-auto relative hidden md:block" ref="listEl" @scroll="onScrollList">
@@ -31,8 +31,7 @@
       </aside>
 
       <!-- 右侧播放界面 -->
-      <div class="flex-1 flex flex-col min-h-0 ml-1 rounded-lg bg-#fefefe dark:bg-white/10 transition-all duration-300">
-        <!-- 封面 -->
+      <div class="flex-1 flex flex-col min-h-0 ml-1 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] transition-all duration-300">
         <div v-if="currentItem" class="mt-20 p-6 text-center">
           <div class="cover-wrap w-40 h-40 rounded-full overflow-hidden shadow-xl flex items-center justify-center mx-auto">
             <img
@@ -40,7 +39,7 @@
               :src="currentItem.coverFull"
               :alt="currentItem.title || 'cover'"
               class="block w-full h-full object-cover origin-center animate-spin"
-              :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '20s' }"
+              :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '40s' }"
             />
             <div v-else class="w-full h-full flex items-center justify-center text-sm text-gray-500">
               无封面
@@ -72,11 +71,15 @@
                   ? 'current text-gradient font-semibold scale-115'
                   : 'text-gray-600 dark:text-white'
               ]"
-              :style="i === currentLyricIndex ? { filter: 'none' } : { filter: 'blur(1px)' }"
+              :style="i === currentLyricIndex ? { filter: 'none' } : { filter: 'blur(1.5px)' }"
             >
               {{ line.text }}
             </div>
           </div>
+        </div>
+
+        <div class="hidden md:block absolute bottom-1 right-2 cursor-pointer opacity-50" @click="toggleFullscreen"> 
+          <i class="text-lg iconfont icon-quanping"></i>
         </div>
       </div>
     </div>
@@ -84,74 +87,261 @@
     <!-- 底部控制栏 -->
     <div
       data-fade
-      class="my-4 p-5 flex items-center gap-4 rounded-lg bg-#fefefe dark:bg-white/10 duration-300 flex-wrap justify-between"
+      class="my-4 p-5 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] duration-300"
     >
-      <!-- 左侧播放控制 -->
-      <div class="flex items-center gap-4">
-        <button @click="prev" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-          <i class="iconfont icon-backward"></i>
-        </button>
+      <!-- 移动端 -->
+      <div class="md:hidden flex flex-col gap-3">
+        <!-- 进度条 -->
+        <div class="w-full flex items-center gap-2">
+          <span class="text-xs w-10 text-right">{{ formatTime(currentTime) }}</span>
+          <input
+            class="flex-1 h-1.5 rounded-full bg-gray/20 dark:bg-white/10 appearance-none cursor-pointer accent-gray dark:accent-white"
+            type="range"
+            min="0"
+            :max="duration"
+            step="0.1"
+            v-model.number="seekValue"
+            @input="onSeekInput"
+            @change="onSeekChange"
+            :style="{ background: `linear-gradient(to right, #00e699 0%, #00e699 ${duration ? (seekValue/duration*100) : 0}%, #D9D9D9 ${duration ? (seekValue/duration*100) : 0}%, #D9D9D9 100%)` }"
+          />
+          <span class="text-xs w-10">{{ formatTime(duration) }}</span>
+        </div>
 
-        <button @click="togglePlay" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-          <i :class="isPlaying ? 'iconfont icon-pause' : 'iconfont icon-play'"></i>
-        </button>
+        <!-- 按钮 -->
+        <div class="w-full flex items-center justify-between px-2">
+          <!-- 左侧列表 -->
+          <div class="flex items-center gap-2">
+            <button @click="musicList" :disabled="!list?.length" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <i class="iconfont icon-liebiao"></i>
+            </button>
+            <button @click="togglePlayMode" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <i :class="{
+                'iconfont icon-repeat': playMode === 'loop',
+                'iconfont icon-repeat-1': playMode === 'single',
+                'iconfont icon-shuffle1': playMode === 'shuffle'
+              }"></i>
+            </button>
+          </div>
 
-        <button @click="next" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-          <i class="iconfont icon-forward"></i>
-        </button>
+          <!-- 中间控制 -->
+          <div class="flex items-center gap-4">
+            <button @click="prev" :disabled="!list?.length" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <i class="iconfont icon-backward"></i>
+            </button>
+
+            <button @click="togglePlay" :disabled="!list?.length" class="p-3 rounded-full bg-#00e699 text-white shadow-[0_0_2px_rgba(0,0,0,0.2)] appearance-none border-none cursor-pointer transition-all">
+              <i :class="isPlaying ? 'iconfont icon-pause' : 'iconfont icon-play'"></i>
+            </button>
+
+            <button @click="next" :disabled="!list?.length" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <i class="iconfont icon-forward"></i>
+            </button>
+          </div>
+
+          <!-- 右侧功能 -->
+          <div class="flex items-center gap-2">
+            <button @click="toggleMute" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <i :class="muted ? 'iconfont icon-16gf-volumeCross' : 'iconfont icon-20gf-volumeHigh'"></i>
+            </button>
+
+            <button
+              v-if="currentItem?.musicFull"
+              @click="downloadMusic"
+              class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all"
+            >
+              <i class="iconfont icon-download"></i>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <!-- 中间进度 -->
-      <div class="flex-1 flex items-center gap-2 mx-2 min-w-[200px]">
-        <span class="text-xs w-10 text-right">{{ formatTime(currentTime) }}</span>
-        <input
-          class="flex-1 h-1.5 rounded-full bg-gray/20 dark:bg-white/10 appearance-none cursor-pointer accent-gray dark:accent-white"
-          type="range"
-          min="0"
-          :max="duration"
-          step="0.1"
-          v-model.number="seekValue"
-          @input="onSeekInput"
-          @change="onSeekChange"
-          :style="{ background: `linear-gradient(to right, #00e699 0%, #00e699 ${seekValue/duration*100}%, #D9D9D9 ${seekValue/duration*100}%, #D9D9D9 100%)` }"
+      <!-- 桌面端 -->
+      <div class="hidden md:flex items-center gap-4 flex-wrap justify-between">
+        <!-- 左侧播放控制 -->
+        <div class="flex items-center gap-4">
+          <button @click="prev" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <i class="iconfont icon-backward"></i>
+          </button>
+
+          <button @click="togglePlay" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <i :class="isPlaying ? 'iconfont icon-pause' : 'iconfont icon-play'"></i>
+          </button>
+
+          <button @click="next" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <i class="iconfont icon-forward"></i>
+          </button>
+        </div>
+
+        <!-- 进度条 -->
+        <div class="flex-1 flex items-center gap-2 mx-2 min-w-[200px]">
+          <span class="text-xs w-10 text-right">{{ formatTime(currentTime) }}</span>
+          <input
+            class="flex-1 h-1.5 rounded-full bg-gray/20 dark:bg-white/10 appearance-none cursor-pointer accent-gray dark:accent-white"
+            type="range"
+            min="0"
+            :max="duration"
+            step="0.1"
+            v-model.number="seekValue"
+            @input="onSeekInput"
+            @change="onSeekChange"
+            :style="{ background: `linear-gradient(to right, #00e699 0%, #00e699 ${seekValue/duration*100}%, #D9D9D9 ${seekValue/duration*100}%, #D9D9D9 100%)` }"
+          />
+          <span class="text-xs w-10">{{ formatTime(duration) }}</span>
+        </div>
+
+        <!-- 右侧功能 -->
+        <div class="flex items-center gap-4">
+          <button @click="togglePlayMode" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <i :class="{
+              'iconfont icon-repeat': playMode === 'loop',
+              'iconfont icon-repeat-1': playMode === 'single',
+              'iconfont icon-shuffle1': playMode === 'shuffle'
+            }"></i>
+          </button>
+
+          <button @click="toggleMute" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <i :class="muted ? 'iconfont icon-16gf-volumeCross' : 'iconfont icon-20gf-volumeHigh'"></i>
+          </button>
+
+          <button
+            v-if="currentItem?.musicFull"
+            @click="downloadMusic"
+            class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all"
+          >
+            <i class="iconfont icon-download"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 移动端歌曲列 -->
+  <div class="fixed inset-0 z-50 md:hidden select-none" :class="{ 'pointer-events-none': !mobileListOpen }" aria-hidden="true">
+    <transition name="fade">
+      <div v-show="mobileListOpen" class="absolute inset-0 bg-black/50 backdrop-blur" @click="closeMobileList"></div>
+    </transition>
+
+    <transition name="slide-up">
+      <aside
+        ref="mobileListEl"
+        v-show="mobileListOpen"
+        class="fixed bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]
+               bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-lg text-gray-800 dark:text-gray-100 rounded-t-lg"
+      >
+        <ul class="space-y-2 p-3">
+          <li
+            v-for="(item, idx) in list || []"
+            :key="item.musicFull || item.path || idx"
+            @click="selectMobile(idx)"
+            :class="[ 
+              'flex items-center p-2 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
+              idx === currentIndex
+                ? 'shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]'
+                : 'shadow-[0_0_2px_rgba(0,0,0,0.2)]'
+            ]"
+          >
+            <img
+              v-if="item.coverFull"
+              :src="item.coverFull"
+              class="w-12 h-12 rounded-md mr-3 object-cover"
+            />
+            <div class="min-w-0 flex-1">
+              <div class="transition-color duration-300 font-semibold truncate ">{{ item.title }}</div>
+              <div class="text-sm transition-color duration-300 truncate">
+                {{ item.artist }}<span v-if="item.album"> - {{ item.album }}</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </aside>
+    </transition>
+  </div>
+
+  <!-- 全屏模式 -->
+  <div v-if="isFullscreen" class="fixed inset-0 flex overflow-hidden select-none 2xl:px-80">
+    <!-- 背景 -->
+    <div
+      class="absolute inset-0"
+      :style="{
+        backgroundImage: `url(${encodeURI(currentItem.coverFull)})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        filter: 'blur(30px) brightness(0.3)',
+        zIndex: 0
+      }"
+    ></div>
+    <div class="absolute inset-0 bg-black/40 z-0"></div>
+
+    <div class="relative z-10 w-2/5 flex flex-col items-center justify-center p-6 gap-6 text-center text-white">
+      <!-- 封面 -->
+      <div class="cover-wrap w-50 h-50 lg:w-60 lg:h-60 2xl:w-78 2xl:h-78 rounded-full overflow-hidden shadow-2xl flex items-center justify-center">
+        <img
+          v-if="currentItem?.coverFull"
+          :src="currentItem.coverFull"
+          :alt="currentItem.title || 'cover'"
+          class="w-full h-full object-cover animate-spin"
+          :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '35s' }"
         />
-        <span class="text-xs w-10">{{ formatTime(duration) }}</span>
+        <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
+          无封面
+        </div>
       </div>
 
-      <!-- 右侧功能 -->
-      <div class="flex items-center gap-4">
-        <!-- 播放模式 -->
-        <button @click="togglePlayMode" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-          <i :class="{
-            'iconfont icon-repeat': playMode === 'loop',
-            'iconfont icon-repeat-1': playMode === 'single',
-            'iconfont icon-shuffle1': playMode === 'shuffle'
-          }"></i>
+      <!-- 歌曲信息 -->
+      <div class="text-center">
+        <div class="text-3xl 2xl:text-4xl font-bold truncate">{{ currentItem?.title }}</div>
+        <div class="text-md 2xl:text-xl opacity-80 truncate mt-1">
+          {{ currentItem?.artist }}<span v-if="currentItem?.album"> - {{ currentItem.album }}</span>
+        </div>
+      </div>
+
+      <!-- 播放控件 -->
+      <div class="flex items-center gap-6 mt-4">
+        <button @click="prev" :disabled="!list?.length" class="text-white hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-color">
+          <i class="text-5 iconfont icon-backward"></i>
         </button>
 
-        <!-- 静音按钮 -->
-        <button @click="toggleMute" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-          <i :class="muted ? 'iconfont icon-16gf-volumeCross' : 'iconfont icon-20gf-volumeHigh'"></i>
+        <button @click="togglePlay" :disabled="!list?.length" class="text-white hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-color">
+          <i class="text-5 iconfont" :class="isPlaying ? 'icon-pause' : 'icon-play'"></i>
         </button>
 
-        <!-- 下载按钮 -->
-        <button
-          v-if="currentItem?.musicFull"
-          @click="downloadMusic"
-          class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all"
-        >
-          <i class="iconfont icon-download"></i>
+        <button @click="next" :disabled="!list?.length" class="text-white hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-color">
+          <i class="text-5 iconfont icon-forward"></i>
         </button>
       </div>
     </div>
 
-    <audio ref="audio" preload="metadata" autoplay></audio>
+    <!-- 歌词 -->
+    <div
+      class="lyrics flex-1 overflow-y-auto py-78 text-center"
+      ref="lyricsEl"
+      tabindex="-1"
+    >
+      <div v-if="!currentItem" class="mt-20">请选择歌曲播放</div>
+      <div v-else-if="!lyrics?.length" class="mt-20">暂无歌词</div>
+      <div v-else class="space-y-5">
+        <div
+          v-for="(line, i) in lyrics"
+          :key="i"
+          :class="[ 
+            'lyric-line text-5 lg:text-6 2xl:text-7 transition-all duration-300',
+            i === currentLyricIndex
+              ? 'current text-gradient font-semibold scale-130'
+              : 'text-white'
+          ]"
+          :style="i === currentLyricIndex ? { filter: 'none' } : { filter: 'blur(1.5px)' }"
+        >
+          {{ line.text }}
+        </div>
+      </div>
+    </div>
   </div>
+
+  <audio ref="audio" preload="metadata" autoplay></audio>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick, computed, useHead } from '#imports'
-
 import { musicConfig } from '../siteConfig/music'
 import { siteConfig } from '../siteConfig/main'
 
@@ -202,6 +392,105 @@ const lyricsEl = ref(null)
 const listEl = ref(null)
 const shuffleList = ref([])
 const shuffleIndex = ref(0)
+const isFullscreen = ref(false)
+const mobileListOpen = ref(false)
+const mobileListEl = ref(null)
+
+//移动端歌曲列表
+function musicList() {
+  if (!list.value?.length) return
+  mobileListOpen.value = !mobileListOpen.value
+  if (mobileListOpen.value) {
+    nextTick().then(() => { scrollMobileToCurrentItem().catch(() => {}) })
+  }
+}
+
+function closeMobileList() {
+  mobileListOpen.value = false
+}
+
+function selectMobile(idx) {
+  playIndex(idx, false, true)
+  closeMobileList()
+}
+
+// 移动端滚动到当前项
+async function scrollMobileToCurrentItem() {
+  const el = mobileListEl.value
+  if (!el || currentIndex.value < 0) return
+  await nextTick()
+  const currentItemEl = el.querySelector(`li:nth-child(${currentIndex.value + 1})`)
+  if (!currentItemEl) return
+
+  const elRect = el.getBoundingClientRect()
+  const itemRect = currentItemEl.getBoundingClientRect()
+  const isVisible = itemRect.top >= elRect.top && itemRect.bottom <= elRect.bottom
+  if (isVisible) return
+
+  const target = el.scrollTop + (itemRect.bottom - elRect.bottom) + 20
+  const start = el.scrollTop
+  const distance = target - start
+  const duration = 400
+  const startTime = performance.now()
+
+  function animate(now) {
+    const progress = Math.min((now - startTime) / duration, 1)
+    const ease = 1 - Math.pow(1 - progress, 3)
+    el.scrollTop = start + distance * ease
+    if (progress < 1) requestAnimationFrame(animate)
+  }
+
+  requestAnimationFrame(animate)
+}
+
+watch(currentIndex, async () => {
+  if (mobileListOpen.value) {
+    await nextTick()
+    scrollMobileToCurrentItem().catch(() => {})
+  }
+})
+
+// 切换全屏模式
+const hideHeader = useState('hideHeader', () => false)
+
+async function toggleFullscreen() {
+  if (!isFullscreen.value) {
+    await document.documentElement.requestFullscreen()
+    hideHeader.value = true
+    isFullscreen.value = true
+
+    if (lyrics.value?.length && currentLyricIndex.value >= 0) {
+      await nextTick()
+      scrollLyrics()
+    }
+  } else {
+    await document.exitFullscreen()
+    hideHeader.value = false
+    isFullscreen.value = false
+
+    if (lyrics.value?.length && currentLyricIndex.value >= 0) {
+      await nextTick()
+      scrollLyrics()
+    }
+  }
+}
+
+function handleFullscreenChange() {
+  if (!document.fullscreenElement) {
+    hideHeader.value = false
+    isFullscreen.value = false
+  }
+}
+
+watch(isFullscreen, async (val) => {
+  await nextTick()
+  if (!val && list.value?.length) {
+    scrollToCurrentItem()
+  }
+  if (lyrics.value?.length && currentLyricIndex.value >= 0) {
+    scrollLyrics()
+  }
+})
 
 // 加载列表
 async function fetchJson(url) {
@@ -272,6 +561,7 @@ function playIndex(i, forcePlay = false, shouldScroll = true) {
   
   if (shouldScroll) {
     scrollToCurrentItem()
+    if (mobileListOpen.value) scrollMobileToCurrentItem().catch(() => {})
   }
 }
 
@@ -462,9 +752,6 @@ function formatTime(sec) {
 
 // 歌词滚动
 let scrollTimer = null
-let lyricsWheelHandler = null
-let lyricsTouchHandler = null
-let lyricsKeyHandler = null
 
 async function scrollLyrics() {
   const el = lyricsEl.value
@@ -528,6 +815,40 @@ async function scrollToCurrentItem() {
   requestAnimationFrame(animate)
 }
 
+// 键盘事件
+function handleKeydown(e) {
+  if (e.ctrlKey || e.altKey || e.metaKey) return
+  if (e.code === 'Escape' && isFullscreen.value) {
+    e.preventDefault()
+    toggleFullscreen().catch(() => {})
+    return
+  }
+  if (e.code === 'Space') {
+    e.preventDefault()
+    togglePlay()
+    return
+  }
+  if (e.code === 'ArrowLeft') {
+    e.preventDefault()
+    prev()
+    return
+  }
+  if (e.code === 'ArrowRight') {
+    e.preventDefault()
+    next()
+    return
+  }
+}
+
+function handleKeyup(e) {
+  if (e.code === 'Escape' && !isFullscreen.value) {
+    e.preventDefault()
+    setTimeout(() => {
+      if (!isFullscreen.value) toggleFullscreen().catch(() => {})
+    }, 50)
+  }
+}
+
 onMounted(async () => {
   await loadList()
   await nextTick()
@@ -545,13 +866,10 @@ onMounted(async () => {
 
   const lyricsElement = lyricsEl.value
   if (lyricsElement) {
-    lyricsWheelHandler = (e) => e.preventDefault()
-    lyricsTouchHandler = (e) => e.preventDefault()
-    lyricsKeyHandler = (e) => e.preventDefault()
-    
-    lyricsElement.addEventListener('wheel', lyricsWheelHandler, { passive: false })
-    lyricsElement.addEventListener('touchmove', lyricsTouchHandler, { passive: false })
-    lyricsElement.addEventListener('keydown', lyricsKeyHandler)
+    const preventScroll = (e) => e.preventDefault()
+    lyricsElement.addEventListener('wheel', preventScroll, { passive: false })
+    lyricsElement.addEventListener('touchmove', preventScroll, { passive: false })
+    lyricsElement.addEventListener('keydown', preventScroll)
   }
 
   const item = list.value[idx]
@@ -562,6 +880,11 @@ onMounted(async () => {
   audioEl.load()
 
   scrollToCurrentItem()
+
+  document.addEventListener('fullscreenchange', handleFullscreenChange)
+
+  document.addEventListener('keydown', handleKeydown)
+  document.addEventListener('keyup', handleKeyup)
 
   audioEl.play().then(() => {
     isPlaying.value = true
@@ -579,28 +902,23 @@ onBeforeUnmount(() => {
   }
   
   const lyricsElement = lyricsEl.value
-  if (lyricsElement && lyricsWheelHandler && lyricsTouchHandler && lyricsKeyHandler) {
-    lyricsElement.removeEventListener('wheel', lyricsWheelHandler)
-    lyricsElement.removeEventListener('touchmove', lyricsTouchHandler)
-    lyricsElement.removeEventListener('keydown', lyricsKeyHandler)
+  if (lyricsElement) {
+    const preventScroll = (e) => e.preventDefault()
+    lyricsElement.removeEventListener('wheel', preventScroll)
+    lyricsElement.removeEventListener('touchmove', preventScroll)
+    lyricsElement.removeEventListener('keydown', preventScroll)
   }
+  
+  document.removeEventListener('fullscreenchange', handleFullscreenChange)
+
+  document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('keyup', handleKeyup)
 })
 </script>
 
-<style>
-html {
-  overflow-y: scroll;
-  scrollbar-color: rgba(60, 60, 67, 0) transparent;
-}
-
-/* 滚动条样式 */
-.musicList {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(60, 60, 67, 0.4) transparent;
-}
-
+<style scoped>
 .lyrics {
-  overflow: auto;
+  overflow: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
   overscroll-behavior: contain;
@@ -608,5 +926,33 @@ html {
 
 .lyrics::-webkit-scrollbar {
   display: none;
+}
+
+/* 移动端歌曲列表动画 */
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: transform 300ms cubic-bezier(.2,.8,.2,1), opacity 200ms;
+}
+.slide-up-enter-from,
+.slide-up-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
+}
+.slide-up-enter-to,
+.slide-up-leave-from {
+  transform: translateY(0%);
+  opacity: 1;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 200ms ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
 }
 </style>

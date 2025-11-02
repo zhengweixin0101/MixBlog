@@ -452,11 +452,11 @@ const hoveredIndex = ref(null)
                   min-w-full md:min-w-[200px] relative transition-colors duration-300"
       >
         <div class="text-xs absolute text-gray-400">特长</div>
-          <h2 class="text-2xl sm:text-3xl font-bold mt-5">
-            <span class="text-#aa96da dark:text-#ffe2e2 transition-colors duration-300">脑回路新奇的 酸菜鱼</span>
-            <br/>
-            <span class="mt-3 transition-colors duration-300 opacity-70 dark:opacity-100">行动力指数<span class="ml-3 inline-block animate-MAX">MAX</span></span>
-          </h2>
+        <h2 class="text-2xl sm:text-3xl font-bold mt-5">
+          <span class="text-#aa96da dark:text-#ffe2e2 transition-colors duration-300">脑回路新奇的 酸菜鱼</span>
+          <br/>
+          <span class="mt-3 transition-colors duration-300 opacity-70 dark:opacity-100">行动力指数<span class="ml-3 inline-block animate-MAX">MAX</span></span>
+        </h2>
       </div>
       <div class="flex-1 md:flex-[2_2_0%] bg-white dark:bg-white/10 p-5 rounded-2xl shadow-[0_0_2px_rgba(0,0,0,0.2)]
                   min-w-full md:min-w-[200px] relative transition-colors duration-300 overflow-hidden group"

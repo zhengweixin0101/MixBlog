@@ -17,6 +17,9 @@ body {
 
   /* 保留换行符 */
   white-space: pre-line;
+
+  /* 滚动条样式 */
+  scrollbar-color: rgba(60, 60, 67, 0.5) rgba(0, 0, 0, 0);
 }
 
 html.dark {
