@@ -716,6 +716,40 @@ async function scrollToCurrentItem() {
   requestAnimationFrame(animate)
 }
 
+// 键盘事件
+function handleKeydown(e) {
+  if (e.ctrlKey || e.altKey || e.metaKey) return
+  if (e.code === 'Escape' && isFullscreen.value) {
+    e.preventDefault()
+    toggleFullscreen().catch(() => {})
+    return
+  }
+  if (e.code === 'Space') {
+    e.preventDefault()
+    togglePlay()
+    return
+  }
+  if (e.code === 'ArrowLeft') {
+    e.preventDefault()
+    prev()
+    return
+  }
+  if (e.code === 'ArrowRight') {
+    e.preventDefault()
+    next()
+    return
+  }
+}
+
+function handleKeyup(e) {
+  if (e.code === 'Escape' && !isFullscreen.value) {
+    e.preventDefault()
+    setTimeout(() => {
+      if (!isFullscreen.value) toggleFullscreen().catch(() => {})
+    }, 50)
+  }
+}
+
 onMounted(async () => {
   await loadList()
   await nextTick()
@@ -750,6 +784,9 @@ onMounted(async () => {
 
   document.addEventListener('fullscreenchange', handleFullscreenChange)
 
+  document.addEventListener('keydown', handleKeydown)
+  document.addEventListener('keyup', handleKeyup)
+
   audioEl.play().then(() => {
     isPlaying.value = true
   }).catch(() => {
@@ -774,6 +811,9 @@ onBeforeUnmount(() => {
   }
   
   document.removeEventListener('fullscreenchange', handleFullscreenChange)
+
+  document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('keyup', handleKeyup)
 })
 </script>
 
