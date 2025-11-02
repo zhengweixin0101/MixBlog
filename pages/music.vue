@@ -1,5 +1,5 @@
 <template>
-  <div v-fade-in class="h-screen pt-20 flex flex-col select-none">
+  <div v-if="!isFullscreen" v-fade-in class="h-screen pt-20 flex flex-col select-none">
     <div data-fade class="flex flex-1 min-h-0">
       <!-- 左侧列表 -->
       <aside class="musicList w-65 overflow-y-auto relative hidden md:block" ref="listEl" @scroll="onScrollList">
@@ -77,6 +77,10 @@
             </div>
           </div>
         </div>
+
+        <div class="absolute bottom-1 right-2 cursor-pointer opacity-50" @click="toggleFullscreen"> 
+          <i class="text-lg iconfont icon-quanping"></i>
+        </div>
       </div>
     </div>
 
@@ -143,14 +147,24 @@
         </button>
       </div>
     </div>
-
-    <audio ref="audio" preload="metadata" autoplay></audio>
   </div>
+
+  <!-- 全屏模式 -->
+  <div v-else class="fixed inset-0"
+  >
+    <h1 class="text-3xl font-bold mb-6">全屏</h1>
+    <button
+      @click="toggleFullscreen"
+      class="mt-4 px-4 py-2 bg-red-500 rounded-lg"
+    >
+      退出全屏
+    </button>
+  </div>
+
+  <audio ref="audio" preload="metadata" autoplay></audio>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick, computed, useHead } from '#imports'
-
 import { musicConfig } from '../siteConfig/music'
 import { siteConfig } from '../siteConfig/main'
 
@@ -201,6 +215,36 @@ const lyricsEl = ref(null)
 const listEl = ref(null)
 const shuffleList = ref([])
 const shuffleIndex = ref(0)
+const isFullscreen = ref(false)
+
+// 切换全屏模式
+const hideHeader = useState('hideHeader', () => false)
+
+async function toggleFullscreen() {
+  if (!isFullscreen.value) {
+    await document.documentElement.requestFullscreen()
+    hideHeader.value = true
+    isFullscreen.value = true
+  } else {
+    await document.exitFullscreen()
+    hideHeader.value = false
+    isFullscreen.value = false
+  }
+}
+
+function handleFullscreenChange() {
+  if (!document.fullscreenElement) {
+    hideHeader.value = false
+    isFullscreen.value = false
+  }
+}
+
+watch(isFullscreen, async (val) => {
+  if (!val && list.value?.length) {
+    await nextTick()
+    scrollToCurrentItem()
+  }
+})
 
 // 加载列表
 async function fetchJson(url) {
@@ -562,6 +606,8 @@ onMounted(async () => {
 
   scrollToCurrentItem()
 
+  document.addEventListener('fullscreenchange', handleFullscreenChange)
+
   audioEl.play().then(() => {
     isPlaying.value = true
   }).catch(() => {
@@ -583,6 +629,8 @@ onBeforeUnmount(() => {
     lyricsElement.removeEventListener('touchmove', lyricsTouchHandler)
     lyricsElement.removeEventListener('keydown', lyricsKeyHandler)
   }
+  
+  document.removeEventListener('fullscreenchange', handleFullscreenChange)
 })
 </script>
 

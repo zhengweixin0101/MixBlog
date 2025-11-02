@@ -1,6 +1,6 @@
 <template>
   <div class="relative min-h-screen flex flex-col text-#2f3f5b dark:text-white transition-colors duration-300">
-    <Header />
+    <Header v-if="!hideHeader" />
     <div class="flex flex-1">
       <div class="flex-1 w-full flex flex-col">
         <div
@@ -21,6 +21,6 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
 const route = useRoute()
+const hideHeader = useState('hideHeader', () => false)
 </script>
