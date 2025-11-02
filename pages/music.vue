@@ -39,7 +39,7 @@
               :src="currentItem.coverFull"
               :alt="currentItem.title || 'cover'"
               class="block w-full h-full object-cover origin-center animate-spin"
-              :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '20s' }"
+              :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '40s' }"
             />
             <div v-else class="w-full h-full flex items-center justify-center text-sm text-gray-500">
               无封面
@@ -150,15 +150,83 @@
   </div>
 
   <!-- 全屏模式 -->
-  <div v-else class="fixed inset-0"
-  >
-    <h1 class="text-3xl font-bold mb-6">全屏</h1>
-    <button
-      @click="toggleFullscreen"
-      class="mt-4 px-4 py-2 bg-red-500 rounded-lg"
+  <div v-if="isFullscreen" class="fixed inset-0 flex overflow-hidden select-none px-91">
+    <!-- 背景 -->
+    <div
+      class="absolute inset-0"
+      :style="{
+        backgroundImage: `url(${currentItem.coverFull})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        filter: 'blur(30px) brightness(0.3)',
+        zIndex: 0
+      }"
+    ></div>
+    <div class="absolute inset-0 bg-black/40 z-0"></div>
+
+    <div class="relative z-10 w-2/5 flex flex-col items-center justify-center p-6 gap-6 text-center text-white">
+      <!-- 封面 -->
+      <div class="cover-wrap w-78 h-78 rounded-full overflow-hidden shadow-2xl flex items-center justify-center">
+        <img
+          v-if="currentItem?.coverFull"
+          :src="currentItem.coverFull"
+          :alt="currentItem.title || 'cover'"
+          class="w-full h-full object-cover animate-spin"
+          :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '35s' }"
+        />
+        <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
+          无封面
+        </div>
+      </div>
+
+      <!-- 歌曲信息 -->
+      <div class="text-center">
+        <div class="text-4xl font-bold truncate">{{ currentItem?.title }}</div>
+        <div class="text-xl opacity-80 truncate mt-1">
+          {{ currentItem?.artist }}<span v-if="currentItem?.album"> - {{ currentItem.album }}</span>
+        </div>
+      </div>
+
+      <!-- 播放控件 -->
+      <div class="flex items-center gap-6 mt-4">
+        <button @click="prev" :disabled="!list?.length" class="text-white hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-color">
+          <i class="text-5 iconfont icon-backward"></i>
+        </button>
+
+        <button @click="togglePlay" :disabled="!list?.length" class="text-white hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-color">
+          <i class="text-5 iconfont" :class="isPlaying ? 'icon-pause' : 'icon-play'"></i>
+        </button>
+
+        <button @click="next" :disabled="!list?.length" class="text-white hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-color">
+          <i class="text-5 iconfont icon-forward"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 歌词 -->
+    <div
+      class="lyrics flex-1 overflow-y-auto py-78 text-center"
+      ref="lyricsEl"
+      tabindex="-1"
     >
-      退出全屏
-    </button>
+      <div v-if="!currentItem" class="mt-20">请选择歌曲播放</div>
+      <div v-else-if="!lyrics?.length" class="mt-20">暂无歌词</div>
+      <div v-else class="space-y-5">
+        <div
+          v-for="(line, i) in lyrics"
+          :key="i"
+          :class="[ 
+            'lyric-line text-7 transition-all duration-300',
+            i === currentLyricIndex
+              ? 'current text-gradient font-semibold scale-130'
+              : 'text-white'
+          ]"
+          :style="i === currentLyricIndex ? { filter: 'none' } : { filter: 'blur(1.5px)' }"
+        >
+          {{ line.text }}
+        </div>
+      </div>
+    </div>
   </div>
 
   <audio ref="audio" preload="metadata" autoplay></audio>
@@ -225,10 +293,20 @@ async function toggleFullscreen() {
     await document.documentElement.requestFullscreen()
     hideHeader.value = true
     isFullscreen.value = true
+
+    if (lyrics.value?.length && currentLyricIndex.value >= 0) {
+      await nextTick()
+      scrollLyrics()
+    }
   } else {
     await document.exitFullscreen()
     hideHeader.value = false
     isFullscreen.value = false
+
+    if (lyrics.value?.length && currentLyricIndex.value >= 0) {
+      await nextTick()
+      scrollLyrics()
+    }
   }
 }
 
@@ -240,9 +318,12 @@ function handleFullscreenChange() {
 }
 
 watch(isFullscreen, async (val) => {
+  await nextTick()
   if (!val && list.value?.length) {
-    await nextTick()
     scrollToCurrentItem()
+  }
+  if (lyrics.value?.length && currentLyricIndex.value >= 0) {
+    scrollLyrics()
   }
 })
 
@@ -588,13 +669,10 @@ onMounted(async () => {
 
   const lyricsElement = lyricsEl.value
   if (lyricsElement) {
-    lyricsWheelHandler = (e) => e.preventDefault()
-    lyricsTouchHandler = (e) => e.preventDefault()
-    lyricsKeyHandler = (e) => e.preventDefault()
-    
-    lyricsElement.addEventListener('wheel', lyricsWheelHandler, { passive: false })
-    lyricsElement.addEventListener('touchmove', lyricsTouchHandler, { passive: false })
-    lyricsElement.addEventListener('keydown', lyricsKeyHandler)
+    const preventScroll = (e) => e.preventDefault()
+    lyricsElement.addEventListener('wheel', preventScroll, { passive: false })
+    lyricsElement.addEventListener('touchmove', preventScroll, { passive: false })
+    lyricsElement.addEventListener('keydown', preventScroll)
   }
 
   const item = list.value[idx]
@@ -624,10 +702,11 @@ onBeforeUnmount(() => {
   }
   
   const lyricsElement = lyricsEl.value
-  if (lyricsElement && lyricsWheelHandler && lyricsTouchHandler && lyricsKeyHandler) {
-    lyricsElement.removeEventListener('wheel', lyricsWheelHandler)
-    lyricsElement.removeEventListener('touchmove', lyricsTouchHandler)
-    lyricsElement.removeEventListener('keydown', lyricsKeyHandler)
+  if (lyricsElement) {
+    const preventScroll = (e) => e.preventDefault()
+    lyricsElement.removeEventListener('wheel', preventScroll)
+    lyricsElement.removeEventListener('touchmove', preventScroll)
+    lyricsElement.removeEventListener('keydown', preventScroll)
   }
   
   document.removeEventListener('fullscreenchange', handleFullscreenChange)
@@ -636,7 +715,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .lyrics {
-  overflow: auto;
+  overflow: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
   overscroll-behavior: contain;
