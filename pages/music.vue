@@ -216,6 +216,48 @@
     </div>
   </div>
 
+  <!-- 移动端歌曲列 -->
+  <div class="fixed inset-0 z-50 md:hidden select-none" :class="{ 'pointer-events-none': !mobileListOpen }" aria-hidden="true">
+    <transition name="fade">
+      <div v-show="mobileListOpen" class="absolute inset-0 bg-black/50 backdrop-blur" @click="closeMobileList"></div>
+    </transition>
+
+    <transition name="slide-up">
+      <aside
+        ref="mobileListEl"
+        v-show="mobileListOpen"
+        class="fixed bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]
+               bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-lg text-gray-800 dark:text-gray-100 rounded-t-lg"
+      >
+        <ul class="space-y-2 p-3">
+          <li
+            v-for="(item, idx) in list || []"
+            :key="item.musicFull || item.path || idx"
+            @click="selectMobile(idx)"
+            :class="[ 
+              'flex items-center p-2 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
+              idx === currentIndex
+                ? 'shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]'
+                : 'shadow-[0_0_2px_rgba(0,0,0,0.2)]'
+            ]"
+          >
+            <img
+              v-if="item.coverFull"
+              :src="item.coverFull"
+              class="w-12 h-12 rounded-md mr-3 object-cover"
+            />
+            <div class="min-w-0 flex-1">
+              <div class="transition-color duration-300 font-semibold truncate ">{{ item.title }}</div>
+              <div class="text-sm transition-color duration-300 truncate">
+                {{ item.artist }}<span v-if="item.album"> - {{ item.album }}</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </aside>
+    </transition>
+  </div>
+
   <!-- 全屏模式 -->
   <div v-if="isFullscreen" class="fixed inset-0 flex overflow-hidden select-none 2xl:px-80">
     <!-- 背景 -->
@@ -351,6 +393,62 @@ const listEl = ref(null)
 const shuffleList = ref([])
 const shuffleIndex = ref(0)
 const isFullscreen = ref(false)
+const mobileListOpen = ref(false)
+const mobileListEl = ref(null)
+
+//移动端歌曲列表
+function musicList() {
+  if (!list.value?.length) return
+  mobileListOpen.value = !mobileListOpen.value
+  if (mobileListOpen.value) {
+    nextTick().then(() => { scrollMobileToCurrentItem().catch(() => {}) })
+  }
+}
+
+function closeMobileList() {
+  mobileListOpen.value = false
+}
+
+function selectMobile(idx) {
+  playIndex(idx, false, true)
+  closeMobileList()
+}
+
+// 移动端滚动到当前项
+async function scrollMobileToCurrentItem() {
+  const el = mobileListEl.value
+  if (!el || currentIndex.value < 0) return
+  await nextTick()
+  const currentItemEl = el.querySelector(`li:nth-child(${currentIndex.value + 1})`)
+  if (!currentItemEl) return
+
+  const elRect = el.getBoundingClientRect()
+  const itemRect = currentItemEl.getBoundingClientRect()
+  const isVisible = itemRect.top >= elRect.top && itemRect.bottom <= elRect.bottom
+  if (isVisible) return
+
+  const target = el.scrollTop + (itemRect.bottom - elRect.bottom) + 20
+  const start = el.scrollTop
+  const distance = target - start
+  const duration = 400
+  const startTime = performance.now()
+
+  function animate(now) {
+    const progress = Math.min((now - startTime) / duration, 1)
+    const ease = 1 - Math.pow(1 - progress, 3)
+    el.scrollTop = start + distance * ease
+    if (progress < 1) requestAnimationFrame(animate)
+  }
+
+  requestAnimationFrame(animate)
+}
+
+watch(currentIndex, async () => {
+  if (mobileListOpen.value) {
+    await nextTick()
+    scrollMobileToCurrentItem().catch(() => {})
+  }
+})
 
 // 切换全屏模式
 const hideHeader = useState('hideHeader', () => false)
@@ -463,6 +561,7 @@ function playIndex(i, forcePlay = false, shouldScroll = true) {
   
   if (shouldScroll) {
     scrollToCurrentItem()
+    if (mobileListOpen.value) scrollMobileToCurrentItem().catch(() => {})
   }
 }
 
@@ -827,5 +926,33 @@ onBeforeUnmount(() => {
 
 .lyrics::-webkit-scrollbar {
   display: none;
+}
+
+/* 移动端歌曲列表动画 */
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: transform 300ms cubic-bezier(.2,.8,.2,1), opacity 200ms;
+}
+.slide-up-enter-from,
+.slide-up-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
+}
+.slide-up-enter-to,
+.slide-up-leave-from {
+  transform: translateY(0%);
+  opacity: 1;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 200ms ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
 }
 </style>
