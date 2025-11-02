@@ -78,7 +78,7 @@
           </div>
         </div>
 
-        <div class="absolute bottom-1 right-2 cursor-pointer opacity-50" @click="toggleFullscreen"> 
+        <div class="hidden md:block absolute bottom-1 right-2 cursor-pointer opacity-50" @click="toggleFullscreen"> 
           <i class="text-lg iconfont icon-quanping"></i>
         </div>
       </div>
@@ -87,70 +87,137 @@
     <!-- 底部控制栏 -->
     <div
       data-fade
-      class="my-4 p-5 flex items-center gap-4 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] duration-300 flex-wrap justify-between"
+      class="my-4 p-5 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] duration-300"
     >
-      <!-- 左侧播放控制 -->
-      <div class="flex items-center gap-4">
-        <button @click="prev" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-          <i class="iconfont icon-backward"></i>
-        </button>
+      <!-- 移动端 -->
+      <div class="md:hidden flex flex-col gap-3">
+        <!-- 进度条 -->
+        <div class="w-full flex items-center gap-2">
+          <span class="text-xs w-10 text-right">{{ formatTime(currentTime) }}</span>
+          <input
+            class="flex-1 h-1.5 rounded-full bg-gray/20 dark:bg-white/10 appearance-none cursor-pointer accent-gray dark:accent-white"
+            type="range"
+            min="0"
+            :max="duration"
+            step="0.1"
+            v-model.number="seekValue"
+            @input="onSeekInput"
+            @change="onSeekChange"
+            :style="{ background: `linear-gradient(to right, #00e699 0%, #00e699 ${duration ? (seekValue/duration*100) : 0}%, #D9D9D9 ${duration ? (seekValue/duration*100) : 0}%, #D9D9D9 100%)` }"
+          />
+          <span class="text-xs w-10">{{ formatTime(duration) }}</span>
+        </div>
 
-        <button @click="togglePlay" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-          <i :class="isPlaying ? 'iconfont icon-pause' : 'iconfont icon-play'"></i>
-        </button>
+        <!-- 按钮 -->
+        <div class="w-full flex items-center justify-between px-2">
+          <!-- 左侧列表 -->
+          <div class="flex items-center gap-2">
+            <button @click="musicList" :disabled="!list?.length" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <i class="iconfont icon-liebiao"></i>
+            </button>
+            <button @click="togglePlayMode" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <i :class="{
+                'iconfont icon-repeat': playMode === 'loop',
+                'iconfont icon-repeat-1': playMode === 'single',
+                'iconfont icon-shuffle1': playMode === 'shuffle'
+              }"></i>
+            </button>
+          </div>
 
-        <button @click="next" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-          <i class="iconfont icon-forward"></i>
-        </button>
+          <!-- 中间控制 -->
+          <div class="flex items-center gap-4">
+            <button @click="prev" :disabled="!list?.length" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <i class="iconfont icon-backward"></i>
+            </button>
+
+            <button @click="togglePlay" :disabled="!list?.length" class="p-3 rounded-full bg-#00e699 text-white shadow-[0_0_2px_rgba(0,0,0,0.2)] appearance-none border-none cursor-pointer transition-all">
+              <i :class="isPlaying ? 'iconfont icon-pause' : 'iconfont icon-play'"></i>
+            </button>
+
+            <button @click="next" :disabled="!list?.length" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <i class="iconfont icon-forward"></i>
+            </button>
+          </div>
+
+          <!-- 右侧功能 -->
+          <div class="flex items-center gap-2">
+            <button @click="toggleMute" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <i :class="muted ? 'iconfont icon-16gf-volumeCross' : 'iconfont icon-20gf-volumeHigh'"></i>
+            </button>
+
+            <button
+              v-if="currentItem?.musicFull"
+              @click="downloadMusic"
+              class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all"
+            >
+              <i class="iconfont icon-download"></i>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <!-- 中间进度 -->
-      <div class="flex-1 flex items-center gap-2 mx-2 min-w-[200px]">
-        <span class="text-xs w-10 text-right">{{ formatTime(currentTime) }}</span>
-        <input
-          class="flex-1 h-1.5 rounded-full bg-gray/20 dark:bg-white/10 appearance-none cursor-pointer accent-gray dark:accent-white"
-          type="range"
-          min="0"
-          :max="duration"
-          step="0.1"
-          v-model.number="seekValue"
-          @input="onSeekInput"
-          @change="onSeekChange"
-          :style="{ background: `linear-gradient(to right, #00e699 0%, #00e699 ${seekValue/duration*100}%, #D9D9D9 ${seekValue/duration*100}%, #D9D9D9 100%)` }"
-        />
-        <span class="text-xs w-10">{{ formatTime(duration) }}</span>
-      </div>
+      <!-- 桌面端 -->
+      <div class="hidden md:flex items-center gap-4 flex-wrap justify-between">
+        <!-- 左侧播放控制 -->
+        <div class="flex items-center gap-4">
+          <button @click="prev" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <i class="iconfont icon-backward"></i>
+          </button>
 
-      <!-- 右侧功能 -->
-      <div class="flex items-center gap-4">
-        <!-- 播放模式 -->
-        <button @click="togglePlayMode" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-          <i :class="{
-            'iconfont icon-repeat': playMode === 'loop',
-            'iconfont icon-repeat-1': playMode === 'single',
-            'iconfont icon-shuffle1': playMode === 'shuffle'
-          }"></i>
-        </button>
+          <button @click="togglePlay" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <i :class="isPlaying ? 'iconfont icon-pause' : 'iconfont icon-play'"></i>
+          </button>
 
-        <!-- 静音按钮 -->
-        <button @click="toggleMute" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-          <i :class="muted ? 'iconfont icon-16gf-volumeCross' : 'iconfont icon-20gf-volumeHigh'"></i>
-        </button>
+          <button @click="next" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <i class="iconfont icon-forward"></i>
+          </button>
+        </div>
 
-        <!-- 下载按钮 -->
-        <button
-          v-if="currentItem?.musicFull"
-          @click="downloadMusic"
-          class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all"
-        >
-          <i class="iconfont icon-download"></i>
-        </button>
+        <!-- 进度条 -->
+        <div class="flex-1 flex items-center gap-2 mx-2 min-w-[200px]">
+          <span class="text-xs w-10 text-right">{{ formatTime(currentTime) }}</span>
+          <input
+            class="flex-1 h-1.5 rounded-full bg-gray/20 dark:bg-white/10 appearance-none cursor-pointer accent-gray dark:accent-white"
+            type="range"
+            min="0"
+            :max="duration"
+            step="0.1"
+            v-model.number="seekValue"
+            @input="onSeekInput"
+            @change="onSeekChange"
+            :style="{ background: `linear-gradient(to right, #00e699 0%, #00e699 ${seekValue/duration*100}%, #D9D9D9 ${seekValue/duration*100}%, #D9D9D9 100%)` }"
+          />
+          <span class="text-xs w-10">{{ formatTime(duration) }}</span>
+        </div>
+
+        <!-- 右侧功能 -->
+        <div class="flex items-center gap-4">
+          <button @click="togglePlayMode" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <i :class="{
+              'iconfont icon-repeat': playMode === 'loop',
+              'iconfont icon-repeat-1': playMode === 'single',
+              'iconfont icon-shuffle1': playMode === 'shuffle'
+            }"></i>
+          </button>
+
+          <button @click="toggleMute" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <i :class="muted ? 'iconfont icon-16gf-volumeCross' : 'iconfont icon-20gf-volumeHigh'"></i>
+          </button>
+
+          <button
+            v-if="currentItem?.musicFull"
+            @click="downloadMusic"
+            class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all"
+          >
+            <i class="iconfont icon-download"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- 全屏模式 -->
-  <div v-if="isFullscreen" class="fixed inset-0 flex overflow-hidden select-none px-91">
+  <div v-if="isFullscreen" class="fixed inset-0 flex overflow-hidden select-none 2xl:px-80">
     <!-- 背景 -->
     <div
       class="absolute inset-0"
@@ -166,7 +233,7 @@
 
     <div class="relative z-10 w-2/5 flex flex-col items-center justify-center p-6 gap-6 text-center text-white">
       <!-- 封面 -->
-      <div class="cover-wrap w-78 h-78 rounded-full overflow-hidden shadow-2xl flex items-center justify-center">
+      <div class="cover-wrap w-50 h-50 lg:w-60 lg:h-60 2xl:w-78 2xl:h-78 rounded-full overflow-hidden shadow-2xl flex items-center justify-center">
         <img
           v-if="currentItem?.coverFull"
           :src="currentItem.coverFull"
@@ -181,8 +248,8 @@
 
       <!-- 歌曲信息 -->
       <div class="text-center">
-        <div class="text-4xl font-bold truncate">{{ currentItem?.title }}</div>
-        <div class="text-xl opacity-80 truncate mt-1">
+        <div class="text-3xl 2xl:text-4xl font-bold truncate">{{ currentItem?.title }}</div>
+        <div class="text-md 2xl:text-xl opacity-80 truncate mt-1">
           {{ currentItem?.artist }}<span v-if="currentItem?.album"> - {{ currentItem.album }}</span>
         </div>
       </div>
@@ -216,7 +283,7 @@
           v-for="(line, i) in lyrics"
           :key="i"
           :class="[ 
-            'lyric-line text-7 transition-all duration-300',
+            'lyric-line text-5 lg:text-6 2xl:text-7 transition-all duration-300',
             i === currentLyricIndex
               ? 'current text-gradient font-semibold scale-130'
               : 'text-white'
@@ -586,9 +653,6 @@ function formatTime(sec) {
 
 // 歌词滚动
 let scrollTimer = null
-let lyricsWheelHandler = null
-let lyricsTouchHandler = null
-let lyricsKeyHandler = null
 
 async function scrollLyrics() {
   const el = lyricsEl.value
