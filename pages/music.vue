@@ -264,7 +264,7 @@
     <div
       class="absolute inset-0"
       :style="{
-        backgroundImage: `url(${currentItem.coverFull})`,
+        backgroundImage: `url(${encodeURI(currentItem.coverFull)})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         filter: 'blur(30px) brightness(0.3)',
