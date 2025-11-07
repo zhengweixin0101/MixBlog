@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, onBeforeUnmount, useHead, useRouter, useColorMode } from '#imports'
+import { onMounted, ref, onBeforeUnmount, useHead, useRouter, useColorMode, nextTick } from '#imports'
 import gsap from 'gsap'
 
 import { aboutConfig } from '@/siteConfig/about.js'
@@ -202,10 +202,23 @@ const statItems = [
   { label: '总访问量', valueKey: 'pageviews', source: statsTotal },
 ]
 
-const getValue = (stat) => stat?.source?.value?.[stat.valueKey]?.value ?? ''
+const getValue = (stat) => {
+  // 兼容 Umami 新旧接口：
+  // 新: { "pageviews": 34210, "visitors": 9401, ... }
+  // 旧: { "pageviews": { value: 34210 }, ... }
+  const raw = stat?.source?.value
+  if (!raw) return ''
+  const val = raw[stat.valueKey]
+  if (val === undefined || val === null) return ''
+  if (typeof val === 'number' || typeof val === 'string') return val
+  if (typeof val === 'object' && 'value' in val) return val.value
+  return ''
+}
 
 const isLoaded = (stat) => {
-  const val = stat?.source?.value?.[stat.valueKey]?.value
+  const raw = stat?.source?.value
+  if (!raw) return false
+  const val = raw[stat.valueKey]
   return val !== undefined && val !== null
 }
 
