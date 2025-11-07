@@ -261,17 +261,14 @@
   <!-- 全屏模式 -->
   <div v-if="isFullscreen" class="fixed inset-0 flex overflow-hidden select-none 2xl:px-80">
     <!-- 背景 -->
-    <div
-      class="absolute inset-0"
-      :style="{
-        backgroundImage: `url(${encodeURI(currentItem.coverFull)})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        filter: 'blur(30px) brightness(0.3)',
-        zIndex: 0
-      }"
-    ></div>
-    <div class="absolute inset-0 bg-black/40 z-0"></div>
+    <div class="absolute inset-0">
+      <img
+        :src="currentItem.coverFull"
+        class="absolute inset-0 w-full h-full object-cover blur-[20px] scale-105"
+        alt=""
+      />
+      <div class="absolute inset-0 bg-black/75"></div>
+    </div>
 
     <div class="relative z-10 w-2/5 flex flex-col items-center justify-center p-6 gap-6 text-center text-white">
       <!-- 封面 -->
