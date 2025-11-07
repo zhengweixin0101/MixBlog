@@ -66,7 +66,7 @@
               v-for="(line, i) in lyrics"
               :key="i"
               :class="[ 
-                'lyric-line text-5 transition-all duration-300',
+                'lyric-line sm:text-5 transition-all duration-300',
                 i === currentLyricIndex
                   ? 'current text-gradient font-semibold scale-115'
                   : 'text-gray-600 dark:text-white'
