@@ -115,13 +115,6 @@
             <button @click="musicList" :disabled="!list?.length" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
               <i class="iconfont icon-liebiao"></i>
             </button>
-            <button @click="togglePlayMode" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
-              <i :class="{
-                'iconfont icon-repeat': playMode === 'loop',
-                'iconfont icon-repeat-1': playMode === 'single',
-                'iconfont icon-shuffle1': playMode === 'shuffle'
-              }"></i>
-            </button>
           </div>
 
           <!-- 中间控制 -->
@@ -141,16 +134,12 @@
 
           <!-- 右侧功能 -->
           <div class="flex items-center gap-2">
-            <button @click="toggleMute" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
-              <i :class="muted ? 'iconfont icon-16gf-volumeCross' : 'iconfont icon-20gf-volumeHigh'"></i>
-            </button>
-
-            <button
-              v-if="currentItem?.musicFull"
-              @click="downloadMusic"
-              class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all"
-            >
-              <i class="iconfont icon-download"></i>
+            <button @click="togglePlayMode" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <i :class="{
+                'iconfont icon-repeat': playMode === 'loop',
+                'iconfont icon-repeat-1': playMode === 'single',
+                'iconfont icon-shuffle1': playMode === 'shuffle'
+              }"></i>
             </button>
           </div>
         </div>
