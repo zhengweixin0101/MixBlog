@@ -66,7 +66,7 @@
               v-for="(line, i) in lyrics"
               :key="i"
               :class="[ 
-                'lyric-line text-5 transition-all duration-300',
+                'lyric-line sm:text-5 transition-all duration-300',
                 i === currentLyricIndex
                   ? 'current text-gradient font-semibold scale-115'
                   : 'text-gray-600 dark:text-white'
@@ -115,13 +115,6 @@
             <button @click="musicList" :disabled="!list?.length" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
               <i class="iconfont icon-liebiao"></i>
             </button>
-            <button @click="togglePlayMode" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
-              <i :class="{
-                'iconfont icon-repeat': playMode === 'loop',
-                'iconfont icon-repeat-1': playMode === 'single',
-                'iconfont icon-shuffle1': playMode === 'shuffle'
-              }"></i>
-            </button>
           </div>
 
           <!-- 中间控制 -->
@@ -141,16 +134,12 @@
 
           <!-- 右侧功能 -->
           <div class="flex items-center gap-2">
-            <button @click="toggleMute" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
-              <i :class="muted ? 'iconfont icon-16gf-volumeCross' : 'iconfont icon-20gf-volumeHigh'"></i>
-            </button>
-
-            <button
-              v-if="currentItem?.musicFull"
-              @click="downloadMusic"
-              class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all"
-            >
-              <i class="iconfont icon-download"></i>
+            <button @click="togglePlayMode" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <i :class="{
+                'iconfont icon-repeat': playMode === 'loop',
+                'iconfont icon-repeat-1': playMode === 'single',
+                'iconfont icon-shuffle1': playMode === 'shuffle'
+              }"></i>
             </button>
           </div>
         </div>
@@ -261,17 +250,14 @@
   <!-- 全屏模式 -->
   <div v-if="isFullscreen" class="fixed inset-0 flex overflow-hidden select-none 2xl:px-80">
     <!-- 背景 -->
-    <div
-      class="absolute inset-0"
-      :style="{
-        backgroundImage: `url(${encodeURI(currentItem.coverFull)})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        filter: 'blur(30px) brightness(0.3)',
-        zIndex: 0
-      }"
-    ></div>
-    <div class="absolute inset-0 bg-black/40 z-0"></div>
+    <div class="absolute inset-0">
+      <img
+        :src="currentItem.coverFull"
+        class="absolute inset-0 w-full h-full object-cover blur-[20px] scale-105"
+        alt=""
+      />
+      <div class="absolute inset-0 bg-black/75"></div>
+    </div>
 
     <div class="relative z-10 w-2/5 flex flex-col items-center justify-center p-6 gap-6 text-center text-white">
       <!-- 封面 -->
