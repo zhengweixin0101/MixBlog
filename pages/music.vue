@@ -875,7 +875,7 @@ onMounted(async () => {
   audioEl.play().then(() => {
     isPlaying.value = true
   }).catch(() => {
-    console.warn('首次自动播放被阻止，需要用户交互')
+    notification.show('自动播放被浏览器阻止，请点击播放按钮开始播放', 'warning', 10000, true)
   })
 })
 
