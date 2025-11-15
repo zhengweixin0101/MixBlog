@@ -21,14 +21,10 @@ const searchTerm = ref('')
 const selectedTag = ref('')
 
 // 读取文章列表
-const { data: postsRaw } = await useAsyncData('posts-list', async () => {
-  try {
-    return await $fetch(`${siteConfig.apiUrl}/api/article/list`, { timeout: 5000 })
-  } catch (err) {
-    console.error('SSR fetch failed:', err)
-    return []
-  }
-}, { server: true })
+const { data: postsRaw } = await useAsyncData('posts-list', () =>
+  $fetch(`${siteConfig.apiUrl}/api/article/list`),
+  { server: true } // 只在服务端执行
+)
 
 const posts = computed(() => postsRaw.value || [])
 
