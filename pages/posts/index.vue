@@ -23,9 +23,7 @@ const selectedTag = ref('')
 // 读取文章列表
 const { data: postsRaw } = await useAsyncData('posts-list', async () => {
   try {
-    const res = await $fetch(`${siteConfig.apiUrl}/api/article/list`, { timeout: 5000 })
-    console.log('SSR fetch success:', res)
-    return res
+    return await $fetch(`${siteConfig.apiUrl}/api/article/list`, { timeout: 5000 })
   } catch (err) {
     console.error('SSR fetch failed:', err)
     return []
