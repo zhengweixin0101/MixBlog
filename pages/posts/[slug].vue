@@ -457,6 +457,7 @@ const formattedDate = computed(() => {
 .code-block-wrapper {
   position: relative;
   overflow: visible;
+  margin: 1rem 0;
 }
 
 .code-block-wrapper pre {
