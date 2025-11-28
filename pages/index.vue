@@ -58,7 +58,7 @@ import { siteConfig } from '@/siteConfig/main.js'
               :href="item.href"
               :target="item.external ? '_blank' : undefined"
               rel="noopener noreferrer nofollow"
-              class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline"
+              class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline transition-colors"
             >
               <i class="iconfont" :class="item.icon"></i> {{ item.text }}
             </a>
