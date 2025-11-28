@@ -37,14 +37,21 @@ function highlightCodeBlocks(html) {
   return html.replace(
     /<pre><code(?: class="language-(\w+)")?>([\s\S]*?)<\/code><\/pre>/g,
     (_, lang, code) => {
-      const finalLang = lang && ['language'].includes(lang.toLowerCase()) ? '' : lang; //排除语言
+      const finalLang = lang && ['language'].includes(lang.toLowerCase()) ? '' : lang;
+      const lines = (code.match(/\n/g) || []).length + 1
+      const isCollapsed = lines > 20
+      const encodedCode = typeof encodeURIComponent === 'function' ? encodeURIComponent(code) : code
       return `
-        <div class="code-block-wrapper group relative">
+        <div class="code-block-wrapper group relative ${isCollapsed ? 'collapsed' : ''}" data-lines="${lines}" aria-expanded="${isCollapsed ? 'false' : 'true'}">
           <button
-            class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded-lg border border-black/20 dark:border-white/20 bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
-            data-code="${code}"
+            class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded-lg border border-black/20 backdrop-blur-2 dark:border-white/20 bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100 cursor-pointer"
+            data-code="${encodedCode}"
           >复制</button>
           <pre><code class="hljs ${finalLang ? 'language-' + finalLang : ''}">${code}</code></pre>
+          ${isCollapsed ? `
+          <div class="fold-overlay pointer-events-none absolute left-0 right-0 bottom-0 h-20"></div>
+          <button class="expand-btn absolute left-1/2 -translate-x-1/2 bottom-5 px-3 py-2 text-xs rounded-lg border border-black/20 backdrop-blur-2 dark:border-white/20 bg-black/50 text-white dark:bg-white/10 dark:text-white cursor-pointer z-10">展开剩余代码</button>
+          ` : ''}
         </div>
       `;
     }
@@ -108,20 +115,115 @@ function loadHighlightStyle(darkMode) {
   document.head.appendChild(link)
 }
 
-// 复制按钮
-function onCopyBtnClick(e) {
-  const btn = e.target.closest('.copy-btn')
-  if (!btn) return
-  const code = btn.getAttribute('data-code')
-  if (!code) return
-  navigator.clipboard.writeText(code).then(() => {
-    const originalText = btn.innerText
-    btn.innerText = '已复制'
-    setTimeout(() => { btn.innerText = originalText }, 1000)
-  }).catch(() => {
-    const originalText = btn.innerText
-    btn.innerText = '复制失败'
-    setTimeout(() => { btn.innerText = originalText }, 1000)
+// 代码块复制、展开按钮点击处理
+function onDocumentClick(e) {
+  // 复制
+  const copyBtn = e.target.closest('.copy-btn')
+  if (copyBtn) {
+    const encoded = copyBtn.getAttribute('data-code')
+    if (!encoded) return
+    const code = typeof decodeURIComponent === 'function' ? decodeURIComponent(encoded) : encoded
+    navigator.clipboard.writeText(code).then(() => {
+      const originalText = copyBtn.innerText
+      copyBtn.innerText = '已复制'
+      setTimeout(() => { copyBtn.innerText = originalText }, 1000)
+    }).catch(() => {
+      const originalText = copyBtn.innerText
+      copyBtn.innerText = '复制失败'
+      setTimeout(() => { copyBtn.innerText = originalText }, 1000)
+    })
+    return
+  }
+
+  // 展开收起
+  const expandBtn = e.target.closest('.expand-btn')
+  if (expandBtn) {
+    const wrapper = expandBtn.closest('.code-block-wrapper')
+    if (!wrapper) return
+    const pre = wrapper.querySelector('pre')
+      const wasCollapsed = wrapper.classList.contains('collapsed')
+      wrapper.classList.toggle('collapsed')
+      const isCollapsedNow = wrapper.classList.contains('collapsed')
+      wrapper.setAttribute('aria-expanded', isCollapsedNow ? 'false' : 'true')
+      if (!isCollapsedNow) {
+        expandBtn.style.display = 'none'
+        pre.style.maxHeight = ''
+      } else {
+      const codeElem = pre.querySelector('code')
+      const lh = parseFloat(window.getComputedStyle(codeElem).lineHeight) || 18
+      const height = Math.ceil(lh * 20)
+      pre.style.maxHeight = `${height}px`
+        expandBtn.style.display = ''
+    }
+    return
+  }
+}
+
+// 设置折叠高度
+function setCollapsedHeights() {
+  if (typeof document === 'undefined') return
+  
+  document.querySelectorAll('.code-block-wrapper').forEach(wrapper => {
+    const pre = wrapper.querySelector('pre')
+    const code = pre.querySelector('code')
+    const lineHeight = parseFloat(getComputedStyle(code).lineHeight) || 18
+    const collapsedHeight = Math.ceil(lineHeight * 20)
+
+    pre.style.setProperty('--collapsed-height', `${collapsedHeight}px`)
+
+    const btn = wrapper.querySelector('.expand-btn')
+    const isCollapsed = wrapper.classList.contains('collapsed')
+
+    if (isCollapsed) {
+      pre.style.maxHeight = `${collapsedHeight}px`
+      if (btn) btn.style.display = ''
+    } else {
+      pre.style.maxHeight = ''
+      if (btn) btn.style.display = 'none'
+    }
+  })
+
+  attachExpandBtnHandlers()
+}
+
+function attachExpandBtnHandlers() {
+  if (typeof document === 'undefined') return
+  const expandBtns = document.querySelectorAll('.expand-btn')
+  expandBtns.forEach(btn => {
+    if (btn.dataset._expandBound) return
+    const handler = function (e) {
+      e.stopPropagation()
+      const wrapper = btn.closest('.code-block-wrapper')
+      if (!wrapper) return
+      const pre = wrapper.querySelector('pre')
+      wrapper.classList.toggle('collapsed')
+      const isCollapsedNow = wrapper.classList.contains('collapsed')
+      wrapper.setAttribute('aria-expanded', isCollapsedNow ? 'false' : 'true')
+      if (!isCollapsedNow) {
+        btn.style.display = 'none'
+        pre.style.maxHeight = ''
+      } else {
+        const codeElem = pre.querySelector('code')
+        const lh = parseFloat(window.getComputedStyle(codeElem).lineHeight) || 18
+        const height = Math.ceil(lh * 20)
+        pre.style.maxHeight = `${height}px`
+        btn.style.display = ''
+      }
+    }
+    btn.addEventListener('click', handler)
+    btn.dataset._expandBound = '1'
+    btn._expandHandler = handler
+  })
+}
+
+function detachExpandBtnHandlers() {
+  if (typeof document === 'undefined') return
+  const expandBtns = document.querySelectorAll('.expand-btn')
+  expandBtns.forEach(btn => {
+    if (!btn.dataset._expandBound) return
+    if (btn._expandHandler) btn.removeEventListener('click', btn._expandHandler)
+    delete btn._expandHandler
+    delete btn.dataset._expandBound
   })
 }
 
@@ -185,6 +287,8 @@ function applyClientEnhancements() {
       Fancybox.bind('[data-fancybox="gallery"]', {
         Hash: false,
       })
+      // 计算折叠高度并初始化按钮文本
+      setCollapsedHeights()
     })
   })
 }
@@ -230,12 +334,16 @@ onMounted(() => {
   })
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 
-  document.addEventListener('click', onCopyBtnClick)
+  document.addEventListener('click', onDocumentClick)
+
+  attachExpandBtnHandlers()
 })
 
 onBeforeUnmount(() => {
   observer?.disconnect()
-  document.removeEventListener('click', onCopyBtnClick)
+  document.removeEventListener('click', onDocumentClick)
+
+  detachExpandBtnHandlers()
 })
 
 // 格式化日期
@@ -343,5 +451,54 @@ const formattedDate = computed(() => {
 /* 阴影光晕 */
 .drop-shadow-glow {
   filter: drop-shadow(0 0 10px #facc15);
+}
+
+/* 代码块折叠样式 */
+.code-block-wrapper {
+  position: relative;
+  overflow: visible;
+}
+
+.code-block-wrapper pre {
+  margin: 0;
+  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  transition: max-height 0.5s ease, box-shadow 0.5s ease;
+  --collapsed-height: 260px; /* 折叠高度 */
+  --expanded-height: 2000px; /* 允许展开的最大高度 */
+}
+
+.code-block-wrapper.collapsed pre {
+  overflow: hidden;
+  max-height: var(--collapsed-height);
+}
+
+.code-block-wrapper:not(.collapsed) pre {
+  max-height: var(--expanded-height);
+}
+
+.code-block-wrapper .fold-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 20rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+  pointer-events: none;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+.code-block-wrapper[aria-expanded="true"] .fold-overlay {
+  display: none;
+}
+
+.dark .code-block-wrapper .fold-overlay {
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgb(26, 26, 26) 100%);
+}
+
+.code-block-wrapper .copy-btn {
+  z-index: 20;
 }
 </style>

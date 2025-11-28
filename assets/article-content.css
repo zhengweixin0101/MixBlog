@@ -301,16 +301,12 @@ html.dark .article-content code:not(pre code) {
   margin-top: 1rem;
   margin-bottom: 1rem;
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x: auto;
   white-space: pre;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
 }
 
 pre code.hljs {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-pre code.hljs::-webkit-scrollbar {
-  display: none;
+  scrollbar-width: thin;
+  -ms-overflow-style: auto;
 }
