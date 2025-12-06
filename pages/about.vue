@@ -203,16 +203,11 @@ const statItems = [
 ]
 
 const getValue = (stat) => {
-  // 兼容 Umami 新旧接口：
-  // 新: { "pageviews": 34210, "visitors": 9401, ... }
-  // 旧: { "pageviews": { value: 34210 }, ... }
   const raw = stat?.source?.value
   if (!raw) return ''
   const val = raw[stat.valueKey]
   if (val === undefined || val === null) return ''
-  if (typeof val === 'number' || typeof val === 'string') return val
-  if (typeof val === 'object' && 'value' in val) return val.value
-  return ''
+  return val
 }
 
 const isLoaded = (stat) => {
