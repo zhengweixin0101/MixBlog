@@ -67,13 +67,20 @@
               :key="i"
               :class="[ 
                 'lyric-line sm:text-5 transition-all duration-300',
-                i === currentLyricIndex
+                currentLyricIndices.includes(i)
                   ? 'current text-gradient font-semibold scale-115'
                   : 'text-gray-600 dark:text-white'
               ]"
-              :style="i === currentLyricIndex ? { filter: 'none' } : { filter: 'blur(1.5px)' }"
+              :style="currentLyricIndices.includes(i) ? { filter: 'none' } : { filter: 'blur(1.5px)' }"
             >
-              {{ line.text }}
+              <template v-if="Array.isArray(line.text)">
+                <div v-for="(text, textIndex) in line.text" :key="textIndex" class="py-0.5">
+                  {{ text }}
+                </div>
+              </template>
+              <template v-else>
+                {{ line.text }}
+              </template>
             </div>
           </div>
         </div>
@@ -312,13 +319,20 @@
           :key="i"
           :class="[ 
             'lyric-line text-5 lg:text-6 2xl:text-7 transition-all duration-300',
-            i === currentLyricIndex
+            currentLyricIndices.includes(i)
               ? 'current text-gradient font-semibold scale-130'
               : 'text-white'
           ]"
-          :style="i === currentLyricIndex ? { filter: 'none' } : { filter: 'blur(1.5px)' }"
+          :style="currentLyricIndices.includes(i) ? { filter: 'none' } : { filter: 'blur(1.5px)' }"
         >
-          {{ line.text }}
+          <template v-if="Array.isArray(line.text)">
+            <div v-for="(text, textIndex) in line.text" :key="textIndex" class="py-1">
+              {{ text }}
+            </div>
+          </template>
+          <template v-else>
+            {{ line.text }}
+          </template>
         </div>
       </div>
     </div>
@@ -374,6 +388,7 @@ const currentTime = ref(0)
 const seekValue = ref(0)
 const lyrics = ref([])
 const currentLyricIndex = ref(-1)
+const currentLyricIndices = ref([]) // 支持多行同时高亮
 const lyricsEl = ref(null)
 const listEl = ref(null)
 const shuffleList = ref([])
@@ -525,6 +540,7 @@ function playIndex(i, forcePlay = false, shouldScroll = true) {
       audioEl.src = item.musicFull
       lyrics.value = []
       currentLyricIndex.value = -1
+      currentLyricIndices.value = []
       seekValue.value = 0
       currentTime.value = 0
       loadLyrics(item).catch(console.warn)
@@ -540,6 +556,7 @@ function playIndex(i, forcePlay = false, shouldScroll = true) {
   audioEl.src = item.musicFull
   lyrics.value = []
   currentLyricIndex.value = -1
+  currentLyricIndices.value = []
   seekValue.value = 0
   currentTime.value = 0
   loadLyrics(item).catch(console.warn)
@@ -676,6 +693,7 @@ function parseLRC(text) {
   const lines = text.split(/\r?\n/)
   const res = []
   const timeTagRe = /\[(\d{1,2}):(\d{2}(?:\.\d{1,3})?)\]/g
+  
   for (const line of lines) {
     let match
     let lastIndex = 0
@@ -689,9 +707,36 @@ function parseLRC(text) {
       lastIndex = timeTagRe.lastIndex
     }
     const content = texts.slice(lastIndex).trim()
-    for (const t of times) res.push({ time: t, text: content })
+    if (content) {
+      for (const t of times) res.push({ time: t, text: content })
+    }
   }
-  return res.sort((a,b) => a.time - b.time)
+  
+  // 按时间排序后合并相同时间的歌词
+  const sorted = res.sort((a,b) => a.time - b.time)
+  const merged = []
+  
+  for (let i = 0; i < sorted.length; i++) {
+    const current = sorted[i]
+    const sameTimeLyrics = [current.text]
+    
+    // 查找所有相同时间的歌词
+    while (i + 1 < sorted.length && Math.abs(sorted[i + 1].time - current.time) < 0.01) {
+      i++
+      const nextText = sorted[i].text
+      // 避免重复的歌词内容
+      if (!sameTimeLyrics.includes(nextText)) {
+        sameTimeLyrics.push(nextText)
+      }
+    }
+    
+    merged.push({
+      time: current.time,
+      text: sameTimeLyrics
+    })
+  }
+  
+  return merged
 }
 
 // 时间更新
@@ -703,18 +748,40 @@ function onTimeUpdate() {
 
   if (lyrics.value && lyrics.value.length > 0) {
     const t = audioEl.currentTime
-    let i = 0
+    let currentIndex = -1
+    const currentIndices = []
+
     for (let j = lyrics.value.length - 1; j >= 0; j--) {
       if (t >= lyrics.value[j].time) { 
-        i = j
+        currentIndex = j
         break
       }
     }
-    if (i !== currentLyricIndex.value) { 
-      currentLyricIndex.value = i
+
+    if (currentIndex >= 0) {
+      const currentTimeValue = lyrics.value[currentIndex].time
+      for (let i = 0; i < lyrics.value.length; i++) {
+        if (Math.abs(lyrics.value[i].time - currentTimeValue) < 0.01) {
+          currentIndices.push(i)
+        }
+      }
+    }
+    
+    if (currentIndex !== currentLyricIndex.value || 
+        !arraysEqual(currentIndices, currentLyricIndices.value)) {
+      currentLyricIndex.value = currentIndex
+      currentLyricIndices.value = currentIndices
       scrollLyrics() 
     }
   }
+}
+
+function arraysEqual(arr1, arr2) {
+  if (arr1.length !== arr2.length) return false
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) return false
+  }
+  return true
 }
 
 // 播放元数据加载完成
@@ -744,9 +811,11 @@ async function scrollLyrics() {
   if (!el) return
   await nextTick()
 
-  const cur = el.querySelector('.lyric-line.current')
-  if (!cur) return
+  const currentLines = el.querySelectorAll('.lyric-line.current')
+  if (!currentLines || currentLines.length === 0) return
 
+  // 如果有多个当前高亮行，滚动到第一个
+  const cur = currentLines[0]
   const elRect = el.getBoundingClientRect()
   const curRect = cur.getBoundingClientRect()
   const target = el.scrollTop + (curRect.top - elRect.top) - (el.clientHeight / 2 - cur.offsetHeight / 2)
