@@ -304,9 +304,16 @@ html.dark .article-content code:not(pre code) {
   overflow-x: auto;
   white-space: pre;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+  background-color: #f8f9fa;
+}
+
+html.dark .article-content pre {
+  background-color: #1e1e1e;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
 pre code.hljs {
   scrollbar-width: thin;
   -ms-overflow-style: auto;
+  background-color: transparent;
 }
