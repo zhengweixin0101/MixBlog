@@ -197,7 +197,7 @@
           </button>
 
           <button @click="toggleMute" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-            <i :class="muted ? 'iconfont icon-16gf-volumeCross' : 'iconfont icon-20gf-volumeHigh'"></i>
+            <i :class="muted ? 'iconfont icon-volumeCross' : 'iconfont icon-volumeHigh'"></i>
           </button>
 
           <button

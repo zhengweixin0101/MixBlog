@@ -34,7 +34,7 @@ export const siteConfig = {
     ],
 
     thirdParty: {
-        iconfont: '//at.alicdn.com/t/c/font_4401174_5k0t7aecb6i.css',
+        iconfont: '//at.alicdn.com/t/c/font_4401174_i1nmbmfz57p.css',
         twikooEnvId: "https://twikoo.api.zhengweixin.top",
         umami: {
             js: 'https://statistics.zhengweixin.top/script.js',
