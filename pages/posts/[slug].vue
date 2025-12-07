@@ -432,6 +432,48 @@ const formattedDate = computed(() => {
         </div>
       </div>
       <div data-fade>
+        <div class="mt-8 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] relative">
+          <!-- 头像 -->
+          <div class="absolute -top-7 left-1/2 -translate-x-1/2 z-10">
+            <a href="/about" class="block">
+                <img 
+                  :src="siteConfig.author.avatar" 
+                  :alt="siteConfig.author.name"
+                  class="w-16 h-16 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-[0_0_20px_rgba(0,0,0,0.3)]"
+                />
+            </a>
+          </div>
+          
+          <!-- 作者信息 -->
+          <div class="pt-10 text-center">
+            <div>
+              <div class="font-bold text-2xl text-#2f3f5b dark:text-white mb-1">
+                {{ siteConfig.author.name }}
+              </div>
+              <div class="text-sm text-gray-500 dark:text-gray-400">
+                {{ siteConfig.author.description }}
+              </div>
+            </div>
+            
+            <!-- 文章信息 -->
+            <div class="flex flex-wrap items-center justify-center gap-1 mt-4">
+              <span class="post-copyright__original inline-flex items-center px-2 py-1 text-xs rounded-full bg-green-200 text-green-900 dark:bg-green-900 dark:text-green-300">
+                原创
+              </span>
+              <div class="text-sm text-gray-600 dark:text-gray-300">
+                <span class="text-#2f3f5b dark:text-white text-4">
+                  {{ post.frontmatter.title || '无标题文章' }}
+                </span>
+              </div>
+            </div>
+            
+            <!-- 操作按钮 -->
+            <div class="flex flex-wrap items-center justify-center gap-3 my-4">
+
+            </div>
+          </div>
+        </div>
+        
         <Comment />
       </div>
     </div>
