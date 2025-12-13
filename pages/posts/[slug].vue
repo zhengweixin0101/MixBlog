@@ -312,7 +312,7 @@ useHead(() => {
       { name: 'keywords', content: `${keywords},${siteConfig.keywords}` },
       { property: 'og:title', content: `${title} | ${siteConfig.title}` },
       { property: 'og:description', content: description },
-      { property: 'og:url', content: `${siteConfig.url}/${route.params.slug}` },
+      { property: 'og:url', content: `${siteConfig.url}/posts/${route.params.slug}` },
       { name: 'twitter:title', content: `${title} | ${siteConfig.title}` },
       { name: 'twitter:description', content: description },
     ]
@@ -468,8 +468,47 @@ const formattedDate = computed(() => {
             </div>
             
             <!-- 操作按钮 -->
-            <div class="flex flex-wrap items-center justify-center gap-3 my-4">
+            <div class="flex flex-wrap items-center justify-center gap-3 pt-6">
+              <button
+                title="打赏作者"
+                class="h-10 px-4 text-sm rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)] flex items-center gap-1"
+              >
+                <i class="iconfont icon-dashang"></i> 打赏作者 
+              </button>
 
+              <button
+                title="使用手机访问这篇文章"
+                class="w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)]"
+              >
+                <i class="iconfont icon-erweima"></i>
+              </button>
+
+              <button
+                title="分享本文到微博"
+                class="w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)]"
+              >
+                <i class="iconfont icon-xinlangweibo"></i>
+              </button>
+              
+              <button
+                title="复制本文链接"
+                class="w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)]"
+              >
+                <i class="iconfont icon-link"></i>
+              </button>
+            </div>
+
+            <!-- 版权提示 -->
+            <div class="text-xs text-gray-500 dark:text-gray-400 p-3">
+              本文采用 
+              <a
+                href="https://creativecommons.org/licenses/by-nc-sa/4.0/" 
+                target="_blank" rel="noopener noreferrer" 
+                class="text-gray-500 dark:text-gray-400 hover:text-blue-400 transition-colors"
+              >
+                CC BY-NC-SA 4.0
+              </a>
+              许可协议进行许可，转载请注明出处，禁止商业使用！
             </div>
           </div>
         </div>
