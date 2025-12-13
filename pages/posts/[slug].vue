@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, useHead, useRoute } from '#imports'
+import { useNotification } from '~/composables/useNotification'
 import { marked } from 'marked'
 import dayjs from 'dayjs'
 import hljs from 'highlight.js'
@@ -16,6 +17,11 @@ import '@/assets/article-content.css'
 import { siteConfig } from '@/siteConfig/main.js'
 
 const route = useRoute()
+const notification = useNotification()
+
+// 二维码浮层控制
+const showDonateQR = ref(false)
+const showMobileQR = ref(false)
 
 // 获取文章
 const { data: rawPostData, error } = await useAsyncData(
@@ -351,6 +357,48 @@ const formattedDate = computed(() => {
   if (!post.value.frontmatter.date) return ''
   return `${siteConfig.author.name} 发布于 ${dayjs(post.value.frontmatter.date).format('YYYY-MM-DD')}`
 })
+
+// 分享到微博
+function shareToWeibo() {
+  if (typeof window === 'undefined') return
+  
+  const title = post.value.frontmatter.title || '无标题文章'
+  const url = `${siteConfig.url}/posts/${route.params.slug}`
+  const shareUrl = `https://service.weibo.com/share/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`
+  
+  // 计算屏幕中心位置
+  const width = 600
+  const height = 400
+  const left = Math.round((window.screen.width - width) / 2)
+  const top = Math.round((window.screen.height - height) / 2)
+  
+  window.open(
+    shareUrl, 
+    '_blank', 
+    `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no`
+  )
+}
+
+// 复制文章链接
+async function copyArticleLink() {
+  if (typeof window === 'undefined') return
+  
+  const url = `${siteConfig.url}/posts/${route.params.slug}`
+  
+  try {
+    await navigator.clipboard.writeText(url)
+    notification.show('本文链接已复制!')
+  } catch (err) {
+    console.error('复制失败:', err)
+    const input = document.createElement('input')
+    input.value = url
+    document.body.appendChild(input)
+    input.select()
+    document.execCommand('copy')
+    document.body.removeChild(input)
+    notification.show('本文链接已复制!')
+  }
+}
 </script>
 
 <template>
@@ -420,6 +468,7 @@ const formattedDate = computed(() => {
           </div>
         </div>
       </div>
+
       <div class="flex lg:gap-8 px-2 flex-col md:flex-row max-w-full">
         <section data-fade class=" flex-1 min-w-0 max-w-full">
           <article v-html="post.content" class="article-content whitespace-normal break-words"></article>
@@ -431,88 +480,148 @@ const formattedDate = computed(() => {
           <div class="flex items-center justify-center py-20"></div>
         </div>
       </div>
-      <div data-fade>
-        <div class="mt-8 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] relative">
-          <!-- 头像 -->
-          <div class="absolute -top-7 left-1/2 -translate-x-1/2 z-10">
-            <a href="/about" class="block">
-                <img 
-                  :src="siteConfig.author.avatar" 
-                  :alt="siteConfig.author.name"
-                  class="w-16 h-16 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-[0_0_20px_rgba(0,0,0,0.3)]"
-                />
-            </a>
+
+      <div data-fade class="mt-8 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] relative hidden sm:block">
+        <!-- 头像 -->
+        <div class="absolute -top-7 left-1/2 -translate-x-1/2 z-10">
+          <a href="/about" class="block">
+              <img 
+                :src="siteConfig.author.avatar" 
+                :alt="siteConfig.author.name"
+                class="w-16 h-16 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-[0_0_20px_rgba(0,0,0,0.3)]"
+              />
+          </a>
+        </div>
+        
+        <!-- 作者信息 -->
+        <div class="pt-10 text-center">
+          <div>
+            <div class="font-bold text-2xl text-#2f3f5b dark:text-white mb-1">
+              {{ siteConfig.author.name }}
+            </div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+              {{ siteConfig.author.description }}
+            </div>
           </div>
           
-          <!-- 作者信息 -->
-          <div class="pt-10 text-center">
-            <div>
-              <div class="font-bold text-2xl text-#2f3f5b dark:text-white mb-1">
-                {{ siteConfig.author.name }}
-              </div>
-              <div class="text-sm text-gray-500 dark:text-gray-400">
-                {{ siteConfig.author.description }}
-              </div>
-            </div>
-            
-            <!-- 文章信息 -->
-            <div class="flex flex-wrap items-center justify-center gap-1 mt-4">
-              <span class="post-copyright__original inline-flex items-center px-2 py-1 text-xs rounded-full bg-green-200 text-green-900 dark:bg-green-900 dark:text-green-300">
-                原创
+          <!-- 文章信息 -->
+          <div class="flex flex-wrap items-center justify-center gap-1 mt-4">
+            <span class="post-copyright__original inline-flex items-center px-2 py-1 text-xs rounded-full bg-green-200 text-green-900 dark:bg-green-900 dark:text-green-300">
+              原创
+            </span>
+            <div class="text-sm text-gray-600 dark:text-gray-300">
+              <span class="text-#2f3f5b dark:text-white text-4">
+                {{ post.frontmatter.title || '无标题文章' }}
               </span>
-              <div class="text-sm text-gray-600 dark:text-gray-300">
-                <span class="text-#2f3f5b dark:text-white text-4">
-                  {{ post.frontmatter.title || '无标题文章' }}
-                </span>
-              </div>
             </div>
-            
-            <!-- 操作按钮 -->
-            <div class="flex flex-wrap items-center justify-center gap-3 pt-6">
+          </div>
+          
+          <!-- 操作按钮 -->
+          <div class="flex flex-wrap items-center justify-center gap-3 pt-6">
+            <!-- 打赏按钮 -->
+            <div class="relative">
               <button
+                @mouseenter="showDonateQR = true"
+                @mouseleave="showDonateQR = false"
                 title="打赏作者"
                 class="h-10 px-4 text-sm rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)] flex items-center gap-1"
               >
                 <i class="iconfont icon-dashang"></i> 打赏作者 
               </button>
+              
+              <!-- 打赏二维码浮层 -->
+              <div 
+                v-show="showDonateQR"
+                class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 p-3 bg-#fefefe dark:bg-gray-800 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.15)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] border border-gray-200/50 dark:border-gray-700/50 transition-all duration-200 z-50"
+                @mouseenter="showDonateQR = true"
+                @mouseleave="showDonateQR = false"
+              >
+                <div class="text-center">
+                  <div class="flex items-center justify-center gap-4">
+                    <div 
+                      v-for="(method, index) in siteConfig.donate" 
+                      :key="index"
+                      class="text-center"
+                    >
+                      <div class="w-32 h-32 bg-white rounded-lg p-2 flex items-center justify-center">
+                        <img 
+                          :src="method.qrCode"
+                          :alt="`${method.name}打赏二维码`"
+                          class="w-28 h-28"
+                          @error="$event.target.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNNSAzSDlWOTVIMVY5SDVWM1oiIGZpbGw9IiMzMzMiLz4KPHA+PC9wPgo8L3N2Zz4K'"
+                        />
+                      </div>
+                      <div class="text-xs text-gray-600 dark:text-gray-400 mt-2">{{ method.name }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
+            <!-- 手机访问按钮 -->
+            <div class="relative">
               <button
+                @mouseenter="showMobileQR = true"
+                @mouseleave="showMobileQR = false"
                 title="使用手机访问这篇文章"
                 class="w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)]"
               >
                 <i class="iconfont icon-erweima"></i>
               </button>
-
-              <button
-                title="分享本文到微博"
-                class="w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)]"
-              >
-                <i class="iconfont icon-xinlangweibo"></i>
-              </button>
               
-              <button
-                title="复制本文链接"
-                class="w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)]"
+              <!-- 二维码浮层 -->
+              <div 
+                v-show="showMobileQR"
+                class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 p-3 bg-#fefefe dark:bg-gray-800 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.15)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] border border-gray-200/50 dark:border-gray-700/50 transition-all duration-200 z-50"
+                @mouseenter="showMobileQR = true"
+                @mouseleave="showMobileQR = false"
               >
-                <i class="iconfont icon-link"></i>
-              </button>
+                <div class="text-center">
+                  <div class="w-32 h-32 bg-white rounded-lg p-2 flex items-center justify-center">
+                    <img 
+                      :src="`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(siteConfig.url + '/posts/' + route.params.slug)}`" 
+                      alt="文章二维码"
+                      class="w-28 h-28"
+                    />
+                  </div>
+                  <div class="text-xs text-gray-600 dark:text-gray-400 mt-2">使用手机扫码查看</div>
+                </div>
+              </div>
             </div>
 
-            <!-- 版权提示 -->
-            <div class="text-xs text-gray-500 dark:text-gray-400 p-3">
-              本文采用 
-              <a
-                href="https://creativecommons.org/licenses/by-nc-sa/4.0/" 
-                target="_blank" rel="noopener noreferrer" 
-                class="text-gray-500 dark:text-gray-400 hover:text-blue-400 transition-colors"
-              >
-                CC BY-NC-SA 4.0
-              </a>
-              许可协议进行许可，转载请注明出处，禁止商业使用！
-            </div>
+            <button
+              title="分享本文到微博"
+              @click="shareToWeibo"
+              class="w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)]"
+            >
+              <i class="iconfont icon-xinlangweibo"></i>
+            </button>
+            
+            <button
+              title="复制本文链接"
+              @click="copyArticleLink"
+              class="w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)]"
+            >
+              <i class="iconfont icon-link"></i>
+            </button>
+          </div>
+
+          <!-- 版权提示 -->
+          <div class="text-xs text-gray-500 dark:text-gray-400 p-3">
+            本文采用 
+            <a
+              href="https://creativecommons.org/licenses/by-nc-sa/4.0/" 
+              target="_blank" rel="noopener noreferrer" 
+              class="text-gray-500 dark:text-gray-400 hover:text-blue-400 transition-colors"
+            >
+              CC BY-NC-SA 4.0
+            </a>
+            许可协议进行许可，转载请注明出处，禁止商业使用！
           </div>
         </div>
-        
+      </div>
+
+      <div data-fade>
         <Comment />
       </div>
     </div>
