@@ -1,7 +1,7 @@
 export const siteConfig = {
     apiUrl: 'https://blog.api.zhengweixin.top',
     title: "ShinX's Blog",
-    description: "This is ShinX’s blog, created by a student and a gamer.",
+    description: "This is ShinX's blog, created by a student and a gamer.",
     keywords: "ShinX,zhengweixin,blog,ShinX的个人主页,ShinX的个人网站,ShinX的博客",
     url: "https://zhengweixin.top",
 
@@ -33,8 +33,19 @@ export const siteConfig = {
         { label: 'About', href: '/about', icon: 'icon-guanyu' },
     ],
 
+    donate: [
+        {
+            name: '微信',
+            qrCode: "https://cdn.zhengweixin.top/donation-QR-code/wechatpay.png",
+        },
+        {
+            name: '支付宝',
+            qrCode: "https://cdn.zhengweixin.top/donation-QR-code/alipay.png",
+        }
+    ],
+
     thirdParty: {
-        iconfont: '//at.alicdn.com/t/c/font_4401174_i1nmbmfz57p.css',
+        iconfont: '//at.alicdn.com/t/c/font_4401174_jvqanubrdo.css',
         twikooEnvId: "https://twikoo.api.zhengweixin.top",
         umami: {
             js: 'https://statistics.zhengweixin.top/script.js',

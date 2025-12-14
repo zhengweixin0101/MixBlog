@@ -532,12 +532,16 @@ async function copyArticleLink() {
               <!-- 打赏二维码浮层 -->
               <div 
                 v-show="showDonateQR"
-                class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 p-3 bg-#fefefe dark:bg-gray-800 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.15)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] border border-gray-200/50 dark:border-gray-700/50 transition-all duration-200 z-50"
+                class="absolute bottom-full left-1/2 -translate-x-1/2 z-50 p-4 mb-3 bg-#fefefe/95 dark:bg-#1a1a1a/95 rounded-lg 
+                       shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]"
                 @mouseenter="showDonateQR = true"
                 @mouseleave="showDonateQR = false"
               >
-                <div class="text-center">
-                  <div class="flex items-center justify-center gap-4">
+                <span class="text-md text-red-400 font-bold">
+                  感谢您赐予我前进的力量！
+                </span>
+                <div class="text-center mt-3">
+                  <div class="flex items-center justify-center gap-6">
                     <div 
                       v-for="(method, index) in siteConfig.donate" 
                       :key="index"
@@ -572,7 +576,8 @@ async function copyArticleLink() {
               <!-- 二维码浮层 -->
               <div 
                 v-show="showMobileQR"
-                class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 p-3 bg-#fefefe dark:bg-gray-800 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.15)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] border border-gray-200/50 dark:border-gray-700/50 transition-all duration-200 z-50"
+                class="absolute bottom-full left-1/2 -translate-x-1/2 z-50 p-4 mb-3 bg-#fefefe/95 dark:bg-#1a1a1a/95 rounded-lg 
+                       shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]"
                 @mouseenter="showMobileQR = true"
                 @mouseleave="showMobileQR = false"
               >
