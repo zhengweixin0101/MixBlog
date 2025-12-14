@@ -519,7 +519,7 @@ async function copyArticleLink() {
           <!-- 操作按钮 -->
           <div class="flex flex-wrap items-center justify-center gap-3 pt-6">
             <!-- 打赏按钮 -->
-            <div class="relative">
+            <div v-if="siteConfig.donate && siteConfig.donate.length > 0" class="relative">
               <button
                 @mouseenter="showDonateQR = true"
                 @mouseleave="showDonateQR = false"
@@ -530,13 +530,21 @@ async function copyArticleLink() {
               </button>
               
               <!-- 打赏二维码浮层 -->
-              <div 
-                v-show="showDonateQR"
-                class="absolute bottom-full left-1/2 -translate-x-1/2 z-50 p-4 mb-3 bg-#fefefe/95 dark:bg-#1a1a1a/95 rounded-lg 
-                       shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]"
-                @mouseenter="showDonateQR = true"
-                @mouseleave="showDonateQR = false"
+              <transition
+                enter-active-class="transition-all duration-200 ease-out"
+                enter-from-class="opacity-0 scale-95 translate-y-2"
+                enter-to-class="opacity-100 scale-100 translate-y-0"
+                leave-active-class="transition-all duration-100 ease-in"
+                leave-from-class="opacity-100 scale-100 translate-y-0"
+                leave-to-class="opacity-0 scale-95 translate-y-2"
               >
+                <div 
+                  v-if="showDonateQR"
+                  class="absolute bottom-full left-1/2 -translate-x-1/2 z-50 p-4 mb-3 bg-#fefefe/95 dark:bg-#1a1a1a/95 rounded-lg 
+                         shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]"
+                  @mouseenter="showDonateQR = true"
+                  @mouseleave="showDonateQR = false"
+                >
                 <span class="text-md text-red-400 font-bold">
                   感谢您赐予我前进的力量！
                 </span>
@@ -552,14 +560,14 @@ async function copyArticleLink() {
                           :src="method.qrCode"
                           :alt="`${method.name}打赏二维码`"
                           class="w-28 h-28"
-                          @error="$event.target.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNNSAzSDlWOTVIMVY5SDVWM1oiIGZpbGw9IiMzMzMiLz4KPHA+PC9wPgo8L3N2Zz4K'"
                         />
                       </div>
                       <div class="text-xs text-gray-600 dark:text-gray-400 mt-2">{{ method.name }}</div>
                     </div>
                   </div>
                 </div>
-              </div>
+                </div>
+              </transition>
             </div>
 
             <!-- 手机访问按钮 -->
@@ -574,13 +582,21 @@ async function copyArticleLink() {
               </button>
               
               <!-- 二维码浮层 -->
-              <div 
-                v-show="showMobileQR"
-                class="absolute bottom-full left-1/2 -translate-x-1/2 z-50 p-4 mb-3 bg-#fefefe/95 dark:bg-#1a1a1a/95 rounded-lg 
-                       shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]"
-                @mouseenter="showMobileQR = true"
-                @mouseleave="showMobileQR = false"
+              <transition
+                enter-active-class="transition-all duration-200 ease-out"
+                enter-from-class="opacity-0 scale-95 translate-y-2"
+                enter-to-class="opacity-100 scale-100 translate-y-0"
+                leave-active-class="transition-all duration-100 ease-in"
+                leave-from-class="opacity-100 scale-100 translate-y-0"
+                leave-to-class="opacity-0 scale-95 translate-y-2"
               >
+                <div 
+                  v-if="showMobileQR"
+                  class="absolute bottom-full left-1/2 -translate-x-1/2 z-50 p-4 mb-3 bg-#fefefe/95 dark:bg-#1a1a1a/95 rounded-lg 
+                         shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]"
+                  @mouseenter="showMobileQR = true"
+                  @mouseleave="showMobileQR = false"
+                >
                 <div class="text-center">
                   <div class="w-32 h-32 bg-white rounded-lg p-2 flex items-center justify-center">
                     <img 
@@ -591,7 +607,8 @@ async function copyArticleLink() {
                   </div>
                   <div class="text-xs text-gray-600 dark:text-gray-400 mt-2">使用手机扫码查看</div>
                 </div>
-              </div>
+                </div>
+              </transition>
             </div>
 
             <button
