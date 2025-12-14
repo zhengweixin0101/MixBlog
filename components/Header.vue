@@ -42,7 +42,7 @@ onMounted(() => {
   <header>
     <nav class="fixed top-0 left-0 right-0 z-50 w-full h-[68px] bg-#f8f8f8/50 dark:bg-[#0e1111]/50 backdrop-blur-md transition-colors duration-300 border-b border-white/10 dark:border-white/10">
       <div class="flex items-center justify-between h-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[90vw] xl:max-w-[80vw] 2xl:max-w-[55vw] mx-auto">
-        <ul class="hidden sm:flex justify-start space-x-4 list-none p-0 m-0 flex-1">
+        <ul class="hidden md:flex justify-start space-x-4 list-none p-0 m-0 flex-1">
           <li v-for="(item, index) in siteConfig.navItems" :key="'main-' + index" class="relative">
             <span
               v-if="isActive(item)"
@@ -68,7 +68,7 @@ onMounted(() => {
           ref="menuButton"
           @click="toggleMenu"
           aria-label="展开菜单"
-          class="sm:hidden w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center select-none cursor-pointer"
+          class="md:hidden w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center select-none cursor-pointer"
           type="button"
         >
           <i :class="isMenuOpen ? 'iconfont icon-guanbi text-lg' : 'iconfont icon-caidan text-lg'"></i>
@@ -94,7 +94,7 @@ onMounted(() => {
         v-if="isMenuOpen"
         ref="menuRef"
         id="mobile-menu"
-        class="sm:hidden fixed top-[68px] left-4 w-1/4 min-w-[160px] mt-1 rounded-xl shadow-xl border border-white/10 backdrop-blur-md bg-white/60 dark:bg-[#1a1a1a]/60 z-40 overflow-hidden"
+        class="md:hidden fixed top-[68px] left-4 w-1/4 min-w-[160px] mt-1 rounded-xl shadow-xl border border-white/10 backdrop-blur-md bg-white/60 dark:bg-[#1a1a1a]/60 z-40 overflow-hidden"
       >
         <ul class="flex flex-col divide-y divide-white/10 dark:divide-white/10">
           <li
