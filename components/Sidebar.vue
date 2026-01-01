@@ -13,11 +13,11 @@
             class="block relative text-#2f3f5b dark:text-gray-400 no-underline hover:text-#2f3f5b/60 dark:hover:text-white transition-colors duration-300 text-sm leading-tight"
             :class="[
               {
-                'pl-2 before:left-0': item.tag === 'H2',
-                'pl-4 before:left-2': item.tag === 'H3',
-                'pl-6 before:left-4': item.tag === 'H4',
-                'pl-8 before:left-6': item.tag === 'H5',
-                'pl-10 before:left-8': item.tag === 'H6',
+                'pl-3 before:left-0': item.tag === 'H2',
+                'pl-6 before:left-2': item.tag === 'H3',
+                'pl-9 before:left-4': item.tag === 'H4',
+                'pl-12 before:left-6': item.tag === 'H5',
+                'pl-15 before:left-8': item.tag === 'H6',
               },
               currentId === item.id
                 ? 'text-#2f3f5b/60 dark:text-white font-bold'

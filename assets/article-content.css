@@ -149,7 +149,7 @@ html.dark .article-content strong {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -2px;
+  bottom: -1px;
   width: 100%;
   height: 1px;
   border-bottom: 1px dotted #2f3f5b;
@@ -166,7 +166,7 @@ html.dark .article-content strong {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -2px;
+  bottom: -1px;
   height: 2px;
   width: 0;
   background: linear-gradient(to right, #00e699, #00e2d8);
@@ -191,7 +191,20 @@ html.dark .article-content a:not(:has(img)) {
 }
 
 html.dark .article-content a:not(:has(img))::after {
-  display: none;
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 1px;
+  border-bottom: 1px dotted #00e699;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+html.dark .article-content a:not(:has(img)):hover::after {
+  opacity: 0;
 }
 
 html.dark .article-content a:not(:has(img))::before {
