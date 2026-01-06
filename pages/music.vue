@@ -2,28 +2,26 @@
   <div v-if="!isFullscreen" v-fade-in class="h-screen pt-20 flex flex-col select-none">
     <div data-fade class="flex flex-1 min-h-0">
       <!-- 左侧列表 -->
-      <aside class="musicList w-65 overflow-y-auto relative hidden md:block" ref="listEl" @scroll="onScrollList">
+      <aside class="musicList max-w-60 overflow-y-auto relative hidden md:block" ref="listEl" @scroll="onScrollList">
         <ul class="space-y-2 p-1">
           <li
             v-for="(item, idx) in list || []"
             :key="item.musicFull || item.path || idx"
             @click="playIndex(idx, false, false)"
-            :class="[ 
-              'flex items-center p-2 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
+            :class="[
+              'flex items-center p-2 py-3 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
               idx === currentIndex
                 ? 'shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]'
                 : 'shadow-[0_0_2px_rgba(0,0,0,0.2)]'
             ]"
           >
-            <img
-              v-if="item.coverFull"
-              :src="item.coverFull"
-              class="w-12 h-12 rounded-md mr-3 object-cover"
-            />
-            <div class="min-w-0 flex-1">
-              <div class="transition-color duration-300 font-semibold truncate ">{{ item.title }}</div>
-              <div class="text-sm transition-color duration-300 truncate">
-                {{ item.artist }}<span v-if="item.album"> - {{ item.album }}</span>
+            <div class="w-6 h-6 flex items-center justify-center text-xs font-semibold mr-2 text-gray-600 dark:text-gray-300">
+              {{ idx + 1 }}
+            </div>
+            <div class="min-w-0 flex-1 flex justify-between items-center">
+              <div class="transition-color duration-300 font-semibold truncate">{{ item.title }}</div>
+              <div class="text-xs transition-color duration-300 truncate ml-2">
+                {{ item.artist }}
               </div>
             </div>
           </li>
@@ -230,22 +228,20 @@
             v-for="(item, idx) in list || []"
             :key="item.musicFull || item.path || idx"
             @click="selectMobile(idx)"
-            :class="[ 
-              'flex items-center p-2 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
+            :class="[
+              'flex items-center p-2 py-3 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
               idx === currentIndex
                 ? 'shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]'
                 : 'shadow-[0_0_2px_rgba(0,0,0,0.2)]'
             ]"
           >
-            <img
-              v-if="item.coverFull"
-              :src="item.coverFull"
-              class="w-12 h-12 rounded-md mr-3 object-cover"
-            />
-            <div class="min-w-0 flex-1">
-              <div class="transition-color duration-300 font-semibold truncate ">{{ item.title }}</div>
-              <div class="text-sm transition-color duration-300 truncate">
-                {{ item.artist }}<span v-if="item.album"> - {{ item.album }}</span>
+            <div class="w-6 h-6 flex items-center justify-center text-xs font-semibold mr-2 text-gray-600 dark:text-gray-300">
+              {{ idx + 1 }}
+            </div>
+            <div class="min-w-0 flex-1 flex justify-between items-center">
+              <div class="transition-color duration-300 font-semibold truncate">{{ item.title }}</div>
+              <div class="text-sm transition-color duration-300 truncate ml-2">
+                {{ item.artist }}
               </div>
             </div>
           </li>
