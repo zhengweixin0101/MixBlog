@@ -40,7 +40,8 @@
                   :alt="img.alt"
                   class="w-16 h-16 object-cover rounded-lg cursor-pointer shadow-[0_0_8px_0_rgba(0,0,0,0.2)] fade-in-image"
                   loading="lazy"
-                  onload="this.classList.add('onload-fade')"
+                  @load="(e) => e.target.classList.add('onload-fade')"
+                  @error="(e) => e.target.classList.add('onload-fade')"
                 />
               </a>
             </div>
@@ -259,6 +260,14 @@ function renderContent(talk) {
 onMounted(() => {
   nextTick().then(() => initMasonry())
   Fancybox.bind('[data-fancybox]', { Hash: false })
+
+  // 处理已缓存的图片
+  const images = document.querySelectorAll('img.fade-in-image')
+  images.forEach((img) => {
+    if (img.complete) {
+      img.classList.add('onload-fade')
+    }
+  })
 })
 </script>
 
