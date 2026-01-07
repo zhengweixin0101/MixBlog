@@ -353,7 +353,7 @@ const hoveredIndex = ref(null)
               <img :src="skill.icon" class="w-12 h-12 object-contain fade-in-image" draggable="false" loading="lazy" onload="this.classList.add('onload-fade')" />
             </div>
             <div v-for="(skill, i) in secondHalf" :key="'row2-copy-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
-              <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
+              <img :src="skill.icon" class="w-12 h-12 object-contain fade-in-image" draggable="false" loading="lazy" onload="this.classList.add('onload-fade')" />
             </div>
           </div>
         </div>
