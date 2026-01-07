@@ -19,9 +19,21 @@ import { siteConfig } from '@/siteConfig/main.js'
 const route = useRoute()
 const notification = useNotification()
 
+// Twikoo 评论系统
+const twikooEnvId = siteConfig.thirdParty?.twikooEnvId || ''
+
+// 访问量和评论数
+const commentCount = ref(0)
+
 // 二维码浮层控制
 const showDonateQR = ref(false)
 const showMobileQR = ref(false)
+
+// 阅读时长记录
+const readingDuration = ref(0)
+let readingTimer = null
+let readingStartTime = Date.now()
+let isPageVisible = true
 
 // 获取文章
 const { data: rawPostData, error } = await useAsyncData(
@@ -343,6 +355,56 @@ onMounted(() => {
   document.addEventListener('click', onDocumentClick)
 
   attachExpandBtnHandlers()
+
+  // 加载缓存的阅读时长
+  readingDuration.value = getStoredReadingDuration()
+
+  // 获取文章统计信息
+  getArticleStats()
+
+  // 监听页面可见性变化
+  const handleVisibilityChange = () => {
+    if (document.hidden) {
+      // 页面隐藏时停止计时并保存
+      isPageVisible = false
+      if (readingTimer) {
+        clearInterval(readingTimer)
+        readingTimer = null
+      }
+    } else {
+      // 页面显示时重新开始计时
+      isPageVisible = true
+      readingStartTime = Date.now()
+    }
+  }
+
+  // 监听 visibilitychange 事件
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+
+  // 启动阅读时长计时器
+  readingStartTime = Date.now()
+  readingTimer = setInterval(() => {
+    if (!isPageVisible) return
+    // 计算自上次更新以来新增的时间（1秒）
+    const currentTotal = readingDuration.value
+    const newTotal = currentTotal + 1
+    readingDuration.value = newTotal
+    saveReadingDuration(newTotal)
+  }, 1000)
+
+  // 页面卸载前保存
+  const handleBeforeUnload = () => {
+    if (readingTimer) {
+      clearInterval(readingTimer)
+      saveReadingDuration(readingDuration.value)
+    }
+  }
+
+  window.addEventListener('beforeunload', handleBeforeUnload)
+
+  // 保存事件处理器引用以便清理
+  window._visibilityChangeHandler = handleVisibilityChange
+  window._beforeUnloadHandler = handleBeforeUnload
 })
 
 onBeforeUnmount(() => {
@@ -350,6 +412,27 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', onDocumentClick)
 
   detachExpandBtnHandlers()
+
+  // 移除页面可见性监听
+  if (window._visibilityChangeHandler) {
+    document.removeEventListener('visibilitychange', window._visibilityChangeHandler)
+  }
+
+  // 移除 beforeunload 监听
+  if (window._beforeUnloadHandler) {
+    window.removeEventListener('beforeunload', window._beforeUnloadHandler)
+  }
+
+  // 保存最后的阅读时长
+  if (readingTimer) {
+    clearInterval(readingTimer)
+    // 最后再保存一次确保数据不丢失
+    saveReadingDuration(readingDuration.value)
+    readingTimer = null
+  }
+
+  delete window._visibilityChangeHandler
+  delete window._beforeUnloadHandler
 })
 
 // 格式化日期
@@ -357,6 +440,97 @@ const formattedDate = computed(() => {
   if (!post.value.frontmatter.date) return ''
   return `${siteConfig.author.name} 发布于 ${dayjs(post.value.frontmatter.date).format('YYYY-MM-DD')}`
 })
+
+// 计算文章字数
+const wordCount = computed(() => {
+  const text = post.value.content
+    .replace(/<[^>]+>/g, '') // 移除 HTML 标签
+    .replace(/\s+/g, '') // 移除空白字符
+  return text.length
+})
+
+// 格式化字数显示
+const formattedWordCount = computed(() => {
+  const count = wordCount.value
+  if (count >= 1000) {
+    return `${(count / 1000).toFixed(1)}k`
+  }
+  return count.toString()
+})
+
+// 计算预计阅读时间（按中文平均每分钟400字计算）
+const readingTime = computed(() => {
+  const words = wordCount.value
+  const minutes = Math.ceil(words / 400)
+  return minutes
+})
+
+// 从缓存获取阅读时长
+function getStoredReadingDuration() {
+  if (typeof window === 'undefined') return 0
+  const storageKey = 'blog_reading_durations'
+  const stored = localStorage.getItem(storageKey)
+  if (!stored) return 0
+  const durations = JSON.parse(stored)
+  return durations[route.params.slug] || 0
+}
+
+// 保存阅读时长到缓存
+function saveReadingDuration(duration) {
+  if (typeof window === 'undefined') return
+  const storageKey = 'blog_reading_durations'
+  const stored = localStorage.getItem(storageKey)
+  const durations = stored ? JSON.parse(stored) : {}
+  durations[route.params.slug] = duration
+  localStorage.setItem(storageKey, JSON.stringify(durations))
+}
+
+// 格式化显示阅读时长
+const formattedReadingDuration = computed(() => {
+  const totalSeconds = readingDuration.value
+  const minutes = Math.floor(totalSeconds / 60)
+
+  if (minutes > 60) {
+    return '超过1小时'
+  }
+  if (minutes === 0) {
+    return '小于1分钟'
+  }
+  return `${minutes}分钟`
+})
+
+// 获取文章评论数
+async function getArticleStats() {
+  if (typeof window === 'undefined' || !twikooEnvId) return
+
+  const articleUrl = `/posts/${route.params.slug}`
+
+  // 等待 Twikoo 加载
+  if (typeof window.twikoo === 'undefined') {
+    await new Promise(resolve => {
+      const checkTwikoo = setInterval(() => {
+        if (typeof window.twikoo !== 'undefined') {
+          clearInterval(checkTwikoo)
+          resolve()
+        }
+      }, 100)
+    })
+  }
+
+  try {
+    // 获取评论数
+    const commentRes = await window.twikoo.getCommentsCount({
+      envId: twikooEnvId,
+      urls: [articleUrl],
+      includeReply: true
+    })
+    if (commentRes && commentRes.length > 0) {
+      commentCount.value = commentRes[0].count
+    }
+  } catch (err) {
+    console.error('获取评论数失败:', err)
+  }
+}
 
 // 分享到微博
 function shareToWeibo() {
@@ -461,9 +635,31 @@ async function copyArticleLink() {
             ></span>
           </span>
         </h1>
-        <div data-fade class="text-sm text-#2f3f5b dark:text-gray-400 mt-2 pb-4 flex flex-col gap-2 transition-colors duration-300" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
-          <span>{{ formattedDate }}</span>
-          <div class="flex flex-wrap gap-2">
+        <div data-fade class="text-sm text-#2f3f5b dark:text-gray-400 mt-4 pb-4 flex flex-col gap-2 transition-colors duration-300" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
+          <div class="flex flex-wrap items-center gap-3 !hidden sm:!flex">
+            <span class="flex items-center">
+              <i class="iconfont icon-word"></i>
+              字数总计: {{ formattedWordCount }}
+            </span>
+            <span class="flex items-center">
+              <i class="iconfont icon-zhong"></i>
+              预计需要: {{ readingTime }}分钟
+            </span>
+            <span class="flex items-center">
+              <i class="iconfont icon-eye"></i>
+              阅读时长: {{ formattedReadingDuration }}
+            </span>
+            <span class="flex items-center">
+              <i class="iconfont icon-comment1"></i>
+              评论数: {{ commentCount }}
+            </span>
+            <span class="flex items-center">
+              <i class="iconfont icon-fire"></i>
+              访问量: <span id="twikoo_visitors" class="ml-0.7">0</span>
+            </span>
+          </div>
+          <span class="ml-1">{{ formattedDate }}</span>
+          <div class="flex items-center gap-2">
             <span v-for="tag in post.frontmatter.tags || []" :key="tag" class="px-2 py-1 text-xs rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">{{ tag }}</span>
           </div>
         </div>
