@@ -277,11 +277,10 @@ html.dark .tk-content blockquote {
   display: block;
   cursor: pointer;
   max-width: 100px !important;
-  opacity: 1 !important;
 }
 
-/* 评论区头像强制显示 */
-.tk-avatar img {
+/* 评论区所有图片强制显示 */
+.twikoo img {
   opacity: 1 !important;
 }
 </style>
