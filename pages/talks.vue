@@ -89,7 +89,7 @@
       </ul>
 
       <!-- 加载更多 -->
-      <div v-if="!finished" class="mt-4 flex justify-center">
+      <div v-if="!finished" data-fade class="mt-4 flex justify-center">
         <button
           class="px-4 py-2 bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 hover:opacity-70 rounded-full transition-all duration-300 cursor-pointer shadow-none border-none"
           :disabled="loading"
