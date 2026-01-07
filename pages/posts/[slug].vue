@@ -387,10 +387,19 @@ onMounted(() => {
         clearInterval(readingTimer)
         readingTimer = null
       }
+      saveReadingDuration(readingDuration.value)
     } else {
       // 页面显示时重新开始计时
       isPageVisible = true
-      readingStartTime = Date.now()
+      if (!readingTimer) {
+        readingTimer = setInterval(() => {
+          if (!isPageVisible) return
+          const currentTotal = readingDuration.value
+          const newTotal = currentTotal + 1
+          readingDuration.value = newTotal
+          saveReadingDuration(newTotal)
+        }, 1000)
+      }
     }
   }
 
