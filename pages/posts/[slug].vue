@@ -25,19 +25,6 @@ const twikooEnvId = siteConfig.thirdParty?.twikooEnvId || ''
 // 访问量和评论数
 const commentCount = ref(0)
 
-// 加载 twikoo
-function loadTwikoo() {
-  if (typeof window === 'undefined' || !twikooEnvId) return
-
-  // 如果已经加载过，直接返回
-  if (document.querySelector('script[src*="twikoo"]')) return
-
-  const script = document.createElement('script')
-  script.src = 'https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.min.js'
-  script.async = true
-  document.body.appendChild(script)
-}
-
 // 二维码浮层控制
 const showDonateQR = ref(false)
 const showMobileQR = ref(false)
@@ -374,9 +361,6 @@ onMounted(() => {
 
   // 获取文章统计信息
   getArticleStats()
-
-  // 加载 twikoo 评论系统
-  loadTwikoo()
 
   // 监听页面可见性变化
   const handleVisibilityChange = () => {

@@ -13,32 +13,18 @@ import { siteConfig } from '@/siteConfig/main.js'
 
 onMounted(async () => {
   await nextTick()
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.min.js'
+  script.async = true
+  document.body.appendChild(script)
 
-  // 等待 twikoo 加载完成
-  if (typeof window.twikoo === 'undefined') {
-    const checkTwikoo = setInterval(() => {
-      if (typeof window.twikoo !== 'undefined') {
-        clearInterval(checkTwikoo)
-        // twikoo 加载后初始化评论区
-        initTwikoo()
-      }
-    }, 100)
-  } else {
-    // twikoo 已加载，直接初始化
-    initTwikoo()
+  script.onload = () => {
+    twikoo.init({
+      envId: siteConfig.thirdParty.twikooEnvId,
+      el: '#tcomment'
+    })
   }
 })
-
-function initTwikoo() {
-  // 检查是否已经初始化过
-  const existingEl = document.querySelector('#tcomment .tk-comments')
-  if (existingEl) return
-
-  twikoo.init({
-    envId: siteConfig.thirdParty.twikooEnvId,
-    el: '#tcomment'
-  })
-}
 </script>
 
 <style>
