@@ -181,11 +181,6 @@ html.dark .tk-comments-title svg, html.dark .tk-action svg {
   box-shadow: 0 0 3px rgba(0,0,0,0.3);
 }
 
-.tk-replies .tk-avatar {
-  border-radius: 6px !important;
-}
-
-
 .el-loading-spinner .circular .path {
   stroke: #2f3f5b;
 }
@@ -282,5 +277,11 @@ html.dark .tk-content blockquote {
   display: block;
   cursor: pointer;
   max-width: 100px !important;
+  opacity: 1 !important;
+}
+
+/* 评论区头像强制显示 */
+.tk-avatar img {
+  opacity: 1 !important;
 }
 </style>
