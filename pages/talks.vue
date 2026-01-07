@@ -38,9 +38,9 @@
                 <img
                   :src="img.url"
                   :alt="img.alt"
-                  class="w-16 h-16 object-cover rounded-lg cursor-pointer shadow-[0_0_8px_0_rgba(0,0,0,0.2)] fade-in-image"
+                  :class="['w-16 h-16 object-cover rounded-lg cursor-pointer shadow-[0_0_8px_0_rgba(0,0,0,0.2)]', imageLoaded[img.url] ? 'fade-in-image onload-fade' : 'fade-in-image']"
                   loading="lazy"
-                  onload="this.classList.add('onload-fade')"
+                  @load="imageLoaded[img.url] = true"
                 />
               </a>
             </div>
@@ -88,7 +88,7 @@
       </ul>
 
       <!-- 加载更多 -->
-      <div v-if="!finished" class="mt-4 flex justify-center">
+      <div v-if="!finished" data-fade class="mt-4 flex justify-center">
         <button
           class="px-4 py-2 bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 hover:opacity-70 rounded-full transition-all duration-300 cursor-pointer shadow-none border-none"
           :disabled="loading"
@@ -195,6 +195,9 @@ async function fetchTalks() {
   }
 }
 
+// 图片加载状态
+const imageLoaded = ref({})
+
 // 转义 HTML 防止 XSS
 function escapeHtml(str) {
   return str.replace(/[&<>"']/g, function(m) { return ({
@@ -217,7 +220,7 @@ function getImgBlocks(talk) {
   })
 }
 
-//渲染内容
+// 渲染内容
 function renderContent(talk) {
   let html = talk.content
 
