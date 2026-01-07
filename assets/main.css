@@ -60,7 +60,7 @@ html.light {
 }
 
 /* 全局图片加载动画 */
-img {
+img:not([class*="f-"]):not(.twikoo img) {
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
 }

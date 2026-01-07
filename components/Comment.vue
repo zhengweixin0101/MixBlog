@@ -278,9 +278,4 @@ html.dark .tk-content blockquote {
   cursor: pointer;
   max-width: 100px !important;
 }
-
-/* 评论区所有图片强制显示 */
-.twikoo img {
-  opacity: 1 !important;
-}
 </style>
