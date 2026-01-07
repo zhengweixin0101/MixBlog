@@ -655,7 +655,7 @@ async function copyArticleLink() {
             </span>
             <span class="flex items-center">
               <i class="iconfont icon-fire"></i>
-              访问量: <span id="twikoo_visitors" class="ml-0.7">0</span>
+              访问量: <span id="twikoo_visitors" class="ml-0.8">0</span>
             </span>
           </div>
           <span class="ml-1">{{ formattedDate }}</span>
