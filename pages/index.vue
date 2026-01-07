@@ -69,8 +69,10 @@ import { siteConfig } from '@/siteConfig/main.js'
         <img
           :src="siteConfig.author.avatar"
           alt="Avatar"
-          class="rounded-full w-full h-full object-cover transition-transform duration-300 md:hover:rotate-360"
+          class="rounded-full w-full h-full object-cover transition-transform duration-300 md:hover:rotate-360 fade-in-image"
           draggable="false"
+          loading="lazy"
+          onload="this.classList.add('onload-fade')"
         />
       </div>
     </div>

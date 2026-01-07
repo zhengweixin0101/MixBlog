@@ -485,10 +485,12 @@ async function copyArticleLink() {
         <!-- 头像 -->
         <div class="absolute -top-7 left-1/2 -translate-x-1/2 z-10">
           <a href="/about" class="block">
-              <img 
-                :src="siteConfig.author.avatar" 
+              <img
+                :src="siteConfig.author.avatar"
                 :alt="siteConfig.author.name"
-                class="w-16 h-16 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-[0_0_20px_rgba(0,0,0,0.3)]"
+                class="w-16 h-16 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-[0_0_20px_rgba(0,0,0,0.3)] fade-in-image"
+                loading="lazy"
+                onload="this.classList.add('onload-fade')"
               />
           </a>
         </div>
@@ -550,16 +552,18 @@ async function copyArticleLink() {
                 </span>
                 <div class="text-center mt-3">
                   <div class="flex items-center justify-center gap-6">
-                    <div 
-                      v-for="(method, index) in siteConfig.donate" 
+                    <div
+                      v-for="(method, index) in siteConfig.donate"
                       :key="index"
                       class="text-center"
                     >
                       <div class="w-32 h-32 bg-white rounded-lg p-2 flex items-center justify-center">
-                        <img 
+                        <img
                           :src="method.qrCode"
                           :alt="`${method.name}打赏二维码`"
-                          class="w-28 h-28"
+                          class="w-28 h-28 fade-in-image"
+                          loading="lazy"
+                          onload="this.classList.add('onload-fade')"
                         />
                       </div>
                       <div class="text-xs text-gray-600 dark:text-gray-400 mt-2">{{ method.name }}</div>
@@ -599,10 +603,12 @@ async function copyArticleLink() {
                 >
                 <div class="text-center">
                   <div class="w-32 h-32 bg-white rounded-lg p-2 flex items-center justify-center">
-                    <img 
-                      :src="`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(siteConfig.url + '/posts/' + route.params.slug)}`" 
+                    <img
+                      :src="`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(siteConfig.url + '/posts/' + route.params.slug)}`"
                       alt="文章二维码"
-                      class="w-28 h-28"
+                      class="w-28 h-28 fade-in-image"
+                      loading="lazy"
+                      onload="this.classList.add('onload-fade')"
                     />
                   </div>
                   <div class="text-xs text-gray-600 dark:text-gray-400 mt-2">使用手机扫码查看</div>

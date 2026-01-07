@@ -38,7 +38,9 @@
                 <img
                   :src="img.url"
                   :alt="img.alt"
-                  class="w-16 h-16 object-cover rounded-lg cursor-pointer shadow-[0_0_8px_0_rgba(0,0,0,0.2)]"
+                  class="w-16 h-16 object-cover rounded-lg cursor-pointer shadow-[0_0_8px_0_rgba(0,0,0,0.2)] fade-in-image"
+                  loading="lazy"
+                  onload="this.classList.add('onload-fade')"
                 />
               </a>
             </div>

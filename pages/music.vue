@@ -36,8 +36,10 @@
               v-if="currentItem.coverFull"
               :src="currentItem.coverFull"
               :alt="currentItem.title || 'cover'"
-              class="block w-full h-full object-cover origin-center animate-spin"
+              class="block w-full h-full object-cover origin-center animate-spin fade-in-image"
               :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '40s' }"
+              loading="lazy"
+              onload="this.classList.add('onload-fade')"
             />
             <div v-else class="w-full h-full flex items-center justify-center text-sm text-gray-500">
               无封面
@@ -256,8 +258,10 @@
     <div class="absolute inset-0">
       <img
         :src="currentItem.coverFull"
-        class="absolute inset-0 w-full h-full object-cover blur-[20px] scale-105"
+        class="absolute inset-0 w-full h-full object-cover blur-[20px] scale-105 fade-in-image"
         alt=""
+        loading="lazy"
+        onload="this.classList.add('onload-fade')"
       />
       <div class="absolute inset-0 bg-black/75"></div>
     </div>
@@ -269,8 +273,10 @@
           v-if="currentItem?.coverFull"
           :src="currentItem.coverFull"
           :alt="currentItem.title || 'cover'"
-          class="w-full h-full object-cover animate-spin"
+          class="w-full h-full object-cover animate-spin fade-in-image"
           :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '35s' }"
+          loading="lazy"
+          onload="this.classList.add('onload-fade')"
         />
         <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
           无封面

@@ -241,8 +241,10 @@ const hoveredIndex = ref(null)
         <img
           :src="siteConfig.author.avatar"
           alt="Avatar"
-          class="rounded-full w-full h-full object-cover transition-transform duration-300 md:hover:rotate-360"
+          class="rounded-full w-full h-full object-cover transition-transform duration-300 md:hover:rotate-360 fade-in-image"
           draggable="false"
+          loading="lazy"
+          onload="this.classList.add('onload-fade')"
         />
       </div>
       <!-- 右侧标签组 -->
@@ -336,10 +338,10 @@ const hoveredIndex = ref(null)
         <div class="skill-row-wrapper mt-2">
           <div class="skill-row">
             <div v-for="(skill, i) in firstHalf" :key="'row1-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
-              <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
+              <img :src="skill.icon" class="w-12 h-12 object-contain fade-in-image" draggable="false" loading="lazy" onload="this.classList.add('onload-fade')" />
             </div>
             <div v-for="(skill, i) in firstHalf" :key="'row1-copy-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
-              <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
+              <img :src="skill.icon" class="w-12 h-12 object-contain fade-in-image" draggable="false" loading="lazy" onload="this.classList.add('onload-fade')" />
             </div>
           </div>
         </div>
@@ -348,7 +350,7 @@ const hoveredIndex = ref(null)
         <div class="skill-row-wrapper mt-4 mb-6">
           <div class="skill-row skill-row-reverse">
             <div v-for="(skill, i) in secondHalf" :key="'row2-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
-              <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
+              <img :src="skill.icon" class="w-12 h-12 object-contain fade-in-image" draggable="false" loading="lazy" onload="this.classList.add('onload-fade')" />
             </div>
             <div v-for="(skill, i) in secondHalf" :key="'row2-copy-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
               <img :src="skill.icon" class="w-12 h-12 object-contain" draggable="false" />
@@ -449,7 +451,7 @@ const hoveredIndex = ref(null)
             上了解更多
           </div>
           <div class="absolute justify-center right-0 md:top-3 transition-transform duration-800 group-hover:-rotate-8">
-            <img :src="aboutConfig.author.personality.img" />
+            <img :src="aboutConfig.author.personality.img" class="fade-in-image" loading="lazy" onload="this.classList.add('onload-fade')" />
           </div>
         </div>
       </div>
@@ -554,8 +556,10 @@ const hoveredIndex = ref(null)
                 border: '2px solid rgba(255,0,0,0.4)',
                 borderRadius: '9999px'
               }"
-              class="w-10 h-10 object-cover transition-all duration-300"
+              class="w-10 h-10 object-cover transition-all duration-300 fade-in-image"
               :class="hoverHero === hero.name ? 'opacity-100' : (hoverHero ? 'opacity-30' : 'opacity-100')"
+              loading="lazy"
+              onload="this.classList.add('onload-fade')"
             />
             <transition
               name="fade"

@@ -58,3 +58,22 @@ html.light {
     transform: none;
   }
 }
+
+/* 全局图片加载动画 */
+img {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+img.fade-in-image {
+  opacity: 0;
+}
+
+img.fade-in-image[style*="opacity: 1"] {
+  opacity: 1 !important;
+}
+
+/* 图片加载完成后显示 */
+img.onload-fade {
+  opacity: 1 !important;
+}
