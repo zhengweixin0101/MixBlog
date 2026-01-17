@@ -42,13 +42,23 @@ const { data: rawPostData, error } = await useAsyncData(
   { server: true }
 )
 
+const notFound = computed(() => error.value || !rawPostData.value?.success)
+
+// 解析响应数据
+const postData = computed(() => {
+  if (!rawPostData.value?.success) return null
+  return {
+    content: rawPostData.value.content || '',
+    frontmatter: rawPostData.value.frontmatter || {}
+  }
+})
+
 const post = ref({
   content: '',
   frontmatter: {},
   toc: []
 })
 
-const notFound = computed(() => error.value || !rawPostData.value)
 
 // 代码高亮处理
 function highlightCodeBlocks(html) {

@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
 
   const articles = await $fetch(`${siteConfig.apiUrl}/api/article/list`)
 
-  const items = articles
+  const items = articles.data
     .filter((a) => a.published)
     .map((a) => `
       <item>
@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
       }
       </item>
     `)
-    .join('')
+    .join('') || ''
 
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

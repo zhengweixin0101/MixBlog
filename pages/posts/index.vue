@@ -26,7 +26,7 @@ const { data: postsRaw } = await useAsyncData('posts-list', () =>
   { server: true }
 )
 
-const posts = computed(() => postsRaw.value || [])
+const posts = computed(() => postsRaw.value?.data || [])
 
 const allTags = computed(() => {
   const tags = new Set()
