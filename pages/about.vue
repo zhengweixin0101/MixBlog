@@ -207,6 +207,17 @@ const getValue = (stat) => {
   if (!raw) return ''
   const val = raw[stat.valueKey]
   if (val === undefined || val === null) return ''
+
+  // 数字格式化
+  if (val >= 1000000) {
+    return (val / 1000000).toFixed(1).replace(/\.0$/, '') + 'm'
+  }
+  if (val >= 10000) {
+    return (val / 1000).toFixed(1).replace(/\.0$/, '') + 'k'
+  }
+  if (val >= 1000) {
+    return (val / 1000).toFixed(1) + 'k'
+  }
   return val
 }
 

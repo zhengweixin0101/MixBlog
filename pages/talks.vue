@@ -174,7 +174,10 @@ const { data: initialData } = await useAsyncData('talks', async () => {
     console.error('Fetch talks failed', e)
     return { data: [], totalPages: 0 }
   }
-}, { server: true })
+}, { 
+  server: true,
+  default: () => ({ data: [], totalPages: 0 })
+})
 
 talks.value = initialData.value.data || []
 if (initialData.value.totalPages <= 1) finished.value = true
@@ -198,13 +201,12 @@ async function fetchTalks() {
 
 // 转义 HTML 防止 XSS
 function escapeHtml(str) {
-  return str.replace(/[&<>"']/g, function(m) { return ({
-    '&':'&amp;',
-    '<':'&lt;',
-    '>':'&gt;',
-    '"':'&quot;',
-    "'":'&#39;'
-  })[m]})
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }
 
 //获取图片数量

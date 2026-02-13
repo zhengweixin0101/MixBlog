@@ -8,4 +8,8 @@ export default defineNuxtConfig({
     classSuffix: '',
   },
   css: ['@/assets/main.css'],
+  routeRules: {
+    // 所有页面 60 秒缓存
+    '/**': { isr: 60 },
+  },
 })

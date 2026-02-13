@@ -13,12 +13,7 @@ import { siteConfig } from '@/siteConfig/main.js'
 
 onMounted(async () => {
   await nextTick()
-  const script = document.createElement('script')
-  script.src = 'https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.min.js'
-  script.async = true
-  document.body.appendChild(script)
-
-  script.onload = () => {
+  if (window.twikoo) {
     twikoo.init({
       envId: siteConfig.thirdParty.twikooEnvId,
       el: '#tcomment'
@@ -109,7 +104,7 @@ html.dark .el-textarea__inner:focus-within {
 }
 
 html.dark .OwO-body {
-  background-color: rgba(000, 000, 000, 0.8) !important;
+  background-color: rgba(0, 0, 0, 0.8) !important;
 }
 
 .OwO-item {

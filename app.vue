@@ -23,7 +23,7 @@ useHead({
     { name: 'theme-color', content: '#f8f8f8', media: '(prefers-color-scheme: light)' },
     { name: 'theme-color', content: '#0e1111', media: '(prefers-color-scheme: dark)' },
     { name: 'apple-mobile-web-app-title', content: 'ShinX' },
-    { name: 'autmobile-web-app-capablehor', content: 'yes' },
+    { name: 'apple-mobile-web-app-capable', content: 'yes' },
 
     { property: 'og:title', content: siteConfig.title },
     { property: 'og:description', content: siteConfig.description },
