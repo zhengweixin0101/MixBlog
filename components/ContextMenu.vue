@@ -20,7 +20,19 @@ const targetElement = ref(null)
 const selectedText = ref('')
 
 const showMenu = async (event) => {
+  // 检测是否为移动设备
+  const userAgent = navigator.userAgent.toLowerCase()
+  const isMobileDevice = /mobile|android|iphone|ipad|ipod|windows phone/i.test(userAgent)
+  const isSmallScreen = window.matchMedia('(max-width: 768px)').matches
+
+  // 在移动设备或小屏幕上禁用右键菜单
+  if (isMobileDevice || (isSmallScreen && window.matchMedia('(pointer: coarse)').matches)) {
+    return
+  }
+
+  // 仅在非移动端阻止默认右键菜单
   event.preventDefault()
+
   const el = event.target
 
   selectedText.value = ''
