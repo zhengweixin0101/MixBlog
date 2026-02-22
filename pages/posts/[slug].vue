@@ -150,7 +150,17 @@ function onDocumentClick(e) {
   if (copyBtn) {
     const encoded = copyBtn.getAttribute('data-code')
     if (!encoded) return
-    const code = typeof decodeURIComponent === 'function' ? decodeURIComponent(encoded) : encoded
+    let code = typeof decodeURIComponent === 'function' ? decodeURIComponent(encoded) : encoded
+    // 解码 HTML 实体（如 &lt;、&gt;、&amp; 等）
+    code = code.replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&#x27;/g, "'")
+      .replace(/&#x2F;/g, '/')
+      .replace(/&#x3D;/g, '=')
+      .replace(/&#x60;/g, '`')
     navigator.clipboard.writeText(code).then(() => {
       const originalText = copyBtn.innerText
       copyBtn.innerText = '已复制'
