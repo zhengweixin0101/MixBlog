@@ -565,11 +565,12 @@ const hoveredIndex = ref(null)
               :alt="hero.name"
               :style="{
                 border: '2px solid rgba(255,0,0,0.4)',
-                borderRadius: '9999px'
+                borderRadius: '9999px',
+                opacity: hoverHero === hero.name ? 1 : (hoverHero ? 0.3 : 1)
               }"
-              class="w-10 h-10 object-cover transition-all duration-300 fade-in-image hover-controlled onload-fade"
-              :class="hoverHero === hero.name ? 'opacity-100' : (hoverHero ? 'opacity-30' : 'opacity-100')"
+              class="w-10 h-10 object-cover transition-all duration-300 fade-in-image"
               loading="lazy"
+              onload="this.classList.add('onload-fade')"
             />
             <transition
               name="fade"

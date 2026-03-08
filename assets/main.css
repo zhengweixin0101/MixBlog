@@ -69,16 +69,11 @@ img.fade-in-image {
   opacity: 0;
 }
 
-img.fade-in-image[style*="opacity: 1"]:not(.hover-controlled) {
+img.fade-in-image[style*="opacity: 1"] {
   opacity: 1 !important;
 }
 
 /* 图片加载完成后显示 */
-img.onload-fade:not(.hover-controlled) {
+img.onload-fade {
   opacity: 1 !important;
-}
-
-/* hover控制的角色图标初始状态 */
-img.onload-fade.hover-controlled {
-  opacity: 1;
 }
