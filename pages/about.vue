@@ -568,7 +568,7 @@ const hoveredIndex = ref(null)
                 borderRadius: '9999px',
                 opacity: hoverHero === hero.name ? 1 : (hoverHero ? 0.3 : 1)
               }"
-              class="w-10 h-10 object-cover transition-all duration-300 fade-in-image"
+              class="w-10 h-10 object-cover transition-all duration-300 fade-in-image hero-icon"
               loading="lazy"
               onload="this.classList.add('onload-fade')"
             />

@@ -74,6 +74,11 @@ img.fade-in-image[style*="opacity: 1"] {
 }
 
 /* 图片加载完成后显示 */
-img.onload-fade {
+img.onload-fade:not(.hero-icon) {
   opacity: 1 !important;
+}
+
+/* 英雄图标特殊处理 - 不使用!important */
+img.onload-fade.hero-icon {
+  opacity: 1;
 }
