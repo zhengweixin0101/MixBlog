@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const baseUrl = siteConfig.url
   const feedUrl = `${baseUrl}/rss.xml`
 
-  const articles = await $fetch(`${siteConfig.apiUrl}/api/article/list`)
+  const articles = await $fetch(`${siteConfig.apiUrl}/api/articles`)
 
   const items = articles.data
     .filter((a) => a.published)

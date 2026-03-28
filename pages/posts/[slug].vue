@@ -38,7 +38,7 @@ let isPageVisible = true
 // 获取文章
 const { data: rawPostData, error } = await useAsyncData(
   `post-${route.params.slug}`,
-  () => $fetch(`${siteConfig.apiUrl}/api/article/get?slug=${route.params.slug}`),
+  () => $fetch(`${siteConfig.apiUrl}/api/articles/${route.params.slug}`),
   { server: true }
 )
 

@@ -107,15 +107,15 @@ const shufflePost = async () => {
   await nextTick()
 
   try {
-    const posts = await $fetch(`${siteConfig.apiUrl}/api/article/list?fields=slug`)
+    const result = await $fetch(`${siteConfig.apiUrl}/api/articles?fields=slug`)
 
-    if (!Array.isArray(posts) || posts.length === 0) {
+    if (!result?.data || !Array.isArray(result.data) || result.data.length === 0) {
       console.warn('No posts available to shuffle.')
       return
     }
 
-    const randomIndex = Math.floor(Math.random() * posts.length)
-    const randomPost = posts[randomIndex]
+    const randomIndex = Math.floor(Math.random() * result.data.length)
+    const randomPost = result.data[randomIndex]
 
     if (randomPost?.slug) {
       router.push(`/posts/${randomPost.slug}`)

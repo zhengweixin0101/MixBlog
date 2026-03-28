@@ -164,7 +164,7 @@ const pageSize = 20
 const loading = ref(false)
 const finished = ref(false)
 
-const TALKS_API = `${siteConfig.apiUrl}/api/talks/get`
+const TALKS_API = `${siteConfig.apiUrl}/api/talks`
 
 // 首屏数据
 const { data: initialData } = await useAsyncData('talks', async () => {
@@ -174,7 +174,7 @@ const { data: initialData } = await useAsyncData('talks', async () => {
     console.error('Fetch talks failed', e)
     return { data: [], totalPages: 0 }
   }
-}, { 
+}, {
   server: true,
   default: () => ({ data: [], totalPages: 0 })
 })
