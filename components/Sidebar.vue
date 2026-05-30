@@ -1,5 +1,6 @@
 <template>
   <aside
+    v-if="toc.length"
     class="hidden lg:block w-60 p-4 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] transition-colors duration-300 group"
   >
     <section>

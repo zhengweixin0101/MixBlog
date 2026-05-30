@@ -700,7 +700,7 @@ async function copyArticleLink() {
         </section>
         <div data-fade class="sticky top-30 flex-shrink-0 hidden md:block self-start">
           <div>
-            <Sidebar :toc="(post.toc && post.toc.length) ? post.toc : [{ id: 'no-toc', text: '暂无标题', tag: 'H2' }]" />
+            <Sidebar :toc="post.toc || []" />
           </div>
           <div class="flex items-center justify-center py-20"></div>
         </div>
