@@ -107,7 +107,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, useHead } from '#imports'
+import { ref, onMounted, nextTick } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
 import Comment from '@/components/Comment.vue'
 
@@ -118,18 +118,7 @@ import timezone from 'dayjs/plugin/timezone'
 import { Fancybox } from '@fancyapps/ui'
 import '@fancyapps/ui/dist/fancybox/fancybox.css'
 
-useHead({
-  titleTemplate: `说说 | ${siteConfig.title}`,
-  meta: [
-    { name: 'description', content: `share my life.` },
-    { name: 'keywords', content: `${siteConfig.keywords},说说,talks` },
-    { property: 'og:title', content: `说说 | ${siteConfig.title}` },
-    { property: 'og:description', content: `share my life.` },
-    { property: 'og:url', content: `${siteConfig.url}/talks` },
-    { name: 'twitter:title', content: `说说 | ${siteConfig.title}` },
-    { name: 'twitter:description', content: `share my life.` },
-  ],
-})
+usePageMeta('说说', 'share my life.', '/talks', '说说,talks')
 
 // 格式化时间
 dayjs.extend(utc)

@@ -1,21 +1,10 @@
 <script setup>
-import { computed, useHead } from '#imports'
+import { computed } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
 import { appsConfig } from '@/siteConfig/apps.js'
 
-// head 信息
-useHead({
-  titleTemplate: `Apps | ${siteConfig.title}`,
-  meta: [
-    { name: 'description', content: `This is a list of applications developed or deployed by ${siteConfig.author.name}.` },
-    { name: 'keywords', content: `${siteConfig.keywords},应用列表,apps,list` },
-    { property: 'og:title', content: `Apps | ${siteConfig.title}` },
-    { property: 'og:description', content: `This is a list of applications developed or deployed by ${siteConfig.author.name}.` },
-    { property: 'og:url', content: `${siteConfig.url}/apps` },
-    { name: 'twitter:title', content: `Apps | ${siteConfig.title}` },
-    { name: 'twitter:description', content: `This is a list of applications developed or deployed by ${siteConfig.author.name}.` },
-  ],
-})
+const appsDesc = `This is a list of applications developed or deployed by ${siteConfig.author.name}.`
+usePageMeta('Apps', appsDesc, '/apps', '应用列表,apps,list')
 
 const apps = computed(() => appsConfig.appsData || [])
 </script>
@@ -74,18 +63,7 @@ const apps = computed(() => appsConfig.appsData || [])
 
       <!-- 返回首页 -->
       <div data-fade class="mt-8 flex flex-row items-center justify-end gap-4">
-        <NuxtLink
-          to="/"
-          class="custom-gradient-link inline-flex relative font-medium text-#2f3f5b no-underline"
-          data-fade
-        >
-          <span class="dark:text-gradient">← Back to Home</span>
-          <span
-            class="absolute inset-0 -z-10
-                  bg-gradient-to-r from-#00e699/30 to-#00e2d8/30
-                  dark:hidden transition-colors duration-300"
-          ></span>
-        </NuxtLink>
+        <BackLink to="/" text="← Back to Home" />
       </div>
     </section>
   </main>

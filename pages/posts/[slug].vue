@@ -635,20 +635,7 @@ async function copyArticleLink() {
       </div>
       <h1 data-fade class="mt-8 text-3xl sm:text-5xl font-bold text-#2f3f5b dark:text-#CCC">Post not found.</h1>
       <div data-fade class="mt-10 flex flex-row items-center justify-center gap-4">
-        <NuxtLink
-          to="/posts"
-          class="custom-gradient-link inline-flex relative font-medium text-#2f3f5b no-underline"
-          data-fade
-        >
-          <span class="dark:text-gradient"
-            >← Back to List</span
-          >
-          <span
-            class="absolute inset-0 -z-10
-                  bg-gradient-to-r from-#00e699/30 to-#00e2d8/30
-                  dark:hidden transition-colors duration-300"
-          ></span>
-        </NuxtLink>
+        <BackLink to="/posts" text="← Back to List" />
       </div>
     </div>
 

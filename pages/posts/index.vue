@@ -1,20 +1,8 @@
 <script setup>
-import { ref, computed, useHead } from '#imports'
+import { ref, computed } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
 
-//head
-useHead({
-  titleTemplate: `Posts | ${siteConfig.title}`,
-  meta: [
-    { name: 'description', content: `This is the posts list page of ${siteConfig.title}.` },
-    { name: 'keywords', content: `${siteConfig.keywords},文章列表,posts,list` },
-    { property: 'og:title', content: `Posts | ${siteConfig.title}` },
-    { property: 'og:description', content: `This is the posts list page of ${siteConfig.title}.` },
-    { property: 'og:url', content: `${siteConfig.url}/posts` },
-    { name: 'twitter:title', content: `Posts | ${siteConfig.title}` },
-    { name: 'twitter:description', content: `This is the posts list page of ${siteConfig.title}.` },
-  ],
-})
+usePageMeta('Posts', `This is the posts list page of ${siteConfig.title}.`, '/posts', '文章列表,posts,list')
 
 // 搜索和筛选相关状态
 const searchTerm = ref('')
@@ -144,49 +132,9 @@ const filteredPosts = computed(() => {
       </ul>
 
       <div data-fade class="mt-8 flex flex-row items-center justify-end gap-4">
-        <NuxtLink
-          :key="$route.path + selectedTag + searchTerm"
-          to="/"
-          class="custom-gradient-link inline-flex relative font-medium text-#2f3f5b dark:bg-gradient-to-r dark:from-[#00e699] dark:to-[#00e2d8] dark:bg-clip-text dark:text-transparent dark:-webkit-bg-clip-text no-underline"
-          data-fade
-        >
-          <span class="dark:text-gradient"
-            >← Back to Home</span
-          >
-          <span
-            class="absolute inset-0 -z-10
-                  bg-gradient-to-r from-#00e699/30 to-#00e2d8/30
-                  dark:hidden transition-colors duration-300"
-          ></span>
-        </NuxtLink>
+        <BackLink to="/" text="← Back to Home" />
       </div>
     </section>
   </main>
 </template>
 
-<style>
-.custom-gradient-link {
-  position: relative;
-  border-bottom: 1.5px dotted white;
-  transition: border-bottom-color 0.5s ease;
-  --underline-width: 0%;
-}
-.custom-gradient-link::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #00e699, #00e2d8);
-  width: var(--underline-width);
-  transition: width 0.3s ease;
-  border-radius: 9999px;
-  pointer-events: none;
-}
-.custom-gradient-link:hover {
-  border-bottom-color: transparent;
-}
-.custom-gradient-link:hover::after {
-  --underline-width: 100%;
-}
-</style>
