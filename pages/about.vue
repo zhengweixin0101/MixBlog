@@ -136,70 +136,43 @@ function getDayTimestamps(date = new Date()) {
   return { start: start.getTime(), end: end.getTime() }
 }
 
-// 今日
-const { data: statsToday } = useAsyncData(
-  'statsToday',
-  async () => {
-    const { start, end } = getDayTimestamps()
-    return await $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
-      headers: { Authorization: `Bearer ${TOKEN}` },
-      params: { startAt: start, endAt: end },
-    })
-  },
-  { lazy: true, server: false }
-)
-
-// 昨日
-const { data: statsYesterday } = useAsyncData(
-  'statsYesterday',
-  async () => {
-    const yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
-    const { start, end } = getDayTimestamps(yesterday)
-    return await $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
-      headers: { Authorization: `Bearer ${TOKEN}` },
-      params: { startAt: start, endAt: end },
-    })
-  },
-  { lazy: true, server: false }
-)
-
-// 本月
-const { data: statsMonth } = useAsyncData(
-  'statsMonth',
+// 统计数据
+const { data: stats } = useAsyncData(
+  'statsAll',
   async () => {
     const now = new Date()
-    const start = new Date(now.getFullYear(), now.getMonth(), 1).getTime()
-    const end = now.getTime()
-    return await $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
-      headers: { Authorization: `Bearer ${TOKEN}` },
-      params: { startAt: start, endAt: end },
-    })
-  },
-  { lazy: true, server: false }
-)
-
-// 总量
-const { data: statsTotal } = useAsyncData(
-  'statsTotal',
-  async () => {
+    const { start: todayStart, end: todayEnd } = getDayTimestamps(now)
+    const yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    const { start: yStart, end: yEnd } = getDayTimestamps(yesterday)
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime()
     const createdAtTs = new Date(CREATED_AT).getTime()
-    const now = Date.now()
-    return await $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
-      headers: { Authorization: `Bearer ${TOKEN}` },
-      params: { startAt: createdAtTs, endAt: now },
-    })
+
+    const fetchStats = (startAt, endAt) =>
+      $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
+        headers: { Authorization: `Bearer ${TOKEN}` },
+        params: { startAt, endAt },
+      })
+
+    const [today, yesterdayStats, month, total] = await Promise.all([
+      fetchStats(todayStart, todayEnd),
+      fetchStats(yStart, yEnd),
+      fetchStats(monthStart, now.getTime()),
+      fetchStats(createdAtTs, Date.now()),
+    ])
+
+    return { today, yesterday: yesterdayStats, month, total }
   },
   { lazy: true, server: false }
 )
 
 const statItems = [
-  { label: '今日人数', valueKey: 'visitors', source: statsToday },
-  { label: '昨日人数', valueKey: 'visitors', source: statsYesterday },
-  { label: '本月访问', valueKey: 'pageviews', source: statsMonth },
-  { label: '今日访问', valueKey: 'pageviews', source: statsToday },
-  { label: '昨日访问', valueKey: 'pageviews', source: statsYesterday },
-  { label: '总访问量', valueKey: 'pageviews', source: statsTotal },
+  { label: '今日人数', valueKey: 'visitors', source: computed(() => stats.value?.today) },
+  { label: '昨日人数', valueKey: 'visitors', source: computed(() => stats.value?.yesterday) },
+  { label: '本月访问', valueKey: 'pageviews', source: computed(() => stats.value?.month) },
+  { label: '今日访问', valueKey: 'pageviews', source: computed(() => stats.value?.today) },
+  { label: '昨日访问', valueKey: 'pageviews', source: computed(() => stats.value?.yesterday) },
+  { label: '总访问量', valueKey: 'pageviews', source: computed(() => stats.value?.total) },
 ]
 
 const getValue = (stat) => {
