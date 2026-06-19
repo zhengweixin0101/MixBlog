@@ -14,8 +14,8 @@ export default defineEventHandler(async (event) => {
     .map((a) => `
       <item>
         <title><![CDATA[${a.title}]]></title>
-        <link>${baseUrl}/article/${a.slug}</link>
-        <guid isPermaLink="true">${baseUrl}/article/${a.slug}</guid>
+        <link>${baseUrl}/posts/${a.slug}</link>
+        <guid isPermaLink="true">${baseUrl}/posts/${a.slug}</guid>
         <pubDate>${new Date(a.date).toUTCString()}</pubDate>
         <description><![CDATA[${a.description}]]></description>
         ${a.tags?.length

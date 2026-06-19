@@ -55,6 +55,11 @@ function applyFadeIn(root) {
 }
 
 export default defineNuxtPlugin((nuxtApp) => {
+  if (import.meta.server) {
+    nuxtApp.vueApp.directive('fade-in', {})
+    return
+  }
+
   const fadeIn = {
     mounted(root) {
       applyFadeIn(root)

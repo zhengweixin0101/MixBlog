@@ -267,9 +267,16 @@ function detachExpandBtnHandlers() {
 
 // 链接添加 target="_blank" 和 rel="noopener noreferrer nofollow"
 function enhanceLinks(html) {
-  return html
-    .replace(/<a(?![^>]*\btarget=)([^>]*)>/g, '<a target="_blank" rel="noopener noreferrer nofollow"$1>')
-    .replace(/<a([^>]*)target=("[^"]*"|'[^']*'|[^\s>]*)/g, '<a$1target="_blank" rel="noopener noreferrer nofollow"')
+  return html.replace(/<a\b([^>]*)>/g, (match, attrs) => {
+    let newAttrs = attrs
+    if (!/\btarget\s*=/.test(attrs)) {
+      newAttrs = ` target="_blank" rel="noopener noreferrer nofollow"${newAttrs}`
+    }
+    if (!/\brel\s*=/.test(attrs)) {
+      newAttrs = `${newAttrs} rel="noopener noreferrer nofollow"`
+    }
+    return `<a${newAttrs}>`
+  })
 }
 
 // 解析文章

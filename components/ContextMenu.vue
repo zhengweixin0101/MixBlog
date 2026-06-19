@@ -385,7 +385,7 @@ onBeforeUnmount(() => {
       </div>
     </template>
 
-    <template v-if="menuType === 'input-selected'">
+    <template v-else-if="menuType === 'input-selected'">
       <div class="flex flex-col p-1">
         <span @click="pasteText" class="rightMenu-item-2"><i class="iconfont icon-paste text-lg mr-2"></i>粘贴</span>
         <span @click="copyText" class="rightMenu-item-2"><i class="iconfont icon-copy text-lg mr-2"></i>复制</span>
