@@ -389,6 +389,8 @@ const duration = ref(0)
 const currentTime = ref(0)
 const seekValue = ref(0)
 const lyrics = ref([])
+const groupedLyrics = ref([]) // [{ time, indices: [0,1] }]
+let lastSearchIdx = 0
 const currentLyricIndex = ref(-1)
 const currentLyricIndices = ref([]) // 支持多行同时高亮
 const lyricsEl = ref(null)
@@ -526,8 +528,6 @@ async function loadList() {
     list.value = []
   }
 }
-
-await loadList()
 
 // 播放
 function playIndex(i, forcePlay = false, shouldScroll = true) {
@@ -685,8 +685,10 @@ async function loadLyrics(item) {
   try {
     const raw = await fetch(item.lyricsFull).then(r => r.text())
     lyrics.value = parseLRC(raw)
+    buildGroupedLyrics()
   } catch {
     lyrics.value = []
+    groupedLyrics.value = []
   }
 }
 
@@ -741,6 +743,22 @@ function parseLRC(text) {
   return merged
 }
 
+function buildGroupedLyrics() {
+  const result = []
+  let i = 0
+  while (i < lyrics.value.length) {
+    const t = lyrics.value[i].time
+    const indices = []
+    while (i < lyrics.value.length && Math.abs(lyrics.value[i].time - t) < 0.01) {
+      indices.push(i)
+      i++
+    }
+    result.push({ time: t, indices })
+  }
+  groupedLyrics.value = result
+  lastSearchIdx = 0
+}
+
 // 时间更新
 function onTimeUpdate() {
   const audioEl = audio.value
@@ -748,42 +766,25 @@ function onTimeUpdate() {
   currentTime.value = audioEl.currentTime
   seekValue.value = audioEl.currentTime
 
-  if (lyrics.value && lyrics.value.length > 0) {
-    const t = audioEl.currentTime
-    let currentIndex = -1
-    const currentIndices = []
+  const groups = groupedLyrics.value
+  if (!groups.length) return
 
-    for (let j = lyrics.value.length - 1; j >= 0; j--) {
-      if (t >= lyrics.value[j].time) { 
-        currentIndex = j
-        break
-      }
-    }
+  const t = audioEl.currentTime
 
-    if (currentIndex >= 0) {
-      const currentTimeValue = lyrics.value[currentIndex].time
-      for (let i = 0; i < lyrics.value.length; i++) {
-        if (Math.abs(lyrics.value[i].time - currentTimeValue) < 0.01) {
-          currentIndices.push(i)
-        }
-      }
-    }
-    
-    if (currentIndex !== currentLyricIndex.value || 
-        !arraysEqual(currentIndices, currentLyricIndices.value)) {
-      currentLyricIndex.value = currentIndex
-      currentLyricIndices.value = currentIndices
-      scrollLyrics() 
-    }
+  // 二分查找：找到 time <= t 的最大索引
+  let lo = 0, hi = groups.length - 1
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1
+    if (groups[mid].time <= t) lo = mid + 1
+    else hi = mid - 1
   }
-}
+  const found = hi >= 0 ? hi : 0
 
-function arraysEqual(arr1, arr2) {
-  if (arr1.length !== arr2.length) return false
-  for (let i = 0; i < arr1.length; i++) {
-    if (arr1[i] !== arr2[i]) return false
+  if (found !== currentLyricIndex.value) {
+    currentLyricIndex.value = found
+    currentLyricIndices.value = groups[found].indices
+    scrollLyrics()
   }
-  return true
 }
 
 // 播放元数据加载完成
