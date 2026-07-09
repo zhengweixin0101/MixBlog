@@ -6,7 +6,7 @@
         <ul class="space-y-2 p-1">
           <li
             v-for="(item, idx) in list || []"
-            :key="item.musicFull || item.path || idx"
+            :key="item.musicFull || item.title || idx"
             @click="playIndex(idx, false, false)"
             :class="[
               'flex items-center p-2 py-3 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
@@ -32,9 +32,9 @@
       <div class="flex-1 flex flex-col min-h-0 ml-1 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] transition-all duration-300">
         <div v-if="currentItem" class="mt-20 p-6 text-center">
           <div class="cover-wrap w-40 h-40 rounded-full overflow-hidden shadow-xl flex items-center justify-center mx-auto">
-            <img
-              v-if="currentItem.coverFull"
-              :src="currentItem.coverFull"
+              <img
+              v-if="currentItem.coverBlobUrl"
+              :src="currentItem.coverBlobUrl"
               :alt="currentItem.title || 'cover'"
               class="block w-full h-full object-cover origin-center animate-spin fade-in-image"
               :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '40s' }"
@@ -48,7 +48,7 @@
           <div class="mt-3 text-center w-full px-4">
             <div class="text-6 font-bold truncate transition-color duration-300">{{ currentItem.title }}</div>
             <div class="text-sm transition-color duration-300 text-gray-600 dark:text-gray-300 truncate">
-              {{ currentItem.artist }}<span v-if="currentItem.album"> - {{ currentItem.album }}</span>
+              {{ currentItem.artist }}
             </div>
           </div>
         </div>
@@ -228,7 +228,7 @@
         <ul class="space-y-2 p-3">
           <li
             v-for="(item, idx) in list || []"
-            :key="item.musicFull || item.path || idx"
+            :key="item.musicFull || item.title || idx"
             @click="selectMobile(idx)"
             :class="[
               'flex items-center p-2 py-3 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
@@ -257,7 +257,8 @@
     <!-- 背景 -->
     <div class="absolute inset-0">
       <img
-        :src="currentItem.coverFull"
+        v-if="currentItem?.coverBlobUrl"
+        :src="currentItem.coverBlobUrl"
         class="absolute inset-0 w-full h-full object-cover blur-[20px] scale-105 fade-in-image"
         alt=""
         loading="lazy"
@@ -270,24 +271,24 @@
       <!-- 封面 -->
       <div class="cover-wrap w-50 h-50 lg:w-60 lg:h-60 2xl:w-78 2xl:h-78 rounded-full overflow-hidden shadow-2xl flex items-center justify-center">
         <img
-          v-if="currentItem?.coverFull"
-          :src="currentItem.coverFull"
+          v-if="currentItem?.coverBlobUrl"
+          :src="currentItem.coverBlobUrl"
           :alt="currentItem.title || 'cover'"
           class="w-full h-full object-cover animate-spin fade-in-image"
           :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '35s' }"
           loading="lazy"
           onload="this.classList.add('onload-fade')"
         />
-        <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
-          无封面
-        </div>
+          <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
+            无封面
+          </div>
       </div>
 
       <!-- 歌曲信息 -->
       <div class="text-center">
         <div class="text-3xl 2xl:text-4xl font-bold truncate">{{ currentItem?.title }}</div>
         <div class="text-md 2xl:text-xl opacity-80 truncate mt-1">
-          {{ currentItem?.artist }}<span v-if="currentItem?.album"> - {{ currentItem.album }}</span>
+          {{ currentItem?.artist }}
         </div>
       </div>
 
@@ -364,6 +365,18 @@ function joinUrl(base, path) {
   const b = String(base).replace(/\/+$/, '')
   const p = String(path).replace(/^\/+/, '')
   return b + '/' + p
+}
+
+function safeName(s) {
+  return s.replace(/\//g, '_').replace(/\\/g, '_').trim()
+}
+
+function derivePaths(item) {
+  const key = safeName(`${item.title}-${item.artist}`)
+  return {
+    musicFull: joinUrl(musicConfig.basic, `music/${key}.flac`),
+    binFull: joinUrl(musicConfig.basic, `meta/${key}.bin`),
+  }
 }
 
 // 状态
@@ -496,13 +509,12 @@ async function fetchJson(url) {
 async function loadList() {
   error.value = ''
   try {
-    const listUrl = joinUrl(musicConfig.listFile.basic, musicConfig.listFile.path)
+    const listUrl = joinUrl(musicConfig.basic, 'music_list.json')
     const remote = await fetchJson(listUrl)
     if (!Array.isArray(remote)) throw new Error('music list json should be an array')
     list.value = remote.map(item => ({
       title: item.title || '',
       artist: item.artist || '',
-      path: item.path || ''
     }))
   } catch (e) {
     error.value = e.message || String(e)
@@ -512,12 +524,9 @@ async function loadList() {
 
 async function ensureInfo(item) {
   if (item.musicFull) return
-  const infoUrl = joinUrl(musicConfig.listFile.basic, item.path)
-  const info = await fetchJson(infoUrl)
-  item.musicFull = info.music_path ? joinUrl(musicConfig.listFile.basic, info.music_path) : ''
-  item.lyricsFull = info.lyrics_path ? joinUrl(musicConfig.listFile.basic, info.lyrics_path) : ''
-  item.coverFull = info.cover_path ? joinUrl(musicConfig.listFile.basic, info.cover_path) : ''
-  item.album = info.album || ''
+  const paths = derivePaths(item)
+  item.musicFull = paths.musicFull
+  item.binFull = paths.binFull
 }
 
 // 播放
@@ -673,16 +682,36 @@ function downloadMusic() {
   notification.show(`已尝试下载，请注意查看！`)
 }
 
-// 加载歌词
+// 加载歌词和封面
+let currentCoverBlobUrl = null
+
 async function loadLyrics(item) {
-  if (!item || !item.lyricsFull) return
+  if (!item || !item.binFull) return
   try {
-    const raw = await fetch(item.lyricsFull).then(r => r.text())
-    lyrics.value = parseLRC(raw)
+    const res = await fetch(item.binFull)
+    if (!res.ok) throw new Error('fetch bin failed')
+    const ab = await res.arrayBuffer()
+    const view = new DataView(ab)
+    const lyricsLength = view.getUint32(0, true)
+    const decoder = new TextDecoder('utf-8')
+    const lyricsText = decoder.decode(new Uint8Array(ab, 4, lyricsLength))
+    lyrics.value = parseLRC(lyricsText)
     buildGroupedLyrics()
+
+    const coverStart = 4 + lyricsLength
+    const coverData = ab.slice(coverStart)
+    if (coverData.byteLength > 0) {
+      if (currentCoverBlobUrl) URL.revokeObjectURL(currentCoverBlobUrl)
+      const coverBlob = new Blob([coverData], { type: 'image/webp' })
+      currentCoverBlobUrl = URL.createObjectURL(coverBlob)
+      item.coverBlobUrl = currentCoverBlobUrl
+    } else {
+      item.coverBlobUrl = ''
+    }
   } catch {
     lyrics.value = []
     groupedLyrics.value = []
+    item.coverBlobUrl = ''
   }
 }
 
