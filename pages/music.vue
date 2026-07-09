@@ -2,7 +2,7 @@
   <div v-if="!isFullscreen" v-fade-in class="h-screen pt-20 flex flex-col select-none">
     <div data-fade class="flex flex-1 min-h-0">
       <!-- 左侧列表 -->
-      <aside class="musicList max-w-65 overflow-y-auto relative hidden md:block" ref="listEl" @scroll="onScrollList">
+      <aside class="musicList max-w-65 overflow-y-auto relative hidden md:block" ref="listEl">
         <ul class="space-y-2 p-1">
           <li
             v-for="(item, idx) in list || []"
@@ -556,10 +556,11 @@ async function playIndex(i, forcePlay = false, shouldScroll = true) {
       loadLyrics(item).then(() => {
         currentLyricIndex.value = -1
         currentLyricIndices.value = []
-        if (item.coverBlobUrl) prevCoverUrl.value = item.coverBlobUrl
+        prevCoverUrl.value = item.coverBlobUrl || ''
         isLoadingSong.value = false
       }).catch(() => {
         lyrics.value = []
+        prevCoverUrl.value = ''
         isLoadingSong.value = false
       })
       audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
@@ -586,10 +587,11 @@ async function playIndex(i, forcePlay = false, shouldScroll = true) {
   loadLyrics(item).then(() => {
     currentLyricIndex.value = -1
     currentLyricIndices.value = []
-    if (item.coverBlobUrl) prevCoverUrl.value = item.coverBlobUrl
+    prevCoverUrl.value = item.coverBlobUrl || ''
     isLoadingSong.value = false
   }).catch(() => {
     lyrics.value = []
+    prevCoverUrl.value = ''
     isLoadingSong.value = false
   })
   audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
@@ -649,8 +651,6 @@ function next(auto = false) {
   }
 
   playIndex(idx);
-
-  if (!auto && audio.value) audio.value.play().catch(console.warn);
 }
 
 function onEnded() {
