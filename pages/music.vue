@@ -32,9 +32,9 @@
       <div class="flex-1 flex flex-col min-h-0 ml-1 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] transition-all duration-300">
         <div v-if="currentItem" class="mt-20 p-6 text-center">
           <div class="cover-wrap w-40 h-40 rounded-full overflow-hidden shadow-xl flex items-center justify-center mx-auto">
-              <img
-              v-if="currentItem.coverBlobUrl"
-              :src="currentItem.coverBlobUrl"
+            <img
+              v-if="currentItem.coverBlobUrl || (isLoadingSong && prevCoverUrl)"
+              :src="currentItem.coverBlobUrl || prevCoverUrl"
               :alt="currentItem.title || 'cover'"
               class="block w-full h-full object-cover origin-center animate-spin fade-in-image"
               :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '40s' }"
@@ -269,10 +269,10 @@
 
     <div class="relative z-10 w-2/5 flex flex-col items-center justify-center p-6 gap-6 text-center text-white">
       <!-- 封面 -->
-      <div class="cover-wrap w-50 h-50 lg:w-60 lg:h-60 2xl:w-78 2xl:h-78 rounded-full overflow-hidden shadow-2xl flex items-center justify-center">
+      <div class="cover-wrap w-50 h-50 lg:w-60 lg:h-60 2xl:w-78 2xl:h-78 rounded-full overflow-hidden shadow-2xl shadow-[0_0_40px_rgba(255,255,255,0.25)] flex items-center justify-center">
         <img
-          v-if="currentItem?.coverBlobUrl"
-          :src="currentItem.coverBlobUrl"
+          v-if="currentItem?.coverBlobUrl || (isLoadingSong && prevCoverUrl)"
+          :src="currentItem?.coverBlobUrl || prevCoverUrl"
           :alt="currentItem.title || 'cover'"
           class="w-full h-full object-cover animate-spin fade-in-image"
           :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '35s' }"
@@ -387,6 +387,8 @@ const currentItem = computed(() => (currentIndex.value >= 0 ? list.value?.[curre
 
 const audio = ref(null)
 const isPlaying = ref(false)
+const isLoadingSong = ref(false)
+const prevCoverUrl = ref('')
 const duration = ref(0)
 const currentTime = ref(0)
 const seekValue = ref(0)
@@ -541,14 +543,25 @@ async function playIndex(i, forcePlay = false, shouldScroll = true) {
 
   if (currentIndex.value === i && !forcePlay) {
     if (playMode.value === 'single') {
+      if (currentItem.value?.coverBlobUrl) {
+        prevCoverUrl.value = currentItem.value.coverBlobUrl
+      }
       currentIndex.value = i
       audioEl.src = item.musicFull
-      lyrics.value = []
-      currentLyricIndex.value = -1
-      currentLyricIndices.value = []
+      isLoadingSong.value = true
       seekValue.value = 0
       currentTime.value = 0
-      loadLyrics(item).catch(console.warn)
+      currentLyricIndex.value = -1
+      currentLyricIndices.value = []
+      loadLyrics(item).then(() => {
+        currentLyricIndex.value = -1
+        currentLyricIndices.value = []
+        if (item.coverBlobUrl) prevCoverUrl.value = item.coverBlobUrl
+        isLoadingSong.value = false
+      }).catch(() => {
+        lyrics.value = []
+        isLoadingSong.value = false
+      })
       audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
     } else {
       if (audioEl.paused) audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
@@ -557,14 +570,28 @@ async function playIndex(i, forcePlay = false, shouldScroll = true) {
     return
   }
 
+  // 保存当前封面和歌名，加载期间用于兜底
+  if (currentItem.value?.coverBlobUrl) {
+    prevCoverUrl.value = currentItem.value.coverBlobUrl
+  }
+
+  isLoadingSong.value = true
   currentIndex.value = i
   audioEl.src = item.musicFull
-  lyrics.value = []
-  currentLyricIndex.value = -1
-  currentLyricIndices.value = []
   seekValue.value = 0
   currentTime.value = 0
-  loadLyrics(item).catch(console.warn)
+  currentLyricIndex.value = -1
+  currentLyricIndices.value = []
+
+  loadLyrics(item).then(() => {
+    currentLyricIndex.value = -1
+    currentLyricIndices.value = []
+    if (item.coverBlobUrl) prevCoverUrl.value = item.coverBlobUrl
+    isLoadingSong.value = false
+  }).catch(() => {
+    lyrics.value = []
+    isLoadingSong.value = false
+  })
   audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
   
   if (shouldScroll) {
