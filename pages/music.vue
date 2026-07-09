@@ -499,31 +499,36 @@ async function loadList() {
     const listUrl = joinUrl(musicConfig.listFile.basic, musicConfig.listFile.path)
     const remote = await fetchJson(listUrl)
     if (!Array.isArray(remote)) throw new Error('music list json should be an array')
-    const enriched = await Promise.all(remote.map(async (item) => {
-      try {
-        const infoUrl = joinUrl(musicConfig.listFile.basic, item.path)
-        const info = await fetchJson(infoUrl)
-        const musicFull = info.music_path ? joinUrl(musicConfig.listFile.basic, info.music_path) : ''
-        const lyricsFull = info.lyrics_path ? joinUrl(musicConfig.listFile.basic, info.lyrics_path) : ''
-        const coverFull = info.cover_path ? joinUrl(musicConfig.listFile.basic, info.cover_path) : ''
-        return { ...info, musicFull, lyricsFull, coverFull }
-      } catch (e) {
-        return { title: item.title || '', artist: item.artist || '', musicFull: '', coverFull: '', _error: e.message }
-      }
+    list.value = remote.map(item => ({
+      title: item.title || '',
+      artist: item.artist || '',
+      path: item.path || ''
     }))
-    list.value = Array.isArray(enriched) ? enriched : []
   } catch (e) {
     error.value = e.message || String(e)
     list.value = []
   }
 }
 
+async function ensureInfo(item) {
+  if (item.musicFull) return
+  const infoUrl = joinUrl(musicConfig.listFile.basic, item.path)
+  const info = await fetchJson(infoUrl)
+  item.musicFull = info.music_path ? joinUrl(musicConfig.listFile.basic, info.music_path) : ''
+  item.lyricsFull = info.lyrics_path ? joinUrl(musicConfig.listFile.basic, info.lyrics_path) : ''
+  item.coverFull = info.cover_path ? joinUrl(musicConfig.listFile.basic, info.cover_path) : ''
+  item.album = info.album || ''
+}
+
 // 播放
-function playIndex(i, forcePlay = false, shouldScroll = true) {
+async function playIndex(i, forcePlay = false, shouldScroll = true) {
   const audioEl = audio.value
   if (!audioEl) return
   const item = list.value?.[i]
-  if (!item || !item.musicFull) return console.warn('no music url for item', i)
+  if (!item) return
+
+  await ensureInfo(item)
+  if (!item.musicFull) return console.warn('no music url for item', i)
 
   if (currentIndex.value === i && !forcePlay) {
     if (playMode.value === 'single') {
@@ -950,6 +955,7 @@ onMounted(async () => {
 
   const item = list.value[idx]
   currentIndex.value = idx
+  await ensureInfo(item)
   await loadLyrics(item)
 
   audioEl.src = item.musicFull
