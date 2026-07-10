@@ -73,7 +73,6 @@ const muted = ref(false)
 const shuffleList = ref([])
 const shuffleIndex = ref(0)
 
-let lastSearchIdx = 0
 let currentCoverBlobUrl = null
 let _audio = null
 let _permanentListenersAttached = false
@@ -174,7 +173,6 @@ function buildGroupedLyrics() {
     result.push({ time: t, indices })
   }
   groupedLyrics.value = result
-  lastSearchIdx = 0
 }
 
 function onTimeUpdate() {

@@ -1,7 +1,8 @@
 <template>
   <div
     v-if="currentItem && !isMusicPage"
-    class="music-capsule fixed bottom-5 left-5 z-40
+    v-show="!isMobile"
+    class="music-capsule fixed bottom-5 left-5 z-40 overflow-hidden
            bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-md
            shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]
            cursor-pointer select-none rounded-full h-[44px]
@@ -17,9 +18,11 @@
           v-if="currentItem.coverBlobUrl"
           :src="currentItem.coverBlobUrl"
           :alt="currentItem.title"
-          class="w-full h-full object-cover onload-fade"
+          class="w-full h-full object-cover fade-in-image"
           :style="{ transform: `rotate(${rotation}deg)` }"
           draggable="false"
+          loading="lazy"
+          onload="this.classList.add('onload-fade')"
         />
         <div v-else class="w-full h-full flex items-center justify-center text-xs text-gray-400 dark:text-gray-500 bg-gray/10 dark:bg-white/5">
           <i class="iconfont icon-music text-xs"></i>
@@ -63,7 +66,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, onBeforeUnmount, nextTick } from 'vue'
+import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 
 const route = useRoute()
 
@@ -73,8 +76,18 @@ const {
 } = useMusicPlayer()
 
 const isMusicPage = computed(() => route.path === '/music')
+const isMobile = ref(false)
 const hovered = ref(false)
 const measureEl = ref(null)
+
+function checkMobile() {
+  isMobile.value = window.innerWidth < 768
+}
+
+watch([isMobile, isMusicPage], ([mobile, musicPage]) => {
+  if (mobile && !musicPage && isPlaying.value) togglePlay()
+  if (mobile && musicPage && !isPlaying.value && currentItem.value) togglePlay()
+})
 
 const currentLyricText = computed(() => {
   if (!lyrics.value?.length || currentLyricIndex.value < 0) return currentItem.value?.title || ''
@@ -85,7 +98,7 @@ const currentLyricText = computed(() => {
 
 const measureText = computed(() => isPlaying.value ? currentLyricText.value : currentItem.value?.title || '')
 
-const capsuleWidth = ref(20)
+const capsuleWidth = ref(44)
 
 function measureWidth() {
   nextTick(() => {
@@ -99,7 +112,9 @@ function measureWidth() {
   })
 }
 
-watch([isPlaying, currentLyricText, currentItem], measureWidth, { immediate: true })
+watch([isPlaying, currentLyricText, currentItem], () => {
+  if (!isMobile.value) measureWidth()
+}, { immediate: true })
 
 const rotation = ref(0)
 let rafId = null
@@ -115,8 +130,8 @@ function animate(now) {
   rafId = requestAnimationFrame(animate)
 }
 
-watch(isPlaying, (playing) => {
-  if (playing) {
+watch([isPlaying, isMobile], ([playing, mobile]) => {
+  if (playing && !mobile) {
     lastTime = null
     rafId = requestAnimationFrame(animate)
   } else {
@@ -126,8 +141,14 @@ watch(isPlaying, (playing) => {
   }
 }, { immediate: true })
 
+onMounted(() => {
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
+})
+
 onBeforeUnmount(() => {
   if (rafId) cancelAnimationFrame(rafId)
+  window.removeEventListener('resize', checkMobile)
 })
 
 function togglePlayAction() {
@@ -153,7 +174,7 @@ function togglePlayAction() {
 
 .lyric-slide-enter-active,
 .lyric-slide-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 0.1s ease, transform 0.1s ease;
 }
 
 .lyric-slide-enter-from {
