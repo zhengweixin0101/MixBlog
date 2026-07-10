@@ -921,11 +921,18 @@ function onLoadedMetadata() {
 function onSeekInput() { currentTime.value = seekValue.value }
 function onSeekChange() { if(audio.value) audio.value.currentTime = seekValue.value }
 
-// 快进快退
+// 快进快退每次跳一句歌词
 function seekForward() {
   const audioEl = audio.value
   if (!audioEl || !duration.value) return
-  const newTime = Math.min(audioEl.currentTime + 5, duration.value)
+  const groups = groupedLyrics.value
+  let newTime
+  if (groups.length) {
+    const nextIdx = currentLyricIndex.value + 1
+    newTime = nextIdx < groups.length ? groups[nextIdx].time : duration.value
+  } else {
+    newTime = Math.min(audioEl.currentTime + 5, duration.value)
+  }
   audioEl.currentTime = newTime
   seekValue.value = newTime
   currentTime.value = newTime
@@ -934,7 +941,14 @@ function seekForward() {
 function seekBackward() {
   const audioEl = audio.value
   if (!audioEl) return
-  const newTime = Math.max(audioEl.currentTime - 5, 0)
+  const groups = groupedLyrics.value
+  let newTime
+  if (groups.length) {
+    const prevIdx = currentLyricIndex.value - 1
+    newTime = prevIdx >= 0 ? groups[prevIdx].time : 0
+  } else {
+    newTime = Math.max(audioEl.currentTime - 5, 0)
+  }
   audioEl.currentTime = newTime
   seekValue.value = newTime
   currentTime.value = newTime
