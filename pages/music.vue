@@ -424,71 +424,56 @@
     </div>
   </div>
 
-  <audio ref="audio" preload="metadata" autoplay></audio>
 </template>
 
 <script setup>
-import { musicConfig } from '../siteConfig/music'
 import { siteConfig } from '../siteConfig/main'
 
 import { useNotification } from '~/composables/useNotification'
 const notification = useNotification()
 
-//head
 usePageMeta('Music', `This is the music page of ${siteConfig.title}.`, '/music', '音乐,Music')
 
 definePageMeta({
   hideFooter: true
 })
 
-// 拼接 URL
-function joinUrl(base, path) {
-  if (!base) return path || ''
-  if (!path) return base || ''
-  const b = String(base).replace(/\/+$/, '')
-  const p = String(path).replace(/^\/+/, '')
-  return b + '/' + p
-}
+const {
+  list, isLoadingList, error, currentIndex, currentItem,
+  isPlaying, isLoadingSong, duration, currentTime,
+  lyrics, groupedLyrics, currentLyricIndex, currentLyricIndices,
+  playMode, muted, shuffleList, shuffleIndex,
+  loadList, ensureInfo, loadLyrics, buildGroupedLyrics,
+  playIndex: sharedPlayIndex, togglePlay: sharedTogglePlay,
+  prev: sharedPrev, next: sharedNext, togglePlayMode: sharedTogglePlayMode,
+  toggleMute: sharedToggleMute, seek: sharedSeek, downloadMusic: sharedDownloadMusic,
+  cleanup, getAudio, attachPermanentListeners, setOnLyricChange,
+} = useMusicPlayer()
 
-function safeName(s) {
-  return s.replace(/\//g, '_').replace(/\\/g, '_').trim()
-}
-
-function derivePaths(item) {
-  const key = safeName(`${item.title}-${item.artist}`)
-  return {
-    musicFull: joinUrl(musicConfig.basic, `music/${key}.flac`),
-    binFull: joinUrl(musicConfig.basic, `meta/${key}.bin`),
-  }
-}
-
-// 状态
-const list = ref([])
-const isLoadingList = ref(true)
-const error = ref('')
-const currentIndex = ref(-1)
-const currentItem = computed(() => (currentIndex.value >= 0 ? list.value?.[currentIndex.value] || null : null))
-
-const audio = ref(null)
-const isPlaying = ref(false)
-const isLoadingSong = ref(false)
-const duration = ref(0)
-const currentTime = ref(0)
 const seekValue = ref(0)
-const lyrics = ref([])
-const groupedLyrics = ref([]) // [{ time, indices: [0,1] }]
-let lastSearchIdx = 0
-const currentLyricIndex = ref(-1)
-const currentLyricIndices = ref([]) // 支持多行同时高亮
 const lyricsEl = ref(null)
 const listEl = ref(null)
-const shuffleList = ref([])
-const shuffleIndex = ref(0)
 const isFullscreen = ref(false)
 const mobileListOpen = ref(false)
 const mobileListEl = ref(null)
 
-//移动端歌曲列表
+watch(currentTime, (v) => { seekValue.value = v })
+
+function playIndex(i, forcePlay = false, shouldScroll = true) {
+  sharedPlayIndex(i, forcePlay)
+  if (shouldScroll) {
+    scrollToCurrentItem()
+    if (mobileListOpen.value) scrollMobileToCurrentItem().catch(() => {})
+  }
+}
+
+function togglePlay() { sharedTogglePlay() }
+function prev() { sharedPrev() }
+function next(auto = false) { sharedNext(auto) }
+function togglePlayMode() { sharedTogglePlayMode() }
+function toggleMute() { sharedToggleMute() }
+function downloadMusic() { sharedDownloadMusic() }
+
 function musicList() {
   if (!list.value?.length) return
   mobileListOpen.value = !mobileListOpen.value
@@ -497,41 +482,33 @@ function musicList() {
   }
 }
 
-function closeMobileList() {
-  mobileListOpen.value = false
-}
+function closeMobileList() { mobileListOpen.value = false }
 
 function selectMobile(idx) {
   playIndex(idx, false, true)
   closeMobileList()
 }
 
-// 移动端滚动到当前项
 async function scrollMobileToCurrentItem() {
   const el = mobileListEl.value
   if (!el || currentIndex.value < 0) return
   await nextTick()
   const currentItemEl = el.querySelector(`li:nth-child(${currentIndex.value + 1})`)
   if (!currentItemEl) return
-
   const elRect = el.getBoundingClientRect()
   const itemRect = currentItemEl.getBoundingClientRect()
-  const isVisible = itemRect.top >= elRect.top && itemRect.bottom <= elRect.bottom
-  if (isVisible) return
-
+  if (itemRect.top >= elRect.top && itemRect.bottom <= elRect.bottom) return
   const target = el.scrollTop + (itemRect.bottom - elRect.bottom) + 20
   const start = el.scrollTop
   const distance = target - start
-  const duration = 400
+  const dur = 400
   const startTime = performance.now()
-
   function animate(now) {
-    const progress = Math.min((now - startTime) / duration, 1)
+    const progress = Math.min((now - startTime) / dur, 1)
     const ease = 1 - Math.pow(1 - progress, 3)
     el.scrollTop = start + distance * ease
     if (progress < 1) requestAnimationFrame(animate)
   }
-
   requestAnimationFrame(animate)
 }
 
@@ -542,7 +519,6 @@ watch(currentIndex, async () => {
   }
 })
 
-// 切换全屏模式
 const hideHeader = useState('hideHeader', () => false)
 
 async function toggleFullscreen() {
@@ -550,7 +526,6 @@ async function toggleFullscreen() {
     await document.documentElement.requestFullscreen()
     hideHeader.value = true
     isFullscreen.value = true
-
     if (lyrics.value?.length && currentLyricIndex.value >= 0) {
       await nextTick()
       scrollLyrics()
@@ -559,7 +534,6 @@ async function toggleFullscreen() {
     await document.exitFullscreen()
     hideHeader.value = false
     isFullscreen.value = false
-
     if (lyrics.value?.length && currentLyricIndex.value >= 0) {
       await nextTick()
       scrollLyrics()
@@ -576,357 +550,15 @@ function handleFullscreenChange() {
 
 watch(isFullscreen, async (val) => {
   await nextTick()
-  if (!val && list.value?.length) {
-    scrollToCurrentItem()
-  }
-  if (lyrics.value?.length && currentLyricIndex.value >= 0) {
-    scrollLyrics()
-  }
+  if (!val && list.value?.length) scrollToCurrentItem()
+  if (lyrics.value?.length && currentLyricIndex.value >= 0) scrollLyrics()
 })
 
-// 加载列表
-async function fetchJson(url) {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`fetch failed: ${res.status} ${res.statusText}`)
-  return res.json()
-}
-
-async function loadList() {
-  isLoadingList.value = true
-  error.value = ''
-  try {
-    const listUrl = joinUrl(musicConfig.basic, 'music_list.json')
-    const remote = await fetchJson(listUrl)
-    if (!Array.isArray(remote)) throw new Error('music list json should be an array')
-    list.value = remote.map(item => ({
-      title: item.title || '',
-      artist: item.artist || '',
-    }))
-  } catch (e) {
-    error.value = e.message || String(e)
-    list.value = []
-  } finally {
-    isLoadingList.value = false
-  }
-}
-
-async function ensureInfo(item) {
-  if (item.musicFull) return
-  const paths = derivePaths(item)
-  item.musicFull = paths.musicFull
-  item.binFull = paths.binFull
-}
-
-// 播放
-async function playIndex(i, forcePlay = false, shouldScroll = true) {
-  const audioEl = audio.value
-  if (!audioEl) return
-  const item = list.value?.[i]
-  if (!item) return
-
-  await ensureInfo(item)
-  if (!item.musicFull) return console.warn('no music url for item', i)
-
-  if (currentIndex.value === i && !forcePlay) {
-    if (playMode.value === 'single') {
-      currentIndex.value = i
-      audioEl.src = item.musicFull
-      isLoadingSong.value = true
-      lyrics.value = []
-      seekValue.value = 0
-      currentTime.value = 0
-      currentLyricIndex.value = -1
-      currentLyricIndices.value = []
-      loadLyrics(item).then(() => {
-        currentLyricIndex.value = -1
-        currentLyricIndices.value = []
-        isLoadingSong.value = false
-      }).catch(() => {
-        lyrics.value = []
-        isLoadingSong.value = false
-      })
-      audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
-    } else {
-      if (audioEl.paused) audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
-      else { audioEl.pause(); isPlaying.value = false }
-    }
-    return
-  }
-
-  isLoadingSong.value = true
-  currentIndex.value = i
-  lyrics.value = []
-  audioEl.src = item.musicFull
-  seekValue.value = 0
-  currentTime.value = 0
-  currentLyricIndex.value = -1
-  currentLyricIndices.value = []
-
-  loadLyrics(item).then(() => {
-    currentLyricIndex.value = -1
-    currentLyricIndices.value = []
-    isLoadingSong.value = false
-  }).catch(() => {
-    lyrics.value = []
-    isLoadingSong.value = false
-  })
-  audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
-  
-  if (shouldScroll) {
-    scrollToCurrentItem()
-    if (mobileListOpen.value) scrollMobileToCurrentItem().catch(() => {})
-  }
-}
-
-// 播放/暂停
-function togglePlay() {
-  const audioEl = audio.value
-  if (!audioEl) return
-  if (audioEl.paused) audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
-  else { audioEl.pause(); isPlaying.value = false }
-}
-
-// 上一首
-function prev() {
-  if (!list.value?.length) return;
-
-  let idx = currentIndex.value;
-
-  if (playMode.value === 'single') {
-    idx = currentIndex.value > 0 ? currentIndex.value - 1 : list.value.length - 1;
-  } else if (playMode.value === 'shuffle') {
-    if (!shuffleList.value.length) generateShuffleList();
-    shuffleIndex.value =
-      (shuffleIndex.value - 1 + shuffleList.value.length) % shuffleList.value.length;
-    idx = shuffleList.value[shuffleIndex.value];
-  } else {
-    idx = currentIndex.value > 0 ? currentIndex.value - 1 : list.value.length - 1;
-  }
-
-  playIndex(idx);
-}
-
-// 下一首
-function next(auto = false) {
-  if (!list.value?.length) return;
-
-  let idx = currentIndex.value;
-
-  if (playMode.value === 'single') {
-    if (auto) {
-      idx = currentIndex.value;
-    } else {
-      idx = (currentIndex.value + 1) % list.value.length;
-    }
-  } else if (playMode.value === 'shuffle') {
-    if (!shuffleList.value.length) generateShuffleList();
-    shuffleIndex.value = (shuffleIndex.value + 1) % shuffleList.value.length;
-    idx = shuffleList.value[shuffleIndex.value];
-  } else {
-    idx = (currentIndex.value + 1) % list.value.length;
-  }
-
-  playIndex(idx);
-}
-
-function onEnded() {
-  next(true)
-}
-
-// 播放模式：loop（循环播放）/ single（单曲循环）/ shuffle（随机播放）
-const playMode = ref('loop')
-
-function togglePlayMode() {
-  if (playMode.value === 'loop') {
-    playMode.value = 'shuffle'
-    generateShuffleList()
-    notification.show(`已切换到随机播放模式`)
-  } else if (playMode.value === 'shuffle') {
-    playMode.value = 'single'
-    notification.show(`已切换到单曲循环模式`)
-  } else {
-    playMode.value = 'loop'
-    notification.show(`已切换到循环播放模式`)
-  }
-}
-
-// 生成随机列表
-function generateShuffleList() {
-  if (!list.value?.length) return;
-
-  const indices = list.value.map((_, i) => i);
-
-  for (let i = indices.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [indices[i], indices[j]] = [indices[j], indices[i]];
-  }
-
-  shuffleIndex.value = currentIndex.value >= 0 ? indices.indexOf(currentIndex.value) : 0;
-
-  shuffleList.value = indices;
-}
-
-// 音量控制
-const muted = ref(false)
-function toggleMute() {
-  if (audio.value) audio.value.muted = muted.value = !muted.value
-}
-
-// 下载歌曲
-function downloadMusic() {
-  const item = currentItem.value
-  if (!item?.musicFull) return
-  const link = document.createElement('a')
-  link.href = item.musicFull
-  link.download = `${item.title || 'music'}.mp3`
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
-  notification.show(`已尝试下载，请注意查看！`)
-}
-
-// 加载歌词和封面
-let currentCoverBlobUrl = null
-
-async function loadLyrics(item) {
-  if (!item || !item.binFull) return
-  try {
-    const res = await fetch(item.binFull)
-    if (!res.ok) throw new Error('fetch bin failed')
-    const ab = await res.arrayBuffer()
-    const view = new DataView(ab)
-    const lyricsLength = view.getUint32(0, true)
-    const decoder = new TextDecoder('utf-8')
-    const lyricsText = decoder.decode(new Uint8Array(ab, 4, lyricsLength))
-    lyrics.value = parseLRC(lyricsText)
-    buildGroupedLyrics()
-
-    const coverStart = 4 + lyricsLength
-    const coverData = ab.slice(coverStart)
-    if (coverData.byteLength > 0) {
-      if (currentCoverBlobUrl) URL.revokeObjectURL(currentCoverBlobUrl)
-      const coverBlob = new Blob([coverData], { type: 'image/webp' })
-      currentCoverBlobUrl = URL.createObjectURL(coverBlob)
-      item.coverBlobUrl = currentCoverBlobUrl
-    } else {
-      item.coverBlobUrl = ''
-    }
-  } catch {
-    lyrics.value = []
-    groupedLyrics.value = []
-    item.coverBlobUrl = ''
-  }
-}
-
-function parseLRC(text) {
-  if (!text) return []
-  const lines = text.split(/\r?\n/)
-  const res = []
-  const timeTagRe = /\[(\d{1,2}):(\d{2}(?:\.\d{1,3})?)\]/g
-  
-  for (const line of lines) {
-    let match
-    let lastIndex = 0
-    const texts = line.replace(/\uFEFF/g, '')
-    timeTagRe.lastIndex = 0
-    const times = []
-    while ((match = timeTagRe.exec(texts)) !== null) {
-      const mm = parseInt(match[1], 10)
-      const ss = parseFloat(match[2])
-      times.push(mm * 60 + ss)
-      lastIndex = timeTagRe.lastIndex
-    }
-    const content = texts.slice(lastIndex).trim()
-    if (content) {
-      for (const t of times) res.push({ time: t, text: content })
-    }
-  }
-  
-  // 按时间排序后合并相同时间的歌词
-  const sorted = res.sort((a,b) => a.time - b.time)
-  const merged = []
-  
-  for (let i = 0; i < sorted.length; i++) {
-    const current = sorted[i]
-    const sameTimeLyrics = [current.text]
-    
-    // 查找所有相同时间的歌词
-    while (i + 1 < sorted.length && Math.abs(sorted[i + 1].time - current.time) < 0.01) {
-      i++
-      const nextText = sorted[i].text
-      // 避免重复的歌词内容
-      if (!sameTimeLyrics.includes(nextText)) {
-        sameTimeLyrics.push(nextText)
-      }
-    }
-    
-    merged.push({
-      time: current.time,
-      text: sameTimeLyrics
-    })
-  }
-  
-  return merged
-}
-
-function buildGroupedLyrics() {
-  const result = []
-  let i = 0
-  while (i < lyrics.value.length) {
-    const t = lyrics.value[i].time
-    const indices = []
-    while (i < lyrics.value.length && Math.abs(lyrics.value[i].time - t) < 0.01) {
-      indices.push(i)
-      i++
-    }
-    result.push({ time: t, indices })
-  }
-  groupedLyrics.value = result
-  lastSearchIdx = 0
-}
-
-// 时间更新
-function onTimeUpdate() {
-  const audioEl = audio.value
-  if (!audioEl) return
-  currentTime.value = audioEl.currentTime
-  seekValue.value = audioEl.currentTime
-
-  const groups = groupedLyrics.value
-  if (!groups.length) return
-
-  const t = audioEl.currentTime
-
-  // 二分查找：找到 time <= t 的最大索引
-  let lo = 0, hi = groups.length - 1
-  while (lo <= hi) {
-    const mid = (lo + hi) >> 1
-    if (groups[mid].time <= t) lo = mid + 1
-    else hi = mid - 1
-  }
-  const found = hi >= 0 ? hi : 0
-
-  if (found !== currentLyricIndex.value) {
-    currentLyricIndex.value = found
-    currentLyricIndices.value = groups[found].indices
-    scrollLyrics()
-  }
-}
-
-// 播放元数据加载完成
-function onLoadedMetadata() {
-  const audioEl = audio.value
-  if (!audioEl) return
-  duration.value = audioEl.duration || 0
-}
-
-// 进度条
 function onSeekInput() { currentTime.value = seekValue.value }
-function onSeekChange() { if(audio.value) audio.value.currentTime = seekValue.value }
+function onSeekChange() { sharedSeek(seekValue.value) }
 
-// 快进快退每次跳一句歌词
 function seekForward() {
-  const audioEl = audio.value
+  const audioEl = getAudio()
   if (!audioEl || !duration.value) return
   const groups = groupedLyrics.value
   let newTime
@@ -936,13 +568,11 @@ function seekForward() {
   } else {
     newTime = Math.min(audioEl.currentTime + 5, duration.value)
   }
-  audioEl.currentTime = newTime
-  seekValue.value = newTime
-  currentTime.value = newTime
+  sharedSeek(newTime)
 }
 
 function seekBackward() {
-  const audioEl = audio.value
+  const audioEl = getAudio()
   if (!audioEl) return
   const groups = groupedLyrics.value
   let newTime
@@ -952,87 +582,65 @@ function seekBackward() {
   } else {
     newTime = Math.max(audioEl.currentTime - 5, 0)
   }
-  audioEl.currentTime = newTime
-  seekValue.value = newTime
-  currentTime.value = newTime
+  sharedSeek(newTime)
 }
 
-// 格式化时间
 function formatTime(sec) {
   if (!sec || !isFinite(sec)) return '0:00'
-  const s = Math.floor(sec % 60).toString().padStart(2,'0')
+  const s = Math.floor(sec % 60).toString().padStart(2, '0')
   const m = Math.floor(sec / 60)
   return `${m}:${s}`
 }
 
-// 歌词滚动
 let scrollTimer = null
 
 async function scrollLyrics() {
   const el = lyricsEl.value
   if (!el) return
   await nextTick()
-
   const currentLines = el.querySelectorAll('.lyric-line.current')
   if (!currentLines || currentLines.length === 0) return
-
-  // 如果有多个当前高亮行，滚动到第一个
   const cur = currentLines[0]
   const elRect = el.getBoundingClientRect()
   const curRect = cur.getBoundingClientRect()
   const target = el.scrollTop + (curRect.top - elRect.top) - (el.clientHeight / 2 - cur.offsetHeight / 2)
-
   const start = el.scrollTop
   const distance = target - start
-  const duration = 700
+  const dur = 700
   const startTime = performance.now()
-
   if (scrollTimer) cancelAnimationFrame(scrollTimer)
-
   function animate(now) {
-    const progress = Math.min((now - startTime) / duration, 1)
+    const progress = Math.min((now - startTime) / dur, 1)
     const ease = 1 - Math.pow(1 - progress, 3)
     el.scrollTop = start + distance * ease
     if (progress < 1) scrollTimer = requestAnimationFrame(animate)
   }
-
   scrollTimer = requestAnimationFrame(animate)
 }
 
-// 音乐列表滚动
 async function scrollToCurrentItem() {
   const listElement = listEl.value
   if (!listElement || currentIndex.value < 0) return
-  
   await nextTick()
-  
   const currentItemEl = listElement.querySelector(`li:nth-child(${currentIndex.value + 1})`)
   if (!currentItemEl) return
-  
   const listRect = listElement.getBoundingClientRect()
   const itemRect = currentItemEl.getBoundingClientRect()
-  const isVisible = itemRect.top >= listRect.top && itemRect.bottom <= listRect.bottom
-
-  if (isVisible) return
-  
+  if (itemRect.top >= listRect.top && itemRect.bottom <= listRect.bottom) return
   const target = listElement.scrollTop + (itemRect.bottom - listRect.bottom) + 20
-  
   const start = listElement.scrollTop
   const distance = target - start
-  const duration = 500
+  const dur = 500
   const startTime = performance.now()
-  
   function animate(now) {
-    const progress = Math.min((now - startTime) / duration, 1)
+    const progress = Math.min((now - startTime) / dur, 1)
     const ease = 1 - Math.pow(1 - progress, 3)
     listElement.scrollTop = start + distance * ease
     if (progress < 1) requestAnimationFrame(animate)
   }
-  
   requestAnimationFrame(animate)
 }
 
-// 键盘事件
 function handleKeydown(e) {
   if (e.ctrlKey || e.altKey || e.metaKey) return
   if (e.code === 'Escape' && isFullscreen.value) {
@@ -1040,31 +648,11 @@ function handleKeydown(e) {
     toggleFullscreen().catch(() => {})
     return
   }
-  if (e.code === 'Space') {
-    e.preventDefault()
-    togglePlay()
-    return
-  }
-  if (e.code === 'ArrowLeft') {
-    e.preventDefault()
-    seekBackward()
-    return
-  }
-  if (e.code === 'ArrowRight') {
-    e.preventDefault()
-    seekForward()
-    return
-  }
-  if (e.code === 'ArrowUp') {
-    e.preventDefault()
-    prev()
-    return
-  }
-  if (e.code === 'ArrowDown') {
-    e.preventDefault()
-    next()
-    return
-  }
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); return }
+  if (e.code === 'ArrowLeft') { e.preventDefault(); seekBackward(); return }
+  if (e.code === 'ArrowRight') { e.preventDefault(); seekForward(); return }
+  if (e.code === 'ArrowUp') { e.preventDefault(); prev(); return }
+  if (e.code === 'ArrowDown') { e.preventDefault(); next(); return }
 }
 
 function handleKeyup(e) {
@@ -1076,45 +664,43 @@ function handleKeyup(e) {
   }
 }
 
+function onLyricsWheel(e) { e.preventDefault() }
+function onLyricsTouchmove(e) { e.preventDefault() }
+function onLyricsKeydown(e) { e.preventDefault() }
+
 onMounted(async () => {
+  attachPermanentListeners()
+  setOnLyricChange(scrollLyrics)
+
   await loadList()
   await nextTick()
 
   if (!list.value?.length) return
-  let idx = Math.floor(Math.random() * list.value.length)
-  if (playMode.value === 'shuffle') generateShuffleList()
 
-  const audioEl = audio.value
+  const audioEl = getAudio()
   if (!audioEl) return
-
-  audioEl.addEventListener('timeupdate', onTimeUpdate)
-  audioEl.addEventListener('loadedmetadata', onLoadedMetadata)
-  audioEl.addEventListener('ended', onEnded)
 
   const lyricsElement = lyricsEl.value
   if (lyricsElement) {
-    const preventScroll = (e) => e.preventDefault()
-    lyricsElement.addEventListener('wheel', preventScroll, { passive: false })
-    lyricsElement.addEventListener('touchmove', preventScroll, { passive: false })
-    lyricsElement.addEventListener('keydown', preventScroll)
+    lyricsElement.addEventListener('wheel', onLyricsWheel, { passive: false })
+    lyricsElement.addEventListener('touchmove', onLyricsTouchmove, { passive: false })
+    lyricsElement.addEventListener('keydown', onLyricsKeydown)
   }
 
-  const item = list.value[idx]
-  currentIndex.value = idx
-  isLoadingSong.value = true
-  await ensureInfo(item)
-  await loadLyrics(item)
-  isLoadingSong.value = false
-
-  audioEl.src = item.musicFull
-  audioEl.load()
-
-  scrollToCurrentItem()
-
   document.addEventListener('fullscreenchange', handleFullscreenChange)
-
   document.addEventListener('keydown', handleKeydown)
   document.addEventListener('keyup', handleKeyup)
+
+  if (currentIndex.value >= 0 && currentItem.value) {
+    scrollToCurrentItem()
+    return
+  }
+
+  const idx = Math.floor(Math.random() * list.value.length)
+  if (playMode.value === 'shuffle') sharedTogglePlayMode()
+
+  await sharedPlayIndex(idx, true)
+  scrollToCurrentItem()
 
   audioEl.play().then(() => {
     isPlaying.value = true
@@ -1124,23 +710,17 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
-  const audioEl = audio.value
-  if (audioEl) {
-    audioEl.removeEventListener('timeupdate', onTimeUpdate)
-    audioEl.removeEventListener('loadedmetadata', onLoadedMetadata)
-    audioEl.removeEventListener('ended', onEnded)
-  }
-  
+  cleanup()
+  setOnLyricChange(null)
+
   const lyricsElement = lyricsEl.value
   if (lyricsElement) {
-    const preventScroll = (e) => e.preventDefault()
-    lyricsElement.removeEventListener('wheel', preventScroll)
-    lyricsElement.removeEventListener('touchmove', preventScroll)
-    lyricsElement.removeEventListener('keydown', preventScroll)
+    lyricsElement.removeEventListener('wheel', onLyricsWheel)
+    lyricsElement.removeEventListener('touchmove', onLyricsTouchmove)
+    lyricsElement.removeEventListener('keydown', onLyricsKeydown)
   }
-  
-  document.removeEventListener('fullscreenchange', handleFullscreenChange)
 
+  document.removeEventListener('fullscreenchange', handleFullscreenChange)
   document.removeEventListener('keydown', handleKeydown)
   document.removeEventListener('keyup', handleKeyup)
 })

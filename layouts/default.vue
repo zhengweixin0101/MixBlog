@@ -16,6 +16,7 @@
     </div>
     <ContextMenu />
     <GlobalNotification />
+    <MusicCapsule />
   </div>
   <Background />
 </template>
