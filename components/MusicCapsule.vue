@@ -2,7 +2,7 @@
   <div
     v-if="currentItem && !isMusicPage"
     v-show="!isMobile"
-    class="music-capsule fixed bottom-5 left-5 z-40 overflow-hidden
+    class="music-capsule fixed bottom-5 left-5 z-40
            bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-md
            shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]
            cursor-pointer select-none rounded-full h-[44px]
@@ -12,39 +12,53 @@
     @mouseenter="hovered = true"
     @mouseleave="hovered = false"
   >
-    <div class="flex items-center h-full px-[6px] gap-2">
-      <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 shadow-sm">
-        <img
-          v-if="currentItem.coverBlobUrl"
-          :src="currentItem.coverBlobUrl"
-          :alt="currentItem.title"
-          class="w-full h-full object-cover fade-in-image"
-          :style="{ transform: `rotate(${rotation}deg)` }"
-          draggable="false"
-          loading="lazy"
-          onload="this.classList.add('onload-fade')"
-        />
-        <div v-else class="w-full h-full flex items-center justify-center text-xs text-gray-400 dark:text-gray-500 bg-gray/10 dark:bg-white/5">
-          <i class="iconfont icon-music text-xs"></i>
+    <!-- 内容区（overflow-hidden 裁切文字） -->
+    <div class="relative w-full h-full overflow-hidden rounded-full">
+      <div class="flex items-center h-full px-[6px] gap-2">
+        <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 shadow-sm relative z-[1]">
+          <img
+            v-if="currentItem.coverBlobUrl"
+            :src="currentItem.coverBlobUrl"
+            :alt="currentItem.title"
+            class="w-full h-full object-cover fade-in-image"
+            :style="{ transform: `rotate(${rotation}deg)` }"
+            draggable="false"
+            loading="lazy"
+            onload="this.classList.add('onload-fade')"
+          />
+          <div v-else class="w-full h-full flex items-center justify-center text-xs text-gray-400 dark:text-gray-500 bg-gray/10 dark:bg-white/5">
+            <i class="iconfont icon-music text-xs"></i>
+          </div>
+        </div>
+
+        <div v-if="!isPlaying" class="flex-shrink-0 overflow-hidden">
+          <span class="text-[15px] font-semibold text-#2f3f5b dark:text-white whitespace-nowrap block">
+            {{ currentItem.title }}
+          </span>
+        </div>
+
+        <div v-else class="flex-shrink-0 overflow-hidden">
+          <transition name="lyric-slide" mode="out-in">
+            <div
+              :key="currentLyricIndex"
+              class="text-[15px] text-gray-600 dark:text-gray-300 whitespace-nowrap"
+            >
+              {{ currentLyricText }}
+            </div>
+          </transition>
         </div>
       </div>
 
-      <div v-if="!isPlaying" class="flex-shrink-0 overflow-hidden">
-        <span class="text-[15px] font-semibold text-#2f3f5b dark:text-white whitespace-nowrap block">
-          {{ currentItem.title }}
-        </span>
-      </div>
-
-      <div v-else class="flex-shrink-0 overflow-hidden">
-        <transition name="lyric-slide" mode="out-in">
-          <div
-            :key="currentLyricIndex"
-            class="text-[15px] text-gray-600 dark:text-gray-300 whitespace-nowrap"
-          >
-            {{ currentLyricText }}
-          </div>
-        </transition>
-      </div>
+      <!-- 播放进度条 -->
+      <div
+        v-if="duration"
+        class="absolute inset-0 origin-left pointer-events-none"
+        :class="{
+          'bg-black/5 dark:bg-white/20': progressPercent < 100,
+          'bg-#00e699/20': progressPercent >= 100,
+        }"
+        :style="{ transform: `scaleX(${progressPercent / 100})` }"
+      ></div>
     </div>
 
     <transition name="overlay-fade">
@@ -71,7 +85,7 @@ import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 const route = useRoute()
 
 const {
-  currentItem, isPlaying, lyrics, currentLyricIndex,
+  currentItem, isPlaying, lyrics, currentLyricIndex, currentTime, duration,
   togglePlay,
 } = useMusicPlayer()
 
@@ -79,6 +93,11 @@ const isMusicPage = computed(() => route.path === '/music')
 const isMobile = ref(false)
 const hovered = ref(false)
 const measureEl = ref(null)
+
+const progressPercent = computed(() => {
+  if (!duration.value) return 0
+  return (currentTime.value / duration.value) * 100
+})
 
 function checkMobile() {
   isMobile.value = window.innerWidth < 768
@@ -98,17 +117,17 @@ const currentLyricText = computed(() => {
 
 const measureText = computed(() => isPlaying.value ? currentLyricText.value : currentItem.value?.title || '')
 
-const capsuleWidth = ref(44)
+const capsuleWidth = ref(120)
 
 function measureWidth() {
   nextTick(() => {
     const el = measureEl.value
     if (!el) {
-      capsuleWidth.value = 20
+      capsuleWidth.value = 120
       return
     }
     const textW = el.getBoundingClientRect().width
-    capsuleWidth.value = Math.max(20, Math.ceil(6 + 32 + 8 + textW + 15))
+    capsuleWidth.value = Math.max(120, Math.ceil(6 + 32 + 8 + textW + 10))
   })
 }
 
@@ -174,7 +193,7 @@ function togglePlayAction() {
 
 .lyric-slide-enter-active,
 .lyric-slide-leave-active {
-  transition: opacity 0.1s ease, transform 0.1s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .lyric-slide-enter-from {
