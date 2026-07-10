@@ -3,9 +3,26 @@
     <div data-fade class="flex flex-1 min-h-0">
       <!-- 左侧列表 -->
       <aside class="musicList max-w-65 overflow-y-auto relative hidden md:block" ref="listEl">
-        <ul class="space-y-2 p-1">
+        <!-- 加载中骨架屏 -->
+        <ul v-if="isLoadingList" class="space-y-2 p-1">
+          <li v-for="n in 6" :key="n" class="flex items-center p-2 py-3 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)]">
+            <div class="w-6 h-6 flex items-center justify-center mr-2">
+              <div class="w-4 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
+            </div>
+            <div class="min-w-0 flex-1 flex justify-between items-center">
+              <div class="w-24 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
+              <div class="w-16 h-3 rounded bg-gray/20 dark:bg-white/10 shimmer ml-2"></div>
+            </div>
+          </li>
+        </ul>
+        <!-- 列表为空 -->
+        <div v-else-if="!list?.length" class="flex items-center justify-center h-full text-gray-400 dark:text-gray-500 text-sm">
+          暂无歌曲
+        </div>
+        <!-- 正常列表 -->
+        <ul v-else class="space-y-2 p-1">
           <li
-            v-for="(item, idx) in list || []"
+            v-for="(item, idx) in list"
             :key="item.musicFull || item.title || idx"
             @click="playIndex(idx, false, false)"
             :class="[
@@ -30,11 +47,25 @@
 
       <!-- 右侧播放界面 -->
       <div class="flex-1 flex flex-col min-h-0 ml-1 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] transition-all duration-300">
-        <div v-if="currentItem" class="mt-20 p-6 text-center">
+        <!-- 加载中骨架屏 -->
+        <div v-if="isLoadingList" class="mt-20 p-6 text-center">
           <div class="cover-wrap w-40 h-40 rounded-full overflow-hidden shadow-xl flex items-center justify-center mx-auto">
+            <div class="w-full h-full rounded-full bg-gray/20 dark:bg-white/10 shimmer"></div>
+          </div>
+          <div class="mt-3 text-center w-full px-4 flex flex-col items-center gap-2">
+            <div class="w-40 h-6 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
+            <div class="w-24 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
+          </div>
+        </div>
+        <!-- 正常播放信息 -->
+        <div v-else-if="currentItem" class="mt-20 p-6 text-center">
+          <div class="cover-wrap w-40 h-40 rounded-full overflow-hidden shadow-xl flex items-center justify-center mx-auto">
+            <!-- 加载中骨架 -->
+            <div v-if="isLoadingSong" class="w-full h-full rounded-full bg-gray/20 dark:bg-white/10 shimmer"></div>
+            <!-- 正常封面 -->
             <img
-              v-if="currentItem.coverBlobUrl || (isLoadingSong && prevCoverUrl)"
-              :src="currentItem.coverBlobUrl || prevCoverUrl"
+              v-else-if="currentItem.coverBlobUrl"
+              :src="currentItem.coverBlobUrl"
               :alt="currentItem.title || 'cover'"
               class="block w-full h-full object-cover origin-center animate-spin fade-in-image"
               :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '40s' }"
@@ -46,10 +77,17 @@
             </div>
           </div>
           <div class="mt-3 text-center w-full px-4">
-            <div class="text-6 font-bold truncate transition-color duration-300">{{ currentItem.title }}</div>
-            <div class="text-sm transition-color duration-300 text-gray-600 dark:text-gray-300 truncate">
-              {{ currentItem.artist }}
+            <!-- 歌名加载中 -->
+            <div v-if="isLoadingSong" class="flex flex-col items-center gap-2">
+              <div class="w-40 h-6 rounded bg-gray/20 dark:bg-white/10 shimmer mx-auto"></div>
+              <div class="w-24 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer mx-auto"></div>
             </div>
+            <template v-else>
+              <div class="text-6 font-bold truncate transition-color duration-300">{{ currentItem.title }}</div>
+              <div class="text-sm transition-color duration-300 text-gray-600 dark:text-gray-300 truncate">
+                {{ currentItem.artist }}
+              </div>
+            </template>
           </div>
         </div>
 
@@ -59,7 +97,18 @@
           ref="lyricsEl"
           tabindex="-1"
         >
-          <div v-if="!currentItem" class="mt-20">请选择歌曲播放</div>
+          <!-- 歌词加载中 -->
+          <div v-if="isLoadingList" class="mt-20 space-y-2 flex flex-col items-center">
+            <div v-for="n in 8" :key="n" class="w-48 h-4 rounded shimmer"
+              :class="n === 1 ? 'w-36' : n === 4 ? 'w-40' : 'w-48'"
+              :style="{ background: `linear-gradient(90deg, rgba(128,128,128,.06) 25%, rgba(128,128,128,.14) 50%, rgba(128,128,128,.06) 75%)`, backgroundSize: '200% 100%' }"></div>
+          </div>
+          <div v-else-if="isLoadingSong && !lyrics?.length" class="mt-20 space-y-2 flex flex-col items-center">
+            <div v-for="n in 8" :key="n" class="w-48 h-4 rounded shimmer"
+              :class="n === 1 ? 'w-36' : n === 4 ? 'w-40' : 'w-48'"
+              :style="{ background: `linear-gradient(90deg, rgba(128,128,128,.06) 25%, rgba(128,128,128,.14) 50%, rgba(128,128,128,.06) 75%)`, backgroundSize: '200% 100%' }"></div>
+          </div>
+          <div v-else-if="!currentItem" class="mt-20">请选择歌曲播放</div>
           <div v-else-if="!lyrics?.length" class="mt-20">暂无歌词</div>
           <div v-else class="space-y-2">
             <div
@@ -225,9 +274,26 @@
         class="fixed bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]
                bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-lg text-gray-800 dark:text-gray-100 rounded-t-lg"
       >
-        <ul class="space-y-2 p-3">
+        <!-- 加载中骨架屏 -->
+        <ul v-if="isLoadingList" class="space-y-2 p-3">
+          <li v-for="n in 6" :key="n" class="flex items-center p-2 py-3 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)]">
+            <div class="w-6 h-6 flex items-center justify-center mr-2">
+              <div class="w-4 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
+            </div>
+            <div class="min-w-0 flex-1 flex justify-between items-center">
+              <div class="w-24 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
+              <div class="w-16 h-3 rounded bg-gray/20 dark:bg-white/10 shimmer ml-2"></div>
+            </div>
+          </li>
+        </ul>
+        <!-- 列表为空 -->
+        <div v-else-if="!list?.length" class="flex items-center justify-center py-12 text-gray-400 dark:text-gray-500 text-sm">
+          暂无歌曲
+        </div>
+        <!-- 正常列表 -->
+        <ul v-else class="space-y-2 p-3">
           <li
-            v-for="(item, idx) in list || []"
+            v-for="(item, idx) in list"
             :key="item.musicFull || item.title || idx"
             @click="selectMobile(idx)"
             :class="[
@@ -270,26 +336,35 @@
     <div class="relative z-10 w-2/5 flex flex-col items-center justify-center p-6 gap-6 text-center text-white">
       <!-- 封面 -->
       <div class="cover-wrap w-50 h-50 lg:w-60 lg:h-60 2xl:w-78 2xl:h-78 rounded-full overflow-hidden shadow-2xl shadow-[0_0_40px_rgba(255,255,255,0.25)] flex items-center justify-center">
+        <!-- 加载中骨架 -->
+        <div v-if="isLoadingSong" class="w-full h-full rounded-full bg-white/10 shimmer"></div>
+        <!-- 正常封面 -->
         <img
-          v-if="currentItem?.coverBlobUrl || (isLoadingSong && prevCoverUrl)"
-          :src="currentItem?.coverBlobUrl || prevCoverUrl"
+          v-else-if="currentItem?.coverBlobUrl"
+          :src="currentItem.coverBlobUrl"
           :alt="currentItem.title || 'cover'"
           class="w-full h-full object-cover animate-spin fade-in-image"
           :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '35s' }"
           loading="lazy"
           onload="this.classList.add('onload-fade')"
         />
-          <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
-            无封面
-          </div>
+        <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
+          无封面
+        </div>
       </div>
 
       <!-- 歌曲信息 -->
       <div class="text-center">
-        <div class="text-3xl 2xl:text-4xl font-bold truncate">{{ currentItem?.title }}</div>
-        <div class="text-md 2xl:text-xl opacity-80 truncate mt-1">
-          {{ currentItem?.artist }}
-        </div>
+        <template v-if="isLoadingSong">
+          <div class="w-48 h-8 rounded bg-white/10 shimmer mx-auto"></div>
+          <div class="w-32 h-6 rounded bg-white/10 shimmer mx-auto mt-2"></div>
+        </template>
+        <template v-else>
+          <div class="text-3xl 2xl:text-4xl font-bold truncate">{{ currentItem?.title }}</div>
+          <div class="text-md 2xl:text-xl opacity-80 truncate mt-1">
+            {{ currentItem?.artist }}
+          </div>
+        </template>
       </div>
 
       <!-- 播放控件 -->
@@ -314,7 +389,12 @@
       ref="lyricsEl"
       tabindex="-1"
     >
-      <div v-if="!currentItem" class="mt-20">请选择歌曲播放</div>
+      <div v-if="isLoadingSong && !lyrics?.length" class="mt-20 space-y-3 flex flex-col items-center">
+        <div v-for="n in 8" :key="n" class="w-64 h-5 rounded shimmer"
+          :class="n === 1 ? 'w-48' : n === 4 ? 'w-56' : 'w-64'"
+          :style="{ background: `linear-gradient(90deg, rgba(255,255,255,.08) 25%, rgba(255,255,255,.18) 50%, rgba(255,255,255,.08) 75%)`, backgroundSize: '200% 100%' }"></div>
+      </div>
+      <div v-else-if="!currentItem" class="mt-20">请选择歌曲播放</div>
       <div v-else-if="!lyrics?.length" class="mt-20">暂无歌词</div>
       <div v-else class="space-y-5">
         <div
@@ -381,6 +461,7 @@ function derivePaths(item) {
 
 // 状态
 const list = ref([])
+const isLoadingList = ref(true)
 const error = ref('')
 const currentIndex = ref(-1)
 const currentItem = computed(() => (currentIndex.value >= 0 ? list.value?.[currentIndex.value] || null : null))
@@ -388,7 +469,6 @@ const currentItem = computed(() => (currentIndex.value >= 0 ? list.value?.[curre
 const audio = ref(null)
 const isPlaying = ref(false)
 const isLoadingSong = ref(false)
-const prevCoverUrl = ref('')
 const duration = ref(0)
 const currentTime = ref(0)
 const seekValue = ref(0)
@@ -509,6 +589,7 @@ async function fetchJson(url) {
 }
 
 async function loadList() {
+  isLoadingList.value = true
   error.value = ''
   try {
     const listUrl = joinUrl(musicConfig.basic, 'music_list.json')
@@ -521,6 +602,8 @@ async function loadList() {
   } catch (e) {
     error.value = e.message || String(e)
     list.value = []
+  } finally {
+    isLoadingList.value = false
   }
 }
 
@@ -543,12 +626,10 @@ async function playIndex(i, forcePlay = false, shouldScroll = true) {
 
   if (currentIndex.value === i && !forcePlay) {
     if (playMode.value === 'single') {
-      if (currentItem.value?.coverBlobUrl) {
-        prevCoverUrl.value = currentItem.value.coverBlobUrl
-      }
       currentIndex.value = i
       audioEl.src = item.musicFull
       isLoadingSong.value = true
+      lyrics.value = []
       seekValue.value = 0
       currentTime.value = 0
       currentLyricIndex.value = -1
@@ -556,11 +637,9 @@ async function playIndex(i, forcePlay = false, shouldScroll = true) {
       loadLyrics(item).then(() => {
         currentLyricIndex.value = -1
         currentLyricIndices.value = []
-        prevCoverUrl.value = item.coverBlobUrl || ''
         isLoadingSong.value = false
       }).catch(() => {
         lyrics.value = []
-        prevCoverUrl.value = ''
         isLoadingSong.value = false
       })
       audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
@@ -571,13 +650,9 @@ async function playIndex(i, forcePlay = false, shouldScroll = true) {
     return
   }
 
-  // 保存当前封面和歌名，加载期间用于兜底
-  if (currentItem.value?.coverBlobUrl) {
-    prevCoverUrl.value = currentItem.value.coverBlobUrl
-  }
-
   isLoadingSong.value = true
   currentIndex.value = i
+  lyrics.value = []
   audioEl.src = item.musicFull
   seekValue.value = 0
   currentTime.value = 0
@@ -587,11 +662,9 @@ async function playIndex(i, forcePlay = false, shouldScroll = true) {
   loadLyrics(item).then(() => {
     currentLyricIndex.value = -1
     currentLyricIndices.value = []
-    prevCoverUrl.value = item.coverBlobUrl || ''
     isLoadingSong.value = false
   }).catch(() => {
     lyrics.value = []
-    prevCoverUrl.value = ''
     isLoadingSong.value = false
   })
   audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
@@ -1011,8 +1084,10 @@ onMounted(async () => {
 
   const item = list.value[idx]
   currentIndex.value = idx
+  isLoadingSong.value = true
   await ensureInfo(item)
   await loadLyrics(item)
+  isLoadingSong.value = false
 
   audioEl.src = item.musicFull
   audioEl.load()
@@ -1064,6 +1139,18 @@ onBeforeUnmount(() => {
 
 .lyrics::-webkit-scrollbar {
   display: none;
+}
+
+/* 骨架屏闪烁动画 */
+.shimmer {
+  animation: shimmer 1.5s ease-in-out infinite;
+  background: linear-gradient(90deg, rgba(128,128,128,.08) 25%, rgba(128,128,128,.18) 50%, rgba(128,128,128,.08) 75%);
+  background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* 移动端歌曲列表动画 */
