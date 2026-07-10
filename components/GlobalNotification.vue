@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed bottom-2 right-4 z-50 flex-col gap-4">
+  <div class="fixed top-2 left-1/2 -translate-x-1/2 lg:top-auto lg:left-auto lg:translate-x-0 lg:bottom-2 lg:right-4 z-50 flex-col gap-4">
     <transition-group name="toast" tag="div">
       <div
         v-for="toast in notification.state.toasts"
