@@ -70,6 +70,7 @@
               class="block w-full h-full object-cover origin-center animate-spin fade-in-image"
               :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '40s' }"
               loading="lazy"
+              draggable="false"
               onload="this.classList.add('onload-fade')"
             />
             <div v-else class="w-full h-full flex items-center justify-center text-sm text-gray-500">
@@ -328,6 +329,7 @@
         class="absolute inset-0 w-full h-full object-cover blur-[20px] scale-105 fade-in-image"
         alt=""
         loading="lazy"
+        draggable="false"
         onload="this.classList.add('onload-fade')"
       />
       <div class="absolute inset-0 bg-black/75"></div>
@@ -346,6 +348,7 @@
           class="w-full h-full object-cover animate-spin fade-in-image"
           :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '35s' }"
           loading="lazy"
+          draggable="false"
           onload="this.classList.add('onload-fade')"
         />
         <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
@@ -1144,6 +1147,12 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+/* 禁止封面图片拖动 */
+.cover-wrap img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
 .lyrics {
   overflow: hidden;
   scrollbar-width: none;
