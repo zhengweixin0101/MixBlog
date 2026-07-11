@@ -345,7 +345,7 @@ const {
   playIndex: sharedPlayIndex, togglePlay: sharedTogglePlay,
   prev: sharedPrev, next: sharedNext, togglePlayMode: sharedTogglePlayMode,
   toggleMute: sharedToggleMute, seek: sharedSeek, downloadMusic: sharedDownloadMusic,
-  cleanup, getAudio, attachPermanentListeners, setOnLyricChange,
+  cleanup, getAudio, attachPermanentListeners, setOnLyricChange, setOnPlayIndex,
 } = useMusicPlayer()
 
 const seekValue = ref(0)
@@ -357,8 +357,8 @@ const mobileListEl = ref(null)
 
 watch(currentTime, (v) => { seekValue.value = v })
 
-function playIndex(i, forcePlay = false, shouldScroll = true) {
-  sharedPlayIndex(i, forcePlay)
+async function playIndex(i, forcePlay = false, shouldScroll = true) {
+  await sharedPlayIndex(i, forcePlay)
   if (shouldScroll) {
     scrollToCurrentItem()
     if (mobileListOpen.value) scrollMobileToCurrentItem().catch(() => {})
@@ -367,7 +367,7 @@ function playIndex(i, forcePlay = false, shouldScroll = true) {
 
 function togglePlay() { sharedTogglePlay() }
 function prev() { sharedPrev() }
-function next(auto = false) { sharedNext(auto) }
+function next() { sharedNext(false) }
 function togglePlayMode() { sharedTogglePlayMode() }
 function toggleMute() { sharedToggleMute() }
 function downloadMusic() { sharedDownloadMusic() }
@@ -523,6 +523,7 @@ function handleKeydown(e) {
 onMounted(async () => {
   attachPermanentListeners()
   setOnLyricChange(scrollLyrics)
+  setOnPlayIndex(() => { scrollToCurrentItem(); if (mobileListOpen.value) scrollMobileToCurrentItem().catch(() => {}) })
 
   await loadList()
   await nextTick()
@@ -535,7 +536,9 @@ onMounted(async () => {
   document.addEventListener('keydown', handleKeydown)
 
   if (currentIndex.value >= 0 && currentItem.value) {
+    seekValue.value = currentTime.value
     scrollToCurrentItem()
+    if (lyrics.value?.length && currentLyricIndex.value >= 0) scrollLyrics()
     return
   }
 
@@ -555,6 +558,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   cleanup()
   setOnLyricChange(null)
+  setOnPlayIndex(null)
 
   document.removeEventListener('keydown', handleKeydown)
 })

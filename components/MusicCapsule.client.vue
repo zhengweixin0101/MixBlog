@@ -119,21 +119,21 @@ const currentLyricText = computed(() => {
 
 const measureText = computed(() => isPlaying.value ? currentLyricText.value : currentItem.value?.title || '')
 
-const capsuleWidth = ref(20)
+const capsuleWidth = ref(45)
 
 function measureWidth() {
   nextTick(() => {
     const el = measureEl.value
     if (!el) {
-      capsuleWidth.value = 20
+      capsuleWidth.value = 45
       return
     }
     const textW = el.getBoundingClientRect().width
-    capsuleWidth.value = Math.max(20, Math.ceil(6 + 32 + 8 + textW + 15))
+    capsuleWidth.value = Math.max(45, Math.ceil(6 + 32 + 8 + textW + 15))
   })
 }
 
-watch([isPlaying, currentLyricText, currentItem], () => {
+watch([isPlaying, currentLyricText, currentItem, lyrics], () => {
   if (!isMobile.value) measureWidth()
 }, { immediate: true })
 
@@ -165,6 +165,7 @@ watch([isPlaying, isMobile], ([playing, mobile]) => {
 onMounted(() => {
   checkMobile()
   window.addEventListener('resize', checkMobile)
+  nextTick(() => { measureWidth() })
 })
 
 onBeforeUnmount(() => {

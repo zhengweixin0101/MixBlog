@@ -209,6 +209,8 @@ function onEnded() {
   next(true)
 }
 
+let _onPlayIndex = null
+
 function attachPermanentListeners() {
   const audioEl = getAudio()
   if (!audioEl || _permanentListenersAttached) return
@@ -270,6 +272,7 @@ async function playIndex(i, forcePlay = false) {
 
   await loadSong(item, audioEl)
   audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
+  if (_onPlayIndex) _onPlayIndex()
 }
 
 function togglePlay() {
@@ -402,5 +405,6 @@ export function useMusicPlayer() {
     getAudio,
     attachPermanentListeners,
     setOnLyricChange(fn) { _onLyricChange = fn },
+    setOnPlayIndex(fn) { _onPlayIndex = fn },
   }
 }
