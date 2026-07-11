@@ -244,8 +244,14 @@ async function loadSong(item, audioEl) {
   isLoadingSong.value = true
   try {
     await loadLyrics(item)
-    currentLyricIndex.value = -1
-    currentLyricIndices.value = []
+    if (groupedLyrics.value.length) {
+      currentLyricIndex.value = 0
+      currentLyricIndices.value = groupedLyrics.value[0].indices
+      if (_onLyricChange) _onLyricChange()
+    } else {
+      currentLyricIndex.value = -1
+      currentLyricIndices.value = []
+    }
   } catch {
     lyrics.value = []
   } finally {
