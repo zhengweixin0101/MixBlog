@@ -340,7 +340,7 @@ const {
   list, isLoadingList, error, currentIndex, currentItem,
   isPlaying, isLoadingSong, duration, currentTime,
   lyrics, groupedLyrics, currentLyricIndex, currentLyricIndices,
-  playMode, muted, shuffleList, shuffleIndex,
+  playMode, muted, shuffleList, shuffleIndex, pausedOnMusicPage,
   loadList, ensureInfo, loadLyrics, buildGroupedLyrics,
   playIndex: sharedPlayIndex, togglePlay: sharedTogglePlay,
   prev: sharedPrev, next: sharedNext, togglePlayMode: sharedTogglePlayMode,
@@ -365,7 +365,10 @@ async function playIndex(i, forcePlay = false, shouldScroll = true) {
   }
 }
 
-function togglePlay() { sharedTogglePlay() }
+function togglePlay() {
+  sharedTogglePlay()
+  pausedOnMusicPage.value = !isPlaying.value
+}
 function prev() { sharedPrev() }
 function next() { sharedNext(false) }
 function togglePlayMode() { sharedTogglePlayMode() }

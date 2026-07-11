@@ -6,7 +6,7 @@ import { useNotification } from '~/composables/useNotification'
 import { useMusicPlayer } from '~/composables/useMusicPlayer'
 
 const notification = useNotification()
-const { isPlaying: musicIsPlaying, togglePlay: musicTogglePlay, prev: musicPrev, next: musicNext, closeCapsule, currentItem: musicCurrentItem, playIndex: musicPlayIndex, list: musicList, loadList: musicLoadList } = useMusicPlayer()
+const { isPlaying: musicIsPlaying, togglePlay: musicTogglePlay, prev: musicPrev, next: musicNext, closeCapsule, currentItem: musicCurrentItem, playIndex: musicPlayIndex, list: musicList, loadList: musicLoadList, pausedOnMusicPage } = useMusicPlayer()
 
 const visible = ref(false)
 const x = ref(0)
@@ -114,7 +114,10 @@ const playMusic = async () => {
   if (!musicList.value?.length) {
     await musicLoadList()
   }
-  if (musicList.value?.length) {
+  if (musicCurrentItem.value) {
+    musicTogglePlay()
+    pausedOnMusicPage.value = false
+  } else if (musicList.value?.length) {
     musicPlayIndex(0)
   }
   hideMenu()
@@ -363,7 +366,7 @@ onBeforeUnmount(() => {
         <span @click="shufflePost" class="rightMenu-item-2">
           <i class="iconfont icon-shuffle text-lg mr-2"></i>随便逛逛
         </span>
-        <span v-if="!isMusicPage && !musicCurrentItem" @click="playMusic" class="rightMenu-item-2">
+        <span v-if="!isMusicPage && (!musicCurrentItem || pausedOnMusicPage)" @click="playMusic" class="rightMenu-item-2">
           <i class="iconfont icon-play text-md mr-2"></i>播放音乐
         </span>
       </div>

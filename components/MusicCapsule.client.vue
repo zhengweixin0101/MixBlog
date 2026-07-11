@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="currentItem && !isMusicPage"
+    v-if="currentItem && !isMusicPage && !pausedOnMusicPage"
     v-show="!isMobile"
     class="music-capsule fixed bottom-5 left-5 z-40
            bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-md
@@ -88,7 +88,7 @@ const route = useRoute()
 
 const {
   currentItem, isPlaying, lyrics, currentLyricIndex, currentTime, duration,
-  togglePlay,
+  togglePlay, pausedOnMusicPage,
 } = useMusicPlayer()
 
 const isMusicPage = computed(() => route.path === '/music')
@@ -105,9 +105,14 @@ function checkMobile() {
   isMobile.value = window.innerWidth < 768
 }
 
+let musicPlayTimer = null
+
 watch([isMobile, isMusicPage], ([mobile, musicPage]) => {
   if (mobile && !musicPage && isPlaying.value) togglePlay()
-  if (mobile && musicPage && !isPlaying.value && currentItem.value) togglePlay()
+  if (musicPage && !isPlaying.value && currentItem.value) {
+    clearTimeout(musicPlayTimer)
+    musicPlayTimer = setTimeout(() => togglePlay(), 1000)
+  }
 })
 
 const currentLyricText = computed(() => {
@@ -170,6 +175,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   if (rafId) cancelAnimationFrame(rafId)
+  clearTimeout(musicPlayTimer)
   window.removeEventListener('resize', checkMobile)
 })
 

@@ -72,6 +72,7 @@ const playMode = ref('loop')
 const muted = ref(false)
 const shuffleList = ref([])
 const shuffleIndex = ref(0)
+const pausedOnMusicPage = ref(false)
 
 let currentCoverBlobUrl = null
 let _audio = null
@@ -407,6 +408,7 @@ export function useMusicPlayer() {
     muted,
     shuffleList,
     shuffleIndex,
+    pausedOnMusicPage,
     loadList,
     ensureInfo,
     loadLyrics,
