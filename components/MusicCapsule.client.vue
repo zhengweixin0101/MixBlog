@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="currentItem && !isMusicPage && !pausedOnMusicPage"
+    v-if="shouldShowCapsule"
     v-show="!isMobile"
     class="music-capsule fixed bottom-5 left-5 z-40
            bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-md
@@ -92,6 +92,7 @@ const {
 } = useMusicPlayer()
 
 const isMusicPage = computed(() => route.path === '/music')
+const shouldShowCapsule = computed(() => !!currentItem.value && !isMusicPage.value && !pausedOnMusicPage.value)
 const isMobile = ref(false)
 const hovered = ref(false)
 const measureEl = ref(null)
@@ -144,6 +145,10 @@ function measureWidth() {
 watch([isPlaying, currentLyricText, currentItem, lyrics], () => {
   if (!isMobile.value) measureWidth()
 }, { immediate: true })
+
+watch(shouldShowCapsule, (visible) => {
+  if (visible && !isMobile.value) measureWidth()
+})
 
 const rotation = ref(0)
 let rafId = null
