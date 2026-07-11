@@ -3,7 +3,6 @@
     <div
       v-if="visible && currentItem"
       class="fixed inset-0 z-[9998] flex overflow-hidden select-none 2xl:px-80"
-      @keydown.esc="close"
       tabindex="0"
       ref="containerEl"
     >
@@ -169,26 +168,18 @@ watch(visible, (val) => {
 
 function handleKeydown(e) {
   if (!visible.value) return
-  if (e.code === 'Escape') { e.preventDefault(); close(); return }
+  if (e.code === 'F11') { close(); return }
   if (e.code === 'Space') { e.preventDefault(); togglePlay(); return }
   if (e.code === 'ArrowLeft') { e.preventDefault(); prev(); return }
   if (e.code === 'ArrowRight') { e.preventDefault(); next(); return }
 }
 
-function handleFullscreenChange() {
-  if (!document.fullscreenElement && visible.value) {
-    close()
-  }
-}
-
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
-  document.addEventListener('fullscreenchange', handleFullscreenChange)
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleKeydown)
-  document.removeEventListener('fullscreenchange', handleFullscreenChange)
   if (scrollTimer) cancelAnimationFrame(scrollTimer)
 })
 </script>

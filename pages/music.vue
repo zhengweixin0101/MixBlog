@@ -435,6 +435,14 @@ function toggleFullscreen() {
   hideHeader.value = isFullscreen.value
 }
 
+function handleFullscreenChange() {
+  if (document.fullscreenElement) {
+    if (!isFullscreen.value) { isFullscreen.value = true; hideHeader.value = true }
+  } else {
+    if (isFullscreen.value) { isFullscreen.value = false; hideHeader.value = false }
+  }
+}
+
 function onSeekInput() { currentTime.value = seekValue.value }
 function onSeekChange() { sharedSeek(seekValue.value) }
 
@@ -523,7 +531,9 @@ async function scrollToCurrentItem() {
 }
 
 function handleKeydown(e) {
+  if (isFullscreen.value) return
   if (e.ctrlKey || e.altKey || e.metaKey) return
+  if (e.code === 'F11') { e.preventDefault(); toggleFullscreen(); return }
   if (e.code === 'Space') { e.preventDefault(); togglePlay(); return }
   if (e.code === 'ArrowLeft') { e.preventDefault(); prev(); return }
   if (e.code === 'ArrowRight') { e.preventDefault(); next(); return }
@@ -545,6 +555,7 @@ onMounted(async () => {
   if (!audioEl) return
 
   document.addEventListener('keydown', handleKeydown)
+  document.addEventListener('fullscreenchange', handleFullscreenChange)
 
   if (currentIndex.value >= 0 && currentItem.value) {
     seekValue.value = currentTime.value
@@ -572,6 +583,7 @@ onBeforeUnmount(() => {
   setOnPlayIndex(null)
 
   document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('fullscreenchange', handleFullscreenChange)
 })
 </script>
 
