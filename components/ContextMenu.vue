@@ -6,7 +6,7 @@ import { useNotification } from '~/composables/useNotification'
 import { useMusicPlayer } from '~/composables/useMusicPlayer'
 
 const notification = useNotification()
-const { isPlaying: musicIsPlaying, togglePlay: musicTogglePlay, prev: musicPrev, next: musicNext } = useMusicPlayer()
+const { isPlaying: musicIsPlaying, togglePlay: musicTogglePlay, prev: musicPrev, next: musicNext, closeCapsule } = useMusicPlayer()
 
 const visible = ref(false)
 const x = ref(0)
@@ -117,6 +117,7 @@ const goMusicFullscreen = () => {
   hideHeader.value = true
   hideMenu()
 }
+const closeMusicCapsule = () => { closeCapsule(); hideMenu() }
 
 const shufflePost = async () => {
   NProgress.start()
@@ -439,6 +440,7 @@ onBeforeUnmount(() => {
       <div class="flex flex-col p-1">
         <span @click="goMusicPage" class="rightMenu-item-2"><i class="iconfont icon-tiaozhuan text-md mr-2"></i>查看详情</span>
         <span @click="goMusicFullscreen" class="rightMenu-item-2"><i class="iconfont icon-bg-fullscreen text-md mr-2"></i>全屏播放</span>
+        <span @click="closeMusicCapsule" class="rightMenu-item-2"><i class="iconfont icon-close text-sm mr-2"></i>关闭胶囊</span>
       </div>
     </template>
   </div>

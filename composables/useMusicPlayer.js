@@ -367,6 +367,23 @@ function downloadMusic() {
   notification.show('已尝试下载，请注意查看！')
 }
 
+function closeCapsule() {
+  const audioEl = getAudio()
+  if (audioEl) {
+    audioEl.pause()
+    audioEl.src = ''
+    isPlaying.value = false
+  }
+  currentItem.value = null
+  currentIndex.value = -1
+  currentTime.value = 0
+  duration.value = 0
+  lyrics.value = []
+  groupedLyrics.value = []
+  currentLyricIndex.value = -1
+  currentLyricIndices.value = []
+}
+
 function cleanup() {
   detachPageListeners()
 }
@@ -402,6 +419,7 @@ export function useMusicPlayer() {
     toggleMute,
     seek,
     downloadMusic,
+    closeCapsule,
     cleanup,
     getAudio,
     attachPermanentListeners,
