@@ -17,6 +17,7 @@
     <ContextMenu />
     <GlobalNotification />
     <MusicCapsule />
+    <MusicFullscreen />
   </div>
   <Background />
 </template>

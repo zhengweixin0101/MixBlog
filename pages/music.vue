@@ -319,111 +319,6 @@
     </transition>
   </div>
 
-  <!-- 全屏模式 -->
-  <div v-if="isFullscreen" class="fixed inset-0 flex overflow-hidden select-none 2xl:px-80">
-    <!-- 背景 -->
-    <div class="absolute inset-0">
-      <img
-        v-if="currentItem?.coverBlobUrl"
-        :src="currentItem.coverBlobUrl"
-        class="absolute inset-0 w-full h-full object-cover blur-[20px] scale-105 fade-in-image"
-        alt=""
-        loading="lazy"
-        draggable="false"
-        onload="this.classList.add('onload-fade')"
-      />
-      <div class="absolute inset-0 bg-black/75"></div>
-    </div>
-
-    <div class="relative z-10 w-2/5 flex flex-col items-center justify-center p-6 gap-6 text-center text-white">
-      <!-- 封面 -->
-      <div class="cover-wrap w-50 h-50 lg:w-60 lg:h-60 2xl:w-78 2xl:h-78 rounded-full overflow-hidden shadow-2xl shadow-[0_0_40px_rgba(255,255,255,0.25)] flex items-center justify-center">
-        <!-- 加载中骨架 -->
-        <div v-if="isLoadingSong" class="w-full h-full rounded-full bg-white/10 shimmer"></div>
-        <!-- 正常封面 -->
-        <img
-          v-else-if="currentItem?.coverBlobUrl"
-          :src="currentItem.coverBlobUrl"
-          :alt="currentItem.title || 'cover'"
-          class="w-full h-full object-cover animate-spin fade-in-image"
-          :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '35s' }"
-          loading="lazy"
-          draggable="false"
-          onload="this.classList.add('onload-fade')"
-        />
-        <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
-          无封面
-        </div>
-      </div>
-
-      <!-- 歌曲信息 -->
-      <div class="text-center">
-        <template v-if="isLoadingSong">
-          <div class="w-48 h-8 rounded bg-white/10 shimmer mx-auto"></div>
-          <div class="w-32 h-6 rounded bg-white/10 shimmer mx-auto mt-2"></div>
-        </template>
-        <template v-else>
-          <div class="text-3xl 2xl:text-4xl font-bold truncate">{{ currentItem?.title }}</div>
-          <div class="text-md 2xl:text-xl opacity-80 truncate mt-1">
-            {{ currentItem?.artist }}
-          </div>
-        </template>
-      </div>
-
-      <!-- 播放控件 -->
-      <div class="flex items-center gap-6 mt-4">
-        <button @click="prev" :disabled="!list?.length" class="text-white hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-color">
-          <i class="text-5 iconfont icon-backward"></i>
-        </button>
-
-        <button @click="togglePlay" :disabled="!list?.length" class="text-white hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-color">
-          <i class="text-5 iconfont" :class="isPlaying ? 'icon-pause' : 'icon-play'"></i>
-        </button>
-
-        <button @click="next" :disabled="!list?.length" class="text-white hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-color">
-          <i class="text-5 iconfont icon-forward"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- 歌词 -->
-    <div
-      class="lyrics flex-1 overflow-y-auto py-78 text-center"
-      ref="lyricsEl"
-      tabindex="-1"
-    >
-      <div v-if="isLoadingSong && !lyrics?.length" class="mt-20 space-y-3 flex flex-col items-center">
-        <div v-for="n in 8" :key="n" class="w-64 h-5 rounded shimmer"
-          :class="n === 1 ? 'w-48' : n === 4 ? 'w-56' : 'w-64'"
-          :style="{ background: `linear-gradient(90deg, rgba(255,255,255,.08) 25%, rgba(255,255,255,.18) 50%, rgba(255,255,255,.08) 75%)`, backgroundSize: '200% 100%' }"></div>
-      </div>
-      <div v-else-if="!currentItem" class="mt-20">请选择歌曲播放</div>
-      <div v-else-if="!lyrics?.length" class="mt-20">暂无歌词</div>
-      <div v-else class="space-y-5">
-        <div
-          v-for="(line, i) in lyrics"
-          :key="i"
-          :class="[ 
-            'lyric-line text-5 lg:text-6 2xl:text-7 transition-all duration-300',
-            currentLyricIndices.includes(i)
-              ? 'current text-gradient font-semibold scale-130'
-              : 'text-white'
-          ]"
-          :style="currentLyricIndices.includes(i) ? { filter: 'none' } : { filter: 'blur(1.5px)' }"
-        >
-          <template v-if="Array.isArray(line.text)">
-            <div v-for="(text, textIndex) in line.text" :key="textIndex" class="py-1">
-              {{ text }}
-            </div>
-          </template>
-          <template v-else>
-            {{ line.text }}
-          </template>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </template>
 
 <script setup>
@@ -453,7 +348,7 @@ const {
 const seekValue = ref(0)
 const lyricsEl = ref(null)
 const listEl = ref(null)
-const isFullscreen = ref(false)
+const isFullscreen = useState('showMusicFullscreen', () => false)
 const mobileListOpen = ref(false)
 const mobileListEl = ref(null)
 
@@ -521,38 +416,10 @@ watch(currentIndex, async () => {
 
 const hideHeader = useState('hideHeader', () => false)
 
-async function toggleFullscreen() {
-  if (!isFullscreen.value) {
-    await document.documentElement.requestFullscreen()
-    hideHeader.value = true
-    isFullscreen.value = true
-    if (lyrics.value?.length && currentLyricIndex.value >= 0) {
-      await nextTick()
-      scrollLyrics()
-    }
-  } else {
-    await document.exitFullscreen()
-    hideHeader.value = false
-    isFullscreen.value = false
-    if (lyrics.value?.length && currentLyricIndex.value >= 0) {
-      await nextTick()
-      scrollLyrics()
-    }
-  }
+function toggleFullscreen() {
+  isFullscreen.value = !isFullscreen.value
+  hideHeader.value = isFullscreen.value
 }
-
-function handleFullscreenChange() {
-  if (!document.fullscreenElement) {
-    hideHeader.value = false
-    isFullscreen.value = false
-  }
-}
-
-watch(isFullscreen, async (val) => {
-  await nextTick()
-  if (!val && list.value?.length) scrollToCurrentItem()
-  if (lyrics.value?.length && currentLyricIndex.value >= 0) scrollLyrics()
-})
 
 function onSeekInput() { currentTime.value = seekValue.value }
 function onSeekChange() { sharedSeek(seekValue.value) }
@@ -643,25 +510,11 @@ async function scrollToCurrentItem() {
 
 function handleKeydown(e) {
   if (e.ctrlKey || e.altKey || e.metaKey) return
-  if (e.code === 'Escape' && isFullscreen.value) {
-    e.preventDefault()
-    toggleFullscreen().catch(() => {})
-    return
-  }
   if (e.code === 'Space') { e.preventDefault(); togglePlay(); return }
   if (e.code === 'ArrowLeft') { e.preventDefault(); seekBackward(); return }
   if (e.code === 'ArrowRight') { e.preventDefault(); seekForward(); return }
   if (e.code === 'ArrowUp') { e.preventDefault(); prev(); return }
   if (e.code === 'ArrowDown') { e.preventDefault(); next(); return }
-}
-
-function handleKeyup(e) {
-  if (e.code === 'Escape' && !isFullscreen.value) {
-    e.preventDefault()
-    setTimeout(() => {
-      if (!isFullscreen.value) toggleFullscreen().catch(() => {})
-    }, 50)
-  }
 }
 
 function onLyricsWheel(e) { e.preventDefault() }
@@ -687,9 +540,7 @@ onMounted(async () => {
     lyricsElement.addEventListener('keydown', onLyricsKeydown)
   }
 
-  document.addEventListener('fullscreenchange', handleFullscreenChange)
   document.addEventListener('keydown', handleKeydown)
-  document.addEventListener('keyup', handleKeyup)
 
   if (currentIndex.value >= 0 && currentItem.value) {
     scrollToCurrentItem()
@@ -720,9 +571,7 @@ onBeforeUnmount(() => {
     lyricsElement.removeEventListener('keydown', onLyricsKeydown)
   }
 
-  document.removeEventListener('fullscreenchange', handleFullscreenChange)
   document.removeEventListener('keydown', handleKeydown)
-  document.removeEventListener('keyup', handleKeyup)
 })
 </script>
 

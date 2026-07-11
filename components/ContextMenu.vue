@@ -3,8 +3,10 @@ import { ref, onMounted, onBeforeUnmount, nextTick, useRouter, useRoute, useColo
 import NProgress from 'nprogress'
 import { siteConfig } from '@/siteConfig/main.js'
 import { useNotification } from '~/composables/useNotification'
+import { useMusicPlayer } from '~/composables/useMusicPlayer'
 
 const notification = useNotification()
+const { isPlaying: musicIsPlaying, togglePlay: musicTogglePlay, prev: musicPrev, next: musicNext } = useMusicPlayer()
 
 const visible = ref(false)
 const x = ref(0)
@@ -62,6 +64,10 @@ const showMenu = async (event) => {
     menuType.value = 'link'
     targetElement.value = el.closest('a')
   }
+  else if (el.closest('[data-music-capsule]')) {
+    menuType.value = 'music'
+    targetElement.value = el
+  }
   else {
     menuType.value = 'default'
     targetElement.value = el
@@ -101,6 +107,16 @@ const goForward = () => { window.history.forward(); hideMenu() }
 const refreshPage = () => { window.location.reload(); hideMenu() }
 const scrollToTop = () => { window.scrollTo({ top: 0, behavior: 'smooth' }); hideMenu() }
 const goHome = () => { router.push('/'); hideMenu() }
+
+// 音乐菜单功能
+const goMusicPage = () => { router.push('/music'); hideMenu() }
+const goMusicFullscreen = () => {
+  const showMusicFullscreen = useState('showMusicFullscreen')
+  showMusicFullscreen.value = true
+  const hideHeader = useState('hideHeader')
+  hideHeader.value = true
+  hideMenu()
+}
 
 const shufflePost = async () => {
   NProgress.start()
@@ -406,6 +422,23 @@ onBeforeUnmount(() => {
         <span @click="copyText" class="rightMenu-item-2"><i class="iconfont icon-copy text-lg mr-2"></i>复制</span>
         <span @click="search" class="rightMenu-item-2"><i class="iconfont icon-search text-lg mr-2"></i>必应搜索</span>
         <span @click="quoteToTwikoo" class="rightMenu-item-2"><i class="iconfont icon-comment-medical1 text-lg mr-2"></i>引用到评论</span>
+      </div>
+    </template>
+
+    <!-- 音乐胶囊 -->
+    <template v-else-if="menuType === 'music'">
+      <div class="flex flex-col p-1">
+        <span @click="musicTogglePlay" class="rightMenu-item-2">
+          <i :class="musicIsPlaying ? 'iconfont icon-pause text-md mr-2' : 'iconfont icon-play text-md mr-2'"></i>
+          {{ musicIsPlaying ? '暂停音乐' : '播放音乐' }}
+        </span>
+        <span @click="musicPrev" class="rightMenu-item-2"><i class="iconfont icon-backward text-md mr-2"></i>上一首</span>
+        <span @click="musicNext" class="rightMenu-item-2"><i class="iconfont icon-forward text-md mr-2"></i>下一首</span>
+      </div>
+      <div class="border border-dashed border-gray-300 dark:border-white/20 m-1"></div>
+      <div class="flex flex-col p-1">
+        <span @click="goMusicPage" class="rightMenu-item-2"><i class="iconfont icon-tiaozhuan text-md mr-2"></i>查看详情</span>
+        <span @click="goMusicFullscreen" class="rightMenu-item-2"><i class="iconfont icon-bg-fullscreen text-md mr-2"></i>全屏播放</span>
       </div>
     </template>
   </div>

@@ -7,12 +7,14 @@
            shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]
            cursor-pointer select-none rounded-full h-[44px]
            transition-[width] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+    data-music-capsule
     :style="{ width: capsuleWidth + 'px' }"
     @click="togglePlayAction"
+    @contextmenu.prevent
     @mouseenter="hovered = true"
     @mouseleave="hovered = false"
   >
-    <!-- 内容区（overflow-hidden 裁切文字） -->
+    <!-- 内容区 -->
     <div class="relative w-full h-full overflow-hidden rounded-full">
       <div class="flex items-center h-full px-[6px] gap-2">
         <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 shadow-sm relative z-[1]">
@@ -63,7 +65,7 @@
 
     <transition name="overlay-fade">
       <div
-        v-if="hovered"
+        v-if="hovered && !menuVisible"
         class="absolute inset-0 rounded-full flex items-center justify-center z-10
                bg-white/60 dark:bg-black/50 backdrop-blur-sm"
       >
@@ -117,17 +119,17 @@ const currentLyricText = computed(() => {
 
 const measureText = computed(() => isPlaying.value ? currentLyricText.value : currentItem.value?.title || '')
 
-const capsuleWidth = ref(120)
+const capsuleWidth = ref(20)
 
 function measureWidth() {
   nextTick(() => {
     const el = measureEl.value
     if (!el) {
-      capsuleWidth.value = 120
+      capsuleWidth.value = 20
       return
     }
     const textW = el.getBoundingClientRect().width
-    capsuleWidth.value = Math.max(120, Math.ceil(6 + 32 + 8 + textW + 10))
+    capsuleWidth.value = Math.max(20, Math.ceil(6 + 32 + 8 + textW + 15))
   })
 }
 
