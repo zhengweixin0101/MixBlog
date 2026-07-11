@@ -111,7 +111,10 @@ watch([isMobile, isMusicPage], ([mobile, musicPage]) => {
   clearTimeout(musicPlayTimer)
   if (mobile && !musicPage && isPlaying.value) togglePlay()
   if (musicPage && !isPlaying.value && currentItem.value) {
-    musicPlayTimer = setTimeout(() => togglePlay(), 1000)
+    musicPlayTimer = setTimeout(() => {
+      togglePlay()
+      pausedOnMusicPage.value = false
+    }, 1000)
   }
 })
 
