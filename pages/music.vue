@@ -163,6 +163,9 @@
             v-model.number="seekValue"
             @input="onSeekInput"
             @change="onSeekChange"
+            @pointerdown="isSeeking = true"
+            @pointerup="isSeeking = false"
+            @pointerleave="isSeeking = false"
             :style="{ background: `linear-gradient(to right, #00e699 0%, #00e699 ${duration ? (seekValue/duration*100) : 0}%, #D9D9D9 ${duration ? (seekValue/duration*100) : 0}%, #D9D9D9 100%)` }"
           />
           <span class="text-xs w-10">{{ formatTime(duration) }}</span>
@@ -234,6 +237,9 @@
             v-model.number="seekValue"
             @input="onSeekInput"
             @change="onSeekChange"
+            @pointerdown="isSeeking = true"
+            @pointerup="isSeeking = false"
+            @pointerleave="isSeeking = false"
             :style="{ background: `linear-gradient(to right, #00e699 0%, #00e699 ${seekValue/duration*100}%, #D9D9D9 ${seekValue/duration*100}%, #D9D9D9 100%)` }"
           />
           <span class="text-xs w-10">{{ formatTime(duration) }}</span>
@@ -349,15 +355,17 @@ const {
 } = useMusicPlayer()
 
 const seekValue = ref(0)
+const isSeeking = ref(false)
 const lyricsEl = ref(null)
 const listEl = ref(null)
 const isFullscreen = useState('showMusicFullscreen', () => false)
 const mobileListOpen = ref(false)
 const mobileListEl = ref(null)
 
-watch(currentTime, (v) => { seekValue.value = v })
+watch(currentTime, (v) => { if (!isSeeking.value) seekValue.value = v })
 
 async function playIndex(i, forcePlay = false, shouldScroll = true) {
+  seekValue.value = 0
   await sharedPlayIndex(i, forcePlay)
   if (shouldScroll) {
     scrollToCurrentItem()
