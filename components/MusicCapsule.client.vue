@@ -108,9 +108,9 @@ function checkMobile() {
 let musicPlayTimer = null
 
 watch([isMobile, isMusicPage], ([mobile, musicPage]) => {
+  clearTimeout(musicPlayTimer)
   if (mobile && !musicPage && isPlaying.value) togglePlay()
   if (musicPage && !isPlaying.value && currentItem.value) {
-    clearTimeout(musicPlayTimer)
     musicPlayTimer = setTimeout(() => togglePlay(), 1000)
   }
 })
