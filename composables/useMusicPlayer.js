@@ -231,6 +231,25 @@ function detachPageListeners() {
   audioEl.removeEventListener('loadedmetadata', onLoadedMetadata)
 }
 
+async function loadSong(item, audioEl) {
+  currentIndex.value = list.value.indexOf(item)
+  currentItem.value = item
+  lyrics.value = []
+  audioEl.src = item.musicFull
+  currentTime.value = 0
+  currentLyricIndex.value = -1
+  currentLyricIndices.value = []
+  isLoadingSong.value = true
+  loadLyrics(item).then(() => {
+    currentLyricIndex.value = -1
+    currentLyricIndices.value = []
+    isLoadingSong.value = false
+  }).catch(() => {
+    lyrics.value = []
+    isLoadingSong.value = false
+  })
+}
+
 async function playIndex(i, forcePlay = false) {
   const audioEl = getAudio()
   if (!audioEl) return
@@ -245,23 +264,8 @@ async function playIndex(i, forcePlay = false) {
 
   if (currentIndex.value === i && !forcePlay) {
     if (playMode.value === 'single') {
-      currentIndex.value = i
-      currentItem.value = item
-      audioEl.src = item.musicFull
-      isLoadingSong.value = true
-      lyrics.value = []
-      currentTime.value = 0
-      currentLyricIndex.value = -1
-      currentLyricIndices.value = []
-      loadLyrics(item).then(() => {
-        currentLyricIndex.value = -1
-        currentLyricIndices.value = []
-        isLoadingSong.value = false
-      }).catch(() => {
-        lyrics.value = []
-        isLoadingSong.value = false
-      })
-      audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
+      if (audioEl.paused) audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
+      else { audioEl.pause(); isPlaying.value = false }
     } else {
       if (audioEl.paused) audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
       else { audioEl.pause(); isPlaying.value = false }
@@ -269,23 +273,7 @@ async function playIndex(i, forcePlay = false) {
     return
   }
 
-  isLoadingSong.value = true
-  currentIndex.value = i
-  currentItem.value = item
-  lyrics.value = []
-  audioEl.src = item.musicFull
-  currentTime.value = 0
-  currentLyricIndex.value = -1
-  currentLyricIndices.value = []
-
-  loadLyrics(item).then(() => {
-    currentLyricIndex.value = -1
-    currentLyricIndices.value = []
-    isLoadingSong.value = false
-  }).catch(() => {
-    lyrics.value = []
-    isLoadingSong.value = false
-  })
+  await loadSong(item, audioEl)
   audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
 }
 
@@ -366,6 +354,7 @@ function seek(time) {
 }
 
 function downloadMusic() {
+  if (typeof document === 'undefined') return
   const notification = useNotification()
   const item = currentItem.value
   if (!item?.musicFull) return

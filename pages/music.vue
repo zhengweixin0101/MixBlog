@@ -97,6 +97,9 @@
           class="lyrics flex-1 overflow-y-auto p-6 text-center"
           ref="lyricsEl"
           tabindex="-1"
+          @wheel.prevent
+          @touchmove.prevent
+          @keydown.prevent
         >
           <!-- 歌词加载中 -->
           <div v-if="isLoadingList" class="mt-20 space-y-2 flex flex-col items-center">
@@ -511,15 +514,11 @@ async function scrollToCurrentItem() {
 function handleKeydown(e) {
   if (e.ctrlKey || e.altKey || e.metaKey) return
   if (e.code === 'Space') { e.preventDefault(); togglePlay(); return }
-  if (e.code === 'ArrowLeft') { e.preventDefault(); seekBackward(); return }
-  if (e.code === 'ArrowRight') { e.preventDefault(); seekForward(); return }
-  if (e.code === 'ArrowUp') { e.preventDefault(); prev(); return }
-  if (e.code === 'ArrowDown') { e.preventDefault(); next(); return }
+  if (e.code === 'ArrowLeft') { e.preventDefault(); prev(); return }
+  if (e.code === 'ArrowRight') { e.preventDefault(); next(); return }
+  if (e.code === 'ArrowUp') { e.preventDefault(); seekBackward(); return }
+  if (e.code === 'ArrowDown') { e.preventDefault(); seekForward(); return }
 }
-
-function onLyricsWheel(e) { e.preventDefault() }
-function onLyricsTouchmove(e) { e.preventDefault() }
-function onLyricsKeydown(e) { e.preventDefault() }
 
 onMounted(async () => {
   attachPermanentListeners()
@@ -532,13 +531,6 @@ onMounted(async () => {
 
   const audioEl = getAudio()
   if (!audioEl) return
-
-  const lyricsElement = lyricsEl.value
-  if (lyricsElement) {
-    lyricsElement.addEventListener('wheel', onLyricsWheel, { passive: false })
-    lyricsElement.addEventListener('touchmove', onLyricsTouchmove, { passive: false })
-    lyricsElement.addEventListener('keydown', onLyricsKeydown)
-  }
 
   document.addEventListener('keydown', handleKeydown)
 
@@ -563,13 +555,6 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   cleanup()
   setOnLyricChange(null)
-
-  const lyricsElement = lyricsEl.value
-  if (lyricsElement) {
-    lyricsElement.removeEventListener('wheel', onLyricsWheel)
-    lyricsElement.removeEventListener('touchmove', onLyricsTouchmove)
-    lyricsElement.removeEventListener('keydown', onLyricsKeydown)
-  }
 
   document.removeEventListener('keydown', handleKeydown)
 })
