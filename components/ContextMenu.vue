@@ -6,7 +6,7 @@ import { useNotification } from '~/composables/useNotification'
 import { useMusicPlayer } from '~/composables/useMusicPlayer'
 
 const notification = useNotification()
-const { isPlaying: musicIsPlaying, togglePlay: musicTogglePlay, prev: musicPrev, next: musicNext, closeCapsule } = useMusicPlayer()
+const { isPlaying: musicIsPlaying, togglePlay: musicTogglePlay, prev: musicPrev, next: musicNext, closeCapsule, currentItem: musicCurrentItem, playIndex: musicPlayIndex, list: musicList, loadList: musicLoadList } = useMusicPlayer()
 
 const visible = ref(false)
 const x = ref(0)
@@ -100,6 +100,7 @@ const hideMenu = () => {
 
 // 状态
 const isHome = computed(() => route.path === '/')
+const isMusicPage = computed(() => route.path === '/music')
 
 // 默认菜单功能
 const goBack = () => { window.history.back(); hideMenu() }
@@ -109,6 +110,15 @@ const scrollToTop = () => { window.scrollTo({ top: 0, behavior: 'smooth' }); hid
 const goHome = () => { router.push('/'); hideMenu() }
 
 // 音乐菜单功能
+const playMusic = async () => {
+  if (!musicList.value?.length) {
+    await musicLoadList()
+  }
+  if (musicList.value?.length) {
+    musicPlayIndex(0)
+  }
+  hideMenu()
+}
 const goMusicPage = () => { router.push('/music'); hideMenu() }
 const goMusicFullscreen = () => {
   const showMusicFullscreen = useState('showMusicFullscreen')
@@ -352,6 +362,9 @@ onBeforeUnmount(() => {
         </span>
         <span @click="shufflePost" class="rightMenu-item-2">
           <i class="iconfont icon-shuffle text-lg mr-2"></i>随便逛逛
+        </span>
+        <span v-if="!isMusicPage && !musicCurrentItem" @click="playMusic" class="rightMenu-item-2">
+          <i class="iconfont icon-play text-md mr-2"></i>播放音乐
         </span>
       </div>
       <div class="border border-dashed border-gray-300 dark:border-white/20 m-1"></div>
