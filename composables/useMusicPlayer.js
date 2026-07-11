@@ -263,13 +263,8 @@ async function playIndex(i, forcePlay = false) {
   attachPageListeners()
 
   if (currentIndex.value === i && !forcePlay) {
-    if (playMode.value === 'single') {
-      if (audioEl.paused) audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
-      else { audioEl.pause(); isPlaying.value = false }
-    } else {
-      if (audioEl.paused) audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
-      else { audioEl.pause(); isPlaying.value = false }
-    }
+    if (audioEl.paused) audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
+    else { audioEl.pause(); isPlaying.value = false }
     return
   }
 

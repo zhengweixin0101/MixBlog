@@ -65,7 +65,7 @@
 
     <transition name="overlay-fade">
       <div
-        v-if="hovered && !menuVisible"
+        v-if="hovered"
         class="absolute inset-0 rounded-full flex items-center justify-center z-10
                bg-white/60 dark:bg-black/50 backdrop-blur-sm"
       >
@@ -74,10 +74,10 @@
           : 'iconfont icon-play text-lg text-#2f3f5b dark:text-white ml-0.5'"></i>
       </div>
     </transition>
-  </div>
 
-  <div ref="measureEl" class="fixed -left-[9999px] top-0 whitespace-nowrap text-[15px] font-semibold pointer-events-none opacity-0">
-    {{ measureText }}
+    <div ref="measureEl" class="fixed -left-[9999px] top-0 whitespace-nowrap text-[15px] font-semibold pointer-events-none opacity-0">
+      {{ measureText }}
+    </div>
   </div>
 </template>
 
