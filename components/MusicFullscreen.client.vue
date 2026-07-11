@@ -174,12 +174,20 @@ function handleKeydown(e) {
   if (e.code === 'ArrowRight') { e.preventDefault(); next(); return }
 }
 
+function handleFullscreenChange() {
+  if (visible.value && !document.fullscreenElement) {
+    close()
+  }
+}
+
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
+  document.addEventListener('fullscreenchange', handleFullscreenChange)
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('fullscreenchange', handleFullscreenChange)
   if (scrollTimer) cancelAnimationFrame(scrollTimer)
 })
 </script>
