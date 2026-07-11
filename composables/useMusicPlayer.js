@@ -237,19 +237,20 @@ async function loadSong(item, audioEl) {
   currentIndex.value = list.value.indexOf(item)
   currentItem.value = item
   lyrics.value = []
-  audioEl.src = item.musicFull
   currentTime.value = 0
   currentLyricIndex.value = -1
   currentLyricIndices.value = []
   isLoadingSong.value = true
-  loadLyrics(item).then(() => {
+  try {
+    await loadLyrics(item)
     currentLyricIndex.value = -1
     currentLyricIndices.value = []
-    isLoadingSong.value = false
-  }).catch(() => {
+  } catch {
     lyrics.value = []
+  } finally {
     isLoadingSong.value = false
-  })
+  }
+  audioEl.src = item.musicFull
 }
 
 async function playIndex(i, forcePlay = false) {
