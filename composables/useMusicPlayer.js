@@ -235,6 +235,7 @@ function detachPageListeners() {
 }
 
 async function loadSong(item, audioEl) {
+  audioEl.pause()
   currentIndex.value = list.value.indexOf(item)
   currentItem.value = item
   lyrics.value = []
@@ -247,7 +248,6 @@ async function loadSong(item, audioEl) {
     if (groupedLyrics.value.length) {
       currentLyricIndex.value = 0
       currentLyricIndices.value = groupedLyrics.value[0].indices
-      if (_onLyricChange) _onLyricChange()
     } else {
       currentLyricIndex.value = -1
       currentLyricIndices.value = []
@@ -259,6 +259,7 @@ async function loadSong(item, audioEl) {
   }
   audioEl.src = item.musicFull
 }
+
 
 async function playIndex(i, forcePlay = false) {
   const audioEl = getAudio()
