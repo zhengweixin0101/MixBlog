@@ -40,25 +40,22 @@ const sectionLayouts = computed(() =>
           ></span>
         </span>
             </h1>
-            <p data-fade class="mt-2 text-#2f3f5b dark:text-gray-300 transition-colors duration-300">
-                朋友们、好工具和我部署的小玩意儿。
-            </p>
 
             <div
                 data-fade
                 v-for="sl in sectionLayouts"
                 :key="sl.section.title"
-                class="mt-12 first:mt-8"
+                class="mt-8"
             >
                 <h2
                     class="text-xl font-semibold text-#2f3f5b dark:text-white transition-colors duration-300"
                 >
-          <span class="relative inline-block">
-            {{ sl.section.title }}
-            <span
-                class="absolute inset-0 -z-10 bg-gradient-to-r from-#00e699/30 to-#00e2d8/30 dark:hidden transition-colors duration-300"
-            ></span>
-          </span>
+                    <span class="relative inline-block">
+                        {{ sl.section.title }}
+                        <span
+                            class="absolute inset-0 -z-10 bg-gradient-to-r from-#00e699/30 to-#00e2d8/30 dark:hidden transition-colors duration-300"
+                        ></span>
+                    </span>
                 </h2>
                 <p
                     v-if="sl.section.description"
