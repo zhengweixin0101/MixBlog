@@ -2,7 +2,7 @@
 import { ref, computed } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
 
-usePageMeta('Posts', `This is the posts list page of ${siteConfig.title}.`, '/posts', '文章列表,posts,list')
+usePageMeta('文章', `${siteConfig.description}`, '/posts', '文章,列表,posts,list')
 
 // 搜索和筛选相关状态
 const searchTerm = ref('')
@@ -48,7 +48,7 @@ const filteredPosts = computed(() => {
           class="relative inline-block transition-colors duration-300
                 text-#2f3f5b dark:text-gradient"
         >
-          Posts
+          文章
           <span
             class="absolute inset-0 -z-10
                   bg-gradient-to-r from-#00e699/50 to-#00e2d8/50
@@ -57,7 +57,7 @@ const filteredPosts = computed(() => {
         </span>
       </h1>
       <p data-fade class="mt-2 text-#2f3f5b dark:text-gray-300 transition-colors duration-300">
-        Articles about Some of My Whimsical Ideas.
+        一些奇思妙想的文章。
       </p>
 
       <div data-fade class="relative mt-6 sm:mt-8 w-full">
@@ -132,7 +132,7 @@ const filteredPosts = computed(() => {
       </ul>
 
       <div data-fade class="mt-8 flex flex-row items-center justify-end gap-4">
-        <BackLink to="/" text="← Back to Home" />
+        <BackLink to="/" text="← 返回首页" />
       </div>
     </section>
   </main>

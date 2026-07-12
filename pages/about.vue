@@ -7,8 +7,7 @@ import { siteConfig } from '@/siteConfig/main.js'
 
 const colorMode = useColorMode()
 
-const aboutDesc = `Hello! I'm ${aboutConfig.author.name}. This is my "About" page. I'm here to introduce myself. Nice to meet you!`
-usePageMeta('About', aboutDesc, '/about', `about,about me,自我介绍,个人简介,个人介绍,${aboutConfig.author.name}`)
+usePageMeta('关于', `${siteConfig.description}`, '/about', `about,about me,自我介绍,个人简介,个人介绍,${aboutConfig.author.name}`)
 
 // 标签位置
 function leftTagPosition(index) {

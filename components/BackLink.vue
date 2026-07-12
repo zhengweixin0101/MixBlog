@@ -15,7 +15,7 @@
 <script setup>
 defineProps({
   to: { type: String, default: '/' },
-  text: { type: String, default: '← Back to Home' },
+  text: { type: String, default: '← 返回首页' },
 })
 </script>
 

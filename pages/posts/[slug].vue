@@ -633,9 +633,9 @@ async function copyArticleLink() {
           </g>
         </svg>
       </div>
-      <h1 data-fade class="mt-8 text-3xl sm:text-5xl font-bold text-#2f3f5b dark:text-#CCC">Post not found.</h1>
+      <h1 data-fade class="mt-8 text-3xl sm:text-5xl font-bold text-#2f3f5b dark:text-#CCC">未找到文章!</h1>
       <div data-fade class="mt-10 flex flex-row items-center justify-center gap-4">
-        <BackLink to="/posts" text="← Back to List" />
+        <BackLink to="/posts" text="← 返回列表" />
       </div>
     </div>
 

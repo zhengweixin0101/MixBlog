@@ -4,7 +4,7 @@
       <!-- 标题 -->
       <h1 data-fade class="text-3xl mt-40">
         <span class="relative inline-block transition-colors duration-300 text-#2f3f5b dark:text-gradient">
-          Talks
+          说说
           <span
             class="absolute inset-0 -z-10
                   bg-gradient-to-r from-#00e699/50 to-#00e2d8/50
@@ -13,7 +13,7 @@
         </span>
       </h1>
       <p data-fade class="mt-2 text-#2f3f5b dark:text-gray-300 transition-colors duration-300">
-        Share my life anytime, anywhere.
+        随时随地，分享生活。
       </p>
 
       <!-- Masonry 容器 -->
@@ -118,7 +118,7 @@ import timezone from 'dayjs/plugin/timezone'
 import { Fancybox } from '@fancyapps/ui'
 import '@fancyapps/ui/dist/fancybox/fancybox.css'
 
-usePageMeta('说说', 'share my life.', '/talks', '说说,talks')
+usePageMeta('说说', `${siteConfig.description}`, '/talks', '说说,talks')
 
 // 格式化时间
 dayjs.extend(utc)

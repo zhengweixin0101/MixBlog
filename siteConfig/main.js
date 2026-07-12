@@ -1,8 +1,8 @@
 export const siteConfig = {
     apiUrl: 'https://blog.api.zhengweixin.top',
-    title: "ShinX's Blog",
-    description: "This is ShinX's blog, created by a student and a gamer.",
-    keywords: "ShinX,zhengweixin,blog,ShinX的个人主页,ShinX的个人网站,ShinX的博客",
+    title: "ShinX - 我的个人主页",
+    description: "Hi，欢迎访问本站！这是我的个人主页，我会在这里发布一些奇思妙想的文章。这里记录了我的学习、生活中的点点滴滴。",
+    keywords: "ShinX,zhengweixin,blog,ShinX的个人主页,ShinX的博客",
     url: "https://zhengweixin.top",
 
     icons: [
@@ -15,7 +15,7 @@ export const siteConfig = {
     author: {
         name: "ShinX",
         avatar: "https://cdn.zhengweixin.top/avatar.jpg",
-        description: "A 📕Student and 🎮Gamer",
+        description: "A 📕Student and 🎮Gamer.",
     },
 
     socialLinks: [
@@ -25,12 +25,12 @@ export const siteConfig = {
     ],
 
     navItems: [
-        { label: 'Home', href: '/', icon: 'icon-portalIndex' },
-        { label: 'Posts', href: '/posts', icon: 'icon-Pen' },
-        { label: 'Music', href: '/music', icon: 'icon-Music' },
-        { label: 'Apps', href: '/apps', icon: 'icon-app' },
-        { label: 'Talks', href: '/talks', icon: 'icon-wodeshuoshuo' },
-        { label: 'About', href: '/about', icon: 'icon-guanyu' },
+        { label: '主页', href: '/', icon: 'icon-portalIndex' },
+        { label: '文章', href: '/posts', icon: 'icon-Pen' },
+        { label: '音乐', href: '/music', icon: 'icon-Music' },
+        { label: '应用', href: '/apps', icon: 'icon-app' },
+        { label: '说说', href: '/talks', icon: 'icon-wodeshuoshuo' },
+        { label: '关于', href: '/about', icon: 'icon-guanyu' },
     ],
 
     donate: [

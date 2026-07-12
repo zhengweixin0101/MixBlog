@@ -20,9 +20,9 @@
           </g>
         </svg>
       </div>
-      <h1 data-fade class="mt-8 text-3xl sm:text-5xl font-bold text-#2f3f5b dark:text-#CCC">Page not found.</h1>
+      <h1 data-fade class="mt-8 text-3xl sm:text-5xl font-bold text-#2f3f5b dark:text-#CCC">未找到页面!</h1>
       <div data-fade class="mt-10 flex flex-row items-center justify-center gap-4">
-        <BackLink to="/" text="← Back to Home" />
+        <BackLink to="/" text="← 返回首页" />
       </div>
     </div>
   </section>
@@ -31,7 +31,7 @@
 <script setup>
 import { siteConfig } from '@/siteConfig/main.js'
 
-usePageMeta('Not Found', '该页面不存在或已被删除。', '', 'Not Found,404,不存在')
+usePageMeta('未找到', '该页面不存在或已被删除。', '', 'Not Found,404,不存在')
 </script>
 
 <style>

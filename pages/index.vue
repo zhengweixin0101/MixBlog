@@ -8,9 +8,9 @@ import { siteConfig } from '@/siteConfig/main.js'
       <!-- 左侧 -->
       <div class="text-center md:text-left">
         <p data-fade class="text-4xl sm:text-5xl font-bold">
-          Hi!<span id="wave-hand">👋</span>
+          Hello!<span id="wave-hand">👋</span>
         </p>
-        <h1 data-fade class="mt-2 text-5xl sm:text-6xl leading-tight break-words">
+        <h1 data-fade class="mt-4 text-5xl sm:text-6xl leading-tight break-words">
           I'm
           <span class="relative inline-block ml-2">
             <span class="text-#2f3f5b dark:text-gradient">
@@ -29,23 +29,23 @@ import { siteConfig } from '@/siteConfig/main.js'
         >
           {{ siteConfig.author.description }}
         </p>
-        <div data-fade class="flex flex-wrap gap-4 mt-10 justify-center md:justify-start">
+        <div data-fade class="flex flex-wrap gap-4 mt-8 justify-center md:justify-start">
           <NuxtLink
             to="/posts"
             class="inline-flex items-center justify-center
                    px-4 py-2 rounded border border-white
                    font-bold text-[#2f3f5b] dark:text-white transition-colors bg-transparent no-underline
-                   hover:scale-105 transition-transform transition-shadow duration-300
+                   hover:shadow-[0_0_10px_rgba(34,197,94,0.7)] transition-shadow duration-300
                    shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]"
           >
-            My Blog
+            My Posts
           </NuxtLink>
           <NuxtLink
             to="/about"
             class="inline-flex items-center justify-center
                    px-4 py-2 rounded border border-white
                    font-bold text-[#2f3f5b] dark:text-white transition-colors bg-transparent no-underline
-                   hover:scale-105 transition-transform transition-shadow duration-300
+                   hover:shadow-[0_0_10px_rgba(34,197,94,0.7)] transition-shadow duration-300
                    shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]"
           >
             About Me

@@ -335,7 +335,7 @@ import { siteConfig } from '../siteConfig/main'
 import { useNotification } from '~/composables/useNotification'
 const notification = useNotification()
 
-usePageMeta('Music', `This is the music page of ${siteConfig.title}.`, '/music', '音乐,Music')
+usePageMeta('音乐', `这里是${siteConfig.author.name}的音乐收藏馆，收藏了一些好听的音乐。`, '/music', '音乐,Music')
 
 definePageMeta({
   hideFooter: true
