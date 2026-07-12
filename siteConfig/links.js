@@ -38,6 +38,13 @@ export const linksConfig = {
                     screenshot: 'https://npm.elemecdn.com/anzhiyu-theme-static@1.1.6/img/blog.anheyu.com.jpg',
                 },
                 {
+                    name: '张洪Heo',
+                    description: '分享设计与科技生活。',
+                    link: 'https://blog.zhheo.com/',
+                    avatar: 'https://img.zhheo.com/i/67d8fa75943e4.webp',
+                    screenshot: 'https://img.zhheo.com/i/67d8fb5f563ff.webp',
+                },
+                {
                     name: 'Guoqi Sun',
                     description: '尝试，失败，重试。这就是成长的节奏。',
                     link: 'https://blog.guoqi.dev/',
