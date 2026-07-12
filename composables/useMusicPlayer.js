@@ -274,20 +274,21 @@ async function playIndex(i, forcePlay = false) {
   attachPageListeners()
 
   if (currentIndex.value === i && !forcePlay) {
-    if (audioEl.paused) audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
-    else { audioEl.pause(); isPlaying.value = false }
+    if (audioEl.paused) {
+      try { await audioEl.play(); isPlaying.value = true } catch {}
+    } else { audioEl.pause(); isPlaying.value = false }
     return
   }
 
   await loadSong(item, audioEl)
-  audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
+  try { await audioEl.play(); isPlaying.value = true } catch {}
   if (_onPlayIndex) _onPlayIndex()
 }
 
 function togglePlay() {
   const audioEl = getAudio()
   if (!audioEl) return
-  if (audioEl.paused) audioEl.play().then(() => { isPlaying.value = true }).catch(console.warn)
+  if (audioEl.paused) audioEl.play().then(() => { isPlaying.value = true }).catch(() => {})
   else { audioEl.pause(); isPlaying.value = false }
 }
 

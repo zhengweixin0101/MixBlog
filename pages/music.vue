@@ -98,7 +98,6 @@
           ref="lyricsEl"
           tabindex="-1"
           @wheel.prevent
-          @touchmove.prevent
           @keydown.prevent
         >
           <!-- 歌词加载中 -->
@@ -374,8 +373,9 @@ async function playIndex(i, forcePlay = false, shouldScroll = true) {
 }
 
 function togglePlay() {
+  const wasPlaying = isPlaying.value
   sharedTogglePlay()
-  pausedOnMusicPage.value = !isPlaying.value
+  pausedOnMusicPage.value = wasPlaying
 }
 function prev() { sharedPrev() }
 function next() { sharedNext(false) }
@@ -570,11 +570,9 @@ onMounted(async () => {
   await sharedPlayIndex(idx, true)
   scrollToCurrentItem()
 
-  audioEl.play().then(() => {
-    isPlaying.value = true
-  }).catch(() => {
+  if (!isPlaying.value) {
     notification.show('自动播放被浏览器阻止，请点击播放按钮开始播放', 'warning', 10000, true)
-  })
+  }
 })
 
 onBeforeUnmount(() => {
@@ -599,6 +597,7 @@ onBeforeUnmount(() => {
   scrollbar-width: none;
   -ms-overflow-style: none;
   overscroll-behavior: contain;
+  touch-action: none;
 }
 
 .lyrics::-webkit-scrollbar {
