@@ -4,7 +4,7 @@ export const aboutConfig = {
         description: "是一名 高中学生、游戏玩家、及独立开发者。",
         birthday: '2010',
         school: '滨江高级中学',
-        work: '高一学生',
+        work: '高二学生',
         tips: [
             { text: "学习", color: "#10b981" },
             { text: "生活", color: "#a393eb" },
