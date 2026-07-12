@@ -19,16 +19,16 @@ export const siteConfig = {
     },
 
     socialLinks: [
-        { icon: 'icon-app', text: 'Apps', href: '/apps', external: false, },
-        { icon: 'icon-envelope', text: 'Mail', href: 'mailto:zhengweixin0101@outlook.com', external: false, },
+        { icon: 'icon-envelope', text: 'Mail', href: 'mailto:zhengweixin0101@outlook.com', external: true, },
         { icon: 'icon-github', text: 'Github', href: 'https://github.com/zhengweixin0101', external: true, },
+        { icon: 'icon-rss', text: 'RSS', href: '/rss.xml', external: true, },
     ],
 
     navItems: [
         { label: '主页', href: '/', icon: 'icon-portalIndex' },
         { label: '文章', href: '/posts', icon: 'icon-Pen' },
         { label: '音乐', href: '/music', icon: 'icon-Music' },
-        { label: '应用', href: '/apps', icon: 'icon-app' },
+        { label: '友链', href: '/links', icon: 'icon-link' },
         { label: '说说', href: '/talks', icon: 'icon-wodeshuoshuo' },
         { label: '关于', href: '/about', icon: 'icon-guanyu' },
     ],
@@ -45,7 +45,7 @@ export const siteConfig = {
     ],
 
     thirdParty: {
-        iconfont: '//at.alicdn.com/t/c/font_4401174_srj0f5z9ksf.css',
+        iconfont: '//at.alicdn.com/t/c/font_4401174_q1ppvsm0q1.css',
         twikooEnvId: "https://twikoo.api.zhengweixin.top",
         umami: {
             js: 'https://statistics.zhengweixin.top/script.js',
