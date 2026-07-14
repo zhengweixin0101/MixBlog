@@ -35,6 +35,12 @@ const showMenu = async (event) => {
   // 仅在非移动端阻止默认右键菜单
   event.preventDefault()
 
+  // 如果菜单已经打开，直接关闭
+  if (visible.value) {
+    visible.value = false
+    return
+  }
+
   const el = event.target
 
   selectedText.value = ''
@@ -341,8 +347,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+<Transition name="menu">
   <div
-    v-show="visible"
+    v-if="visible"
     ref="menuRef"
     id="rightMenu"
     class="fixed z-10002 bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-md text-gray-800 dark:text-gray-100 rounded-lg 
@@ -460,4 +467,30 @@ onBeforeUnmount(() => {
       </div>
     </template>
   </div>
+</Transition>
 </template>
+
+<style>
+#rightMenu {
+  transform-origin: top left;
+}
+
+.menu-enter-active {
+  animation: menu-expand 0.13s ease-out;
+}
+
+.menu-leave-active {
+  animation: menu-expand 0.13s ease-in reverse;
+}
+
+@keyframes menu-expand {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+</style>
