@@ -39,7 +39,7 @@ async function typeText() {
   
   if (displayText.value.length < fullText.value.length) {
     displayText.value = fullText.value.slice(0, displayText.value.length + 1)
-    typingTimer = setTimeout(typeText, 100)
+    typingTimer = setTimeout(typeText, 150)
   } else {
     if (!nextText.value) {
       nextText.value = await fetchHitokoto()
@@ -47,7 +47,7 @@ async function typeText() {
     typingTimer = setTimeout(() => {
       isDeleting.value = true
       deleteText()
-    }, 3000)
+    }, 5000)
   }
 }
 
