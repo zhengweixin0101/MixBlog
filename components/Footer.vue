@@ -3,7 +3,7 @@ import { siteConfig } from '@/siteConfig/main.js'
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const currentYear = new Date().getFullYear()
-const runTime = ref('')
+const runTime = ref('加载中...')
 
 const calculateRunTime = () => {
   const startDate = new Date(siteConfig.startDate)
@@ -35,5 +35,8 @@ onUnmounted(() => {
   <footer class="mb-10 w-full text-center text-#2f3f5b dark:text-gray-300 text-sm">
     <p>© {{ currentYear }} {{ siteConfig.author.name }}. All rights reserved.</p>
     <p class="mt-2">本站居然苟活了 {{ runTime }}</p>
+    <p class="mt-2">
+      今日总访问量 <span id="busuanzi_today_pv">加载中...</span> 次 | 今日总访客数 <span id="busuanzi_today_uv">加载中...</span> 人
+    </p>
   </footer>
 </template>
