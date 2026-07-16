@@ -30,7 +30,7 @@ async function fetchHitokoto() {
     const data = await res.json()
     const hitokoto = data.hitokoto || ''
     const from = data.from || ''
-    return from ? `「${hitokoto}」——${from}` : `「${hitokoto}」`
+    return from ? `「${hitokoto}」——《${from}》` : `「${hitokoto}」`
   } catch {
     return ''
   }
@@ -41,7 +41,7 @@ async function typeText() {
   
   if (displayText.value.length < fullText.value.length) {
     displayText.value = fullText.value.slice(0, displayText.value.length + 1)
-    typingTimer = setTimeout(typeText, 150)
+    typingTimer = setTimeout(typeText, 100)
   } else {
     if (!nextText.value) {
       nextText.value = await fetchHitokoto()
