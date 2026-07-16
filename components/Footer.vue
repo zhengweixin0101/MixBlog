@@ -26,9 +26,11 @@ let typingTimer = null
 
 async function fetchHitokoto() {
   try {
-    const res = await fetch('https://v1.hitokoto.cn/')
+    const res = await fetch('https://v1.hitokoto.cn/?c=d&c=i')
     const data = await res.json()
-    return data.hitokoto || ''
+    const hitokoto = data.hitokoto || ''
+    const from = data.from || ''
+    return from ? `「${hitokoto}」——${from}` : `「${hitokoto}」`
   } catch {
     return ''
   }
@@ -47,7 +49,7 @@ async function typeText() {
     typingTimer = setTimeout(() => {
       isDeleting.value = true
       deleteText()
-    }, 5000)
+    }, 6000)
   }
 }
 
