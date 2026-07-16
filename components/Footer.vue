@@ -88,7 +88,7 @@ onUnmounted(() => {
         <div class="truncate min-h-[1.25rem]">{{ displayText }}<span class="animate-pulse">|</span></div>
       </div>
       <div class="flex flex-col gap-y-1 text-right">
-        <div>本站已运行 {{ runTime }}</div>
+        <div>本站居然苟活了 {{ runTime }}</div>
         <div>
           今日总访问量 <span id="busuanzi_today_pv">加载中...</span> 次 | 今日总访客数 <span id="busuanzi_today_uv">加载中...</span> 人
         </div>
