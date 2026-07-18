@@ -17,6 +17,7 @@ logs
 .DS_Store
 .fleet
 .idea
+.mimocode
 
 # Local env files
 .env
