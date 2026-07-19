@@ -10,7 +10,7 @@
           <div class="flex-1 relative z-10 px-3 min-h-screen">
             <NuxtPage />
           </div>
-          <Footer v-if="!route.meta.hideFooter" />
+          <Footer v-show="!route.meta.hideFooter" />
         </div>
       </div>
     </div>

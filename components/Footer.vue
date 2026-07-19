@@ -80,19 +80,21 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="w-full h-0.3 bg-#2f3f5b/20 dark:bg-gray-700 my-8 transition-colors duration-300"></div>
-  <footer class="mb-10 w-full text-sm text-#2f3f5b dark:text-gray-300 px-4">
-    <div class="flex flex-col md:flex-row justify-between">
-      <div class="flex flex-col gap-y-1 text-center md:text-left">
-        <div>© {{ currentYear }} {{ siteConfig.author.name }}. All rights reserved.</div>
-        <div class="hidden md:block truncate min-h-[1.25rem]">{{ displayText }}<span class="animate-pulse">|</span></div>
-      </div>
-      <div class="hidden md:flex flex-col gap-y-1 text-right">
-        <div>本站居然苟活了 {{ runTime }}</div>
-        <div>
-          今日总访问量 <span id="busuanzi_today_pv">...</span> 次 | 今日总访客数 <span id="busuanzi_today_uv">...</span> 人
+  <div>
+    <div class="w-full h-0.3 bg-#2f3f5b/20 dark:bg-gray-700 my-8 transition-colors duration-300"></div>
+    <footer class="mb-10 w-full text-sm text-#2f3f5b dark:text-gray-300 px-4">
+      <div class="flex flex-col md:flex-row justify-between">
+        <div class="flex flex-col gap-y-1 text-center md:text-left">
+          <div>© {{ currentYear }} {{ siteConfig.author.name }}. All rights reserved.</div>
+          <div class="hidden md:block truncate min-h-[1.25rem]">{{ displayText }}<span class="animate-pulse">|</span></div>
+        </div>
+        <div class="hidden md:flex flex-col gap-y-1 text-right">
+          <div>本站居然苟活了 {{ runTime }}</div>
+          <div>
+            今日总访问量 <span id="busuanzi_today_pv">...</span> 次 | 今日总访客数 <span id="busuanzi_today_uv">...</span> 人
+          </div>
         </div>
       </div>
-    </div>
-  </footer>
+    </footer>
+  </div>
 </template>
