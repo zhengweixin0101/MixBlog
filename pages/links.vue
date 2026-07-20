@@ -253,7 +253,7 @@ const sectionLayouts = computed(() =>
                     <p>2. 内容符合中国大陆法律法规。</p>
                     <p>3. 已添加本站友链。</p>
                     <p>4. 在评论区留下你的站点信息（名称、链接、头像、描述）。</p>
-                    <div class="!mt-4 p-4 rounded-lg bg-#fefefe/50 dark:bg-white/5 text-xs font-mono">
+                    <div class="!mt-4 p-4 rounded-lg bg-gray/10 dark:bg-white/5 text-xs font-mono">
                         <p class="text-#2f3f5b dark:text-white font-semibold !mb-2">本站信息</p>
                         <p>名称：ShinX</p>
                         <p>链接：https://zhengweixin.top/</p>
