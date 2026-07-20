@@ -79,6 +79,7 @@ let _audio = null
 let _permanentListenersAttached = false
 let _pageListenersAttached = false
 let _onLyricChange = null
+let _playGeneration = 0
 
 function getAudio() {
   if (typeof document === 'undefined') return null
@@ -280,8 +281,21 @@ async function playIndex(i, forcePlay = false) {
     return
   }
 
+  const gen = ++_playGeneration
   await loadSong(item, audioEl)
+  if (gen !== _playGeneration) {
+    currentItem.value = null
+    currentIndex.value = -1
+    return
+  }
   try { await audioEl.play(); isPlaying.value = true } catch {}
+  if (gen !== _playGeneration) {
+    audioEl.pause()
+    isPlaying.value = false
+    currentItem.value = null
+    currentIndex.value = -1
+    return
+  }
   if (_onPlayIndex) _onPlayIndex()
 }
 
@@ -393,6 +407,10 @@ function closeCapsule() {
   currentLyricIndices.value = []
 }
 
+function cancelPendingPlay() {
+  _playGeneration++
+}
+
 function cleanup() {
   detachPageListeners()
 }
@@ -430,6 +448,7 @@ export function useMusicPlayer() {
     seek,
     downloadMusic,
     closeCapsule,
+    cancelPendingPlay,
     cleanup,
     getAudio,
     attachPermanentListeners,

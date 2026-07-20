@@ -351,6 +351,7 @@ const {
   prev: sharedPrev, next: sharedNext, togglePlayMode: sharedTogglePlayMode,
   toggleMute: sharedToggleMute, seek: sharedSeek, downloadMusic: sharedDownloadMusic,
   cleanup, getAudio, attachPermanentListeners, setOnLyricChange, setOnPlayIndex,
+  cancelPendingPlay,
 } = useMusicPlayer()
 
 const seekValue = ref(0)
@@ -576,6 +577,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  cancelPendingPlay()
   cleanup()
   setOnLyricChange(null)
   setOnPlayIndex(null)
