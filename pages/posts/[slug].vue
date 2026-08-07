@@ -3,21 +3,20 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, useHead, us
 import { useNotification } from '~/composables/useNotification'
 import { marked } from 'marked'
 import dayjs from 'dayjs'
-import hljs from 'highlight.js'
-import katex from 'katex'
-import 'katex/dist/katex.min.css'
-
-import { Fancybox } from '@fancyapps/ui/dist/fancybox/'
-import '@fancyapps/ui/dist/fancybox/fancybox.css'
 
 import Comment from '@/components/Comment.vue'
 import Sidebar from '@/components/Sidebar.vue'
 import '@/assets/article-content.css'
+import 'katex/dist/katex.min.css'
 
 import { siteConfig } from '@/siteConfig/main.js'
 
 const route = useRoute()
 const notification = useNotification()
+
+// 按需加载 KaTeX
+let katex = null
+await import('katex').then((mod) => { katex = mod.default })
 
 // Twikoo 评论系统
 const twikooEnvId = siteConfig.thirdParty?.twikooEnvId || ''
@@ -65,7 +64,7 @@ function highlightCodeBlocks(html) {
   return html.replace(
     /<pre><code(?: class="language-(\w+)")?>([\s\S]*?)<\/code><\/pre>/g,
     (_, lang, code) => {
-      const finalLang = lang && ['language'].includes(lang.toLowerCase()) ? '' : lang;
+      const langClass = lang ? `language-${lang}` : ''
       const lines = (code.match(/\n/g) || []).length + 1
       const isCollapsed = lines > 20
       const encodedCode = typeof encodeURIComponent === 'function' ? encodeURIComponent(code) : code
@@ -75,7 +74,7 @@ function highlightCodeBlocks(html) {
             class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded-lg border border-black/20 backdrop-blur-2 dark:border-white/20 bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100 cursor-pointer"
             data-code="${encodedCode}"
           >复制</button>
-          <pre><code class="hljs ${finalLang ? 'language-' + finalLang : ''}">${code}</code></pre>
+          <pre><code class="hljs ${langClass}">${code}</code></pre>
           ${isCollapsed ? `
           <div class="fold-overlay pointer-events-none absolute left-0 right-0 bottom-0 h-20"></div>
           <button class="expand-btn absolute left-1/2 -translate-x-1/2 bottom-5 px-3 py-2 text-xs rounded-lg border border-black/20 backdrop-blur-2 dark:border-white/20 bg-black/50 text-white dark:bg-white/10 dark:text-white cursor-pointer z-10">展开剩余代码</button>
@@ -280,7 +279,7 @@ function enhanceLinks(html) {
 }
 
 // 解析文章
-watch([rawPostData, error], async () => {
+watch([rawPostData, error], () => {
   if (notFound.value) {
     post.value = {
       content: '',
@@ -323,12 +322,15 @@ watch(() => post.value.content, () => applyClientEnhancements())
 function applyClientEnhancements() {
   if (!process.client) return
   nextTick(() => {
-    requestAnimationFrame(() => {
+    requestAnimationFrame(async () => {
       const codeBlocks = document.querySelectorAll('article pre code')
       if (codeBlocks.length) {
+        const { default: hljs } = await import('highlight.js')
         codeBlocks.forEach(block => hljs.highlightElement(block))
       }
       // 初始化 Fancybox
+      const { Fancybox } = await import('@fancyapps/ui/dist/fancybox/')
+      try { await import('@fancyapps/ui/dist/fancybox/fancybox.css') } catch { /* CSS 注入失败可忽略 */ }
       Fancybox.bind('[data-fancybox="gallery"]', {
         Hash: false,
       })
@@ -337,13 +339,6 @@ function applyClientEnhancements() {
     })
   })
 }
-
-watch(
-  () => post.value.content,
-  () => {
-    applyClientEnhancements()
-  }
-)
 
 // head
 useHead(() => {

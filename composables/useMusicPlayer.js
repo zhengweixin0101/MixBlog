@@ -2,6 +2,8 @@ import { ref } from 'vue'
 import { musicConfig } from '../siteConfig/music'
 import { useNotification } from './useNotification'
 
+const notification = useNotification()
+
 function joinUrl(base, path) {
   if (!base) return path || ''
   if (!path) return base || ''
@@ -235,14 +237,23 @@ function detachPageListeners() {
   audioEl.removeEventListener('loadedmetadata', onLoadedMetadata)
 }
 
+function resetTrackState({ keepTrack = false } = {}) {
+  currentTime.value = 0
+  currentLyricIndex.value = -1
+  currentLyricIndices.value = []
+  lyrics.value = []
+  groupedLyrics.value = []
+  if (!keepTrack) {
+    currentItem.value = null
+    currentIndex.value = -1
+  }
+}
+
 async function loadSong(item, audioEl) {
   audioEl.pause()
   currentIndex.value = list.value.indexOf(item)
   currentItem.value = item
-  lyrics.value = []
-  currentTime.value = 0
-  currentLyricIndex.value = -1
-  currentLyricIndices.value = []
+  resetTrackState({ keepTrack: true })
   isLoadingSong.value = true
   try {
     await loadLyrics(item)
@@ -337,7 +348,6 @@ function next(auto = false) {
 }
 
 function togglePlayMode() {
-  const notification = useNotification()
   if (playMode.value === 'loop') {
     playMode.value = 'shuffle'
     generateShuffleList()
@@ -377,7 +387,6 @@ function seek(time) {
 
 function downloadMusic() {
   if (typeof document === 'undefined') return
-  const notification = useNotification()
   const item = currentItem.value
   if (!item?.musicFull) return
   const ext = item.musicFull.split('.').pop().split('?')[0] || 'mp3'
@@ -397,14 +406,8 @@ function closeCapsule() {
     audioEl.src = ''
     isPlaying.value = false
   }
-  currentItem.value = null
-  currentIndex.value = -1
-  currentTime.value = 0
+  resetTrackState()
   duration.value = 0
-  lyrics.value = []
-  groupedLyrics.value = []
-  currentLyricIndex.value = -1
-  currentLyricIndices.value = []
 }
 
 function cancelPendingPlay() {

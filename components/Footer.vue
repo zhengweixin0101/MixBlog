@@ -24,6 +24,16 @@ const calculateRunTime = () => {
 
 let typingTimer = null
 
+// 在组件挂载后延迟加载 busuanzi，避免脚本在 Vue hydration 前改写 SSR 文本节点
+function loadBusuanzi() {
+  if (typeof window === 'undefined' || window.__busuanziLoaded) return
+  window.__busuanziLoaded = true
+  const s = document.createElement('script')
+  s.src = 'https://cdn.busuanzi.cc/busuanzi/3.6.9/busuanzi.min.js'
+  s.async = true
+  document.body.appendChild(s)
+}
+
 async function fetchHitokoto() {
   try {
     const res = await fetch('https://v1.hitokoto.cn/?c=d&c=i')
@@ -69,7 +79,8 @@ function deleteText() {
 onMounted(async () => {
   calculateRunTime()
   setInterval(calculateRunTime, 1000)
-  
+  loadBusuanzi()
+
   fullText.value = await fetchHitokoto()
   typeText()
 })
