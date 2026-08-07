@@ -104,9 +104,28 @@ const hideMenu = () => {
   visible.value = false
 }
 
+// scroll 事件按帧节流，避免捕获阶段高频触发
+let scrollFrame = null
+const hideMenuOnScroll = () => {
+  if (scrollFrame) return
+  scrollFrame = requestAnimationFrame(() => {
+    scrollFrame = null
+    hideMenu()
+  })
+}
+
 // 状态
 const isHome = computed(() => route.path === '/')
 const isMusicPage = computed(() => route.path === '/music')
+
+const isMobileSize = ref(false)
+function checkMobileSize() {
+  isMobileSize.value = window.matchMedia('(max-width: 768px)').matches
+}
+const onResize = () => {
+  checkMobileSize()
+  hideMenu()
+}
 
 // 默认菜单功能
 const goBack = () => { window.history.back(); hideMenu() }
@@ -332,17 +351,22 @@ const quoteToTwikoo = () => {
 
 // 事件绑定
 onMounted(() => {
+  checkMobileSize()
   window.addEventListener('contextmenu', showMenu)
   window.addEventListener('click', hideMenu)
-  window.addEventListener('scroll', hideMenu, true)
-  window.addEventListener('resize', hideMenu)
+  window.addEventListener('scroll', hideMenuOnScroll, true)
+  window.addEventListener('resize', onResize)
 })
 
 onBeforeUnmount(() => {
+  if (scrollFrame) {
+    cancelAnimationFrame(scrollFrame)
+    scrollFrame = null
+  }
   window.removeEventListener('contextmenu', showMenu)
   window.removeEventListener('click', hideMenu)
-  window.removeEventListener('scroll', hideMenu, true)
-  window.removeEventListener('resize', hideMenu)
+  window.removeEventListener('scroll', hideMenuOnScroll, true)
+  window.removeEventListener('resize', onResize)
 })
 </script>
 
@@ -373,7 +397,7 @@ onBeforeUnmount(() => {
         <span @click="shufflePost" class="rightMenu-item-2">
           <i class="iconfont icon-shuffle text-lg mr-2"></i>随便逛逛
         </span>
-        <span v-if="!isMusicPage && (!musicCurrentItem || pausedOnMusicPage)" @click="playMusic" class="rightMenu-item-2">
+        <span v-if="!isMusicPage && !isMobileSize && (!musicCurrentItem || pausedOnMusicPage)" @click="playMusic" class="rightMenu-item-2">
           <i class="iconfont icon-play text-md mr-2"></i>播放音乐
         </span>
       </div>
