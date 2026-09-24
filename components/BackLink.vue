@@ -1,3 +1,10 @@
+/**
+ * 返回链接
+ * 调用方式：
+ *   <BackLink />                                  // 默认：跳转 /，文字「← 返回首页」
+ *   <BackLink to="/posts" text="← 返回文章列表" /> // 自定义跳转地址与文字
+ */
+
 <template>
   <NuxtLink
     :to="to"

@@ -1,3 +1,18 @@
+/**
+ * 全局右下角 Toast 通知
+ * 调用方式（任意页面/组件）：
+ *   const notification = useNotification()
+ *
+ *   // 基础用法
+ *   notification.show('消息内容')
+ *
+ *   // 完整参数：消息、类型、持续时长（ms，0 为不自动关闭）、是否可手动关闭
+ *   notification.show('保存成功', 'success', 3000, true)
+ *   // type: 'info' | 'success' | 'error' | 'warning'
+ *
+ *   notification.remove(id)            // 手动移除某条（id 见 state.toasts）
+ */
+
 <template>
   <div class="fixed bottom-4 right-4 z-50 flex-col gap-4">
     <transition-group name="toast" tag="div">
