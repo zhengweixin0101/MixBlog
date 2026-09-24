@@ -472,6 +472,17 @@ const formattedDate = computed(() => {
   return `${siteConfig.author.name} 发布于 ${dayjs(post.value.frontmatter.date).format('YYYY-MM-DD')}`
 })
 
+const updatedDate = computed(() => {
+  const updated = post.value.frontmatter.updated
+  if (!updated || updated === post.value.frontmatter.date) return ''
+  return dayjs(updated).format('YYYY-MM-DD')
+})
+
+const formattedUpdatedDate = computed(() => {
+  if (!updatedDate.value) return ''
+  return `最后更新于 ${updatedDate.value}`
+})
+
 // 计算文章字数
 const wordCount = computed(() => {
   const text = post.value.content
@@ -676,7 +687,16 @@ async function copyArticleLink() {
               访问量: <span id="twikoo_visitors" class="ml-0.8">0</span>
             </span>
           </div>
-          <span class="ml-1">{{ formattedDate }}</span>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="flex items-center">
+              <i class="iconfont icon-bianjisekuai"></i>
+              {{ formattedDate }}
+            </span>
+            <span v-if="formattedUpdatedDate" class="flex items-center">
+              <i class="iconfont icon-gengxin"></i>
+              {{ formattedUpdatedDate }}
+            </span>
+          </div>
           <div class="flex items-center gap-2">
             <span v-for="tag in post.frontmatter.tags || []" :key="tag" class="px-2 py-1 text-xs rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">{{ tag }}</span>
           </div>
