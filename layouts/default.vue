@@ -16,6 +16,7 @@
     </div>
     <ContextMenu />
     <GlobalNotification />
+    <GlobalDialog />
     <MusicCapsule />
     <MusicFullscreen />
   </div>
