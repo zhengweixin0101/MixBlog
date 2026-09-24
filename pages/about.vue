@@ -379,7 +379,7 @@ const hoveredIndex = ref(null)
           <p class="text-sm text-white/50">
             统计信息来自 
             <a :href="UMAMI_SHARE_URL" target="_blank" rel="noopener nofollow"
-              class="text-sm text-white/50 no-underline hover:text-white transition-colors duration-200">
+              class="text-sm text-white/50 underline hover:text-white transition-colors duration-200">
               Umami
             </a>
           </p>
@@ -419,7 +419,7 @@ const hoveredIndex = ref(null)
           <h2 class="text-2xl font-bold mt-5">{{ aboutConfig.author.personality.name }}<br/><span class="text-#e4ae3a text-4xl">{{ aboutConfig.author.personality.code }}</span></h2>
           <div class="absolute bottom-4 text-sm text-#999999">
             在 
-            <a class="text-#999999 no-underline hover:text-white transition-colors duration-200" :href="aboutConfig.author.personality.learnMore" target="_blank" rel="noopener nofollow">16personalities</a>
+            <a class="text-#999999 underline hover:text-white transition-colors duration-200" :href="aboutConfig.author.personality.learnMore" target="_blank" rel="noopener nofollow">16personalities</a>
             上了解更多
           </div>
           <div class="absolute justify-center right-0 md:top-3 transition-transform duration-800 group-hover:-rotate-8">
