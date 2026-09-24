@@ -1,25 +1,42 @@
 import { useDialog } from '~/composables/useDialog'
+import { siteConfig } from '~/siteConfig/main'
+
+function isWhitelisted(host, whitelist = []) {
+    return whitelist.some(rule => {
+        if (!rule) return false
+        if (rule.startsWith('*.')) {
+            const base = rule.slice(2)
+            return host === base || host.endsWith('.' + base)
+        }
+        return host === rule
+    })
+}
 
 export default defineNuxtPlugin(() => {
-  const dialog = useDialog()
+    const { enabled, whitelist } = siteConfig.externalLinkConfirm
 
-  document.addEventListener('click', async (e) => {
-    if (e.defaultPrevented || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return
+    if (enabled === false) return
 
-    const link = e.target.closest?.('a[href]')
-    if (!link) return
+    const dialog = useDialog()
 
-    const href = link.getAttribute('href')
-    if (!href) return
+    document.addEventListener('click', async (e) => {
+        if (e.defaultPrevented || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return
 
-    let url
-    try {
-      url = new URL(href, location.href)
-    } catch {
-      return
-    }
+        const link = e.target.closest?.('a[href]')
+        if (!link) return
 
-    if (!/^https?:$/.test(url.protocol) || url.host === location.host) return
+        const href = link.getAttribute('href')
+        if (!href) return
+
+        let url
+        try {
+            url = new URL(href, location.href)
+        } catch {
+            return
+        }
+
+        if (!/^https?:$/.test(url.protocol) || url.host === location.host) return
+        if (isWhitelisted(url.host, whitelist)) return
 
     e.preventDefault()
 

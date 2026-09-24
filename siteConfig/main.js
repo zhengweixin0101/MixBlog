@@ -45,6 +45,13 @@ export const siteConfig = {
         }
     ],
 
+    externalLinkConfirm: {
+        enabled: true,
+        whitelist: [
+            '*.zhengweixin.top',
+        ],
+    },
+
     thirdParty: {
         iconfont: '//at.alicdn.com/t/c/font_4401174_q1ppvsm0q1.css',
         twikooEnvId: "https://twikoo.api.zhengweixin.top",
