@@ -4,7 +4,7 @@ export const siteConfig = {
     description: "Hi，欢迎访问本站！这是我的个人主页，我会在这里发布一些奇思妙想的文章。这里记录了我的学习、生活中的点点滴滴。",
     keywords: "ShinX,zhengweixin,blog,ShinX的个人主页,ShinX的博客",
     url: "https://zhengweixin.top",
-    startDate: '2025-07-23 12:00:00',
+    startDate: '2025-08-15 12:00:00',
 
     icons: [
         { rel: 'icon', type: 'image/png', href: 'https://cdn.zhengweixin.top/favicon/favicon-96x96.png', sizes: '96x96' },
