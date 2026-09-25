@@ -386,16 +386,19 @@ function seek(time) {
 }
 
 function downloadMusic() {
-  if (typeof document === 'undefined') return
+  if (typeof window === 'undefined') return
   const item = currentItem.value
   if (!item?.musicFull) return
-  const ext = item.musicFull.split('.').pop().split('?')[0] || 'mp3'
-  const link = document.createElement('a')
-  link.href = item.musicFull
-  link.download = `${item.title || 'music'}.${ext}`
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
+  const win = window.open(item.musicFull, '_blank')
+  if (!win) {
+    const link = document.createElement('a')
+    link.href = item.musicFull
+    link.target = '_blank'
+    link.rel = 'noopener'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  }
   notification.show('已尝试下载，请注意查看！')
 }
 
