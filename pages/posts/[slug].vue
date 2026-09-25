@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, useHead, useRoute } from '#imports'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, useHead, useRoute, setResponseStatus } from '#imports'
 import { useNotification } from '~/composables/useNotification'
 import { marked } from 'marked'
 import dayjs from 'dayjs'
@@ -31,8 +31,11 @@ const showMobileQR = ref(false)
 // 阅读时长记录
 const readingDuration = ref(0)
 let readingTimer = null
-let readingStartTime = Date.now()
 let isPageVisible = true
+let visibilityChangeHandler = null
+let beforeUnloadHandler = null
+let twikooPollTimer = null
+let twikooPollResolve = null
 
 // 获取文章
 const { data: rawPostData, error } = await useAsyncData(
@@ -44,19 +47,22 @@ const { data: rawPostData, error } = await useAsyncData(
 const notFound = computed(() => error.value || !rawPostData.value?.success)
 
 // 解析响应数据
-const postData = computed(() => {
-  if (!rawPostData.value?.success) return null
-  return {
-    content: rawPostData.value.content || '',
-    frontmatter: rawPostData.value.frontmatter || {}
+if (import.meta.server) {
+  const apiStatus = error.value?.statusCode ?? error.value?.status
+  if (apiStatus) {
+    setResponseStatus(apiStatus)
+  } else if (rawPostData.value && !rawPostData.value.success) {
+    setResponseStatus(404)
   }
-})
+}
 
 const post = ref({
   content: '',
   frontmatter: {},
   toc: []
 })
+
+const articleRef = ref(null)
 
 
 // 代码高亮处理
@@ -87,20 +93,21 @@ function highlightCodeBlocks(html) {
 
 // KaTeX 渲染
 function renderKatex(html) {
-  const codeBlocks = []
-  html = html.replace(/<pre><code[\s\S]*?<\/code><\/pre>/g, match => {
-    codeBlocks.push(match)
-    return `___CODE_BLOCK_${codeBlocks.length - 1}___`
+  const codeSegments = []
+  html = html.replace(/<pre><code[\s\S]*?<\/code><\/pre>|<code>[\s\S]*?<\/code>/g, match => {
+    codeSegments.push(match)
+    return `___CODE_SEGMENT_${codeSegments.length - 1}___`
   })
   html = html.replace(/\$\$([^$]+?)\$\$/g, (_, expr) => {
     try { return katex.renderToString(expr, { displayMode: true, throwOnError: false }) }
     catch { return `<span class="katex-error">$$${expr}$$</span>` }
   })
-  html = html.replace(/\$(.+?)\$/g, (_, expr) => {
+  html = html.replace(/\\\$|\$([^\s$](?:[^$\n]*?[^\s$])?)\$/g, (_, expr) => {
+    if (expr === undefined) return '$'
     try { return katex.renderToString(expr, { displayMode: false, throwOnError: false }) }
     catch { return `<span class="katex-error">$${expr}$</span>` }
   })
-  html = html.replace(/___CODE_BLOCK_(\d+)___/g, (_, index) => codeBlocks[index])
+  html = html.replace(/___CODE_SEGMENT_(\d+)___/g, (_, index) => codeSegments[index])
   return html
 }
 
@@ -137,70 +144,74 @@ function loadHighlightStyle(darkMode) {
   link.id = 'hljs-theme'
   link.rel = 'stylesheet'
   link.href = darkMode
-    ? 'https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/vs2015.min.css'
-    : 'https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/github.min.css'
+    ? '/hljs/vs2015.min.css'
+    : '/hljs/github.min.css'
   document.head.appendChild(link)
 }
 
-// 代码块复制、展开按钮点击处理
-function onDocumentClick(e) {
-  // 复制
-  const copyBtn = e.target.closest('.copy-btn')
-  if (copyBtn) {
-    const encoded = copyBtn.getAttribute('data-code')
-    if (!encoded) return
-    let code = typeof decodeURIComponent === 'function' ? decodeURIComponent(encoded) : encoded
-    // 解码 HTML 实体（如 &lt;、&gt;、&amp; 等）
-    code = code.replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&amp;/g, '&')
-      .replace(/&quot;/g, '"')
-      .replace(/&#39;/g, "'")
-      .replace(/&#x27;/g, "'")
-      .replace(/&#x2F;/g, '/')
-      .replace(/&#x3D;/g, '=')
-      .replace(/&#x60;/g, '`')
-    navigator.clipboard.writeText(code).then(() => {
-      const originalText = copyBtn.innerText
-      copyBtn.innerText = '已复制'
-      setTimeout(() => { copyBtn.innerText = originalText }, 1000)
-    }).catch(() => {
-      const originalText = copyBtn.innerText
-      copyBtn.innerText = '复制失败'
-      setTimeout(() => { copyBtn.innerText = originalText }, 1000)
-    })
-    return
-  }
-
-  // 展开收起
-  const expandBtn = e.target.closest('.expand-btn')
-  if (expandBtn) {
-    const wrapper = expandBtn.closest('.code-block-wrapper')
-    if (!wrapper) return
-    const pre = wrapper.querySelector('pre')
-      const wasCollapsed = wrapper.classList.contains('collapsed')
-      wrapper.classList.toggle('collapsed')
-      const isCollapsedNow = wrapper.classList.contains('collapsed')
-      wrapper.setAttribute('aria-expanded', isCollapsedNow ? 'false' : 'true')
-      if (!isCollapsedNow) {
-        expandBtn.style.display = 'none'
-        pre.style.maxHeight = ''
-      } else {
-      const codeElem = pre.querySelector('code')
-      const lh = parseFloat(window.getComputedStyle(codeElem).lineHeight) || 18
-      const height = Math.ceil(lh * 20)
-      pre.style.maxHeight = `${height}px`
-        expandBtn.style.display = ''
+// 复制文本
+async function copyTextToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text)
+    return true
+  } catch {
+    try {
+      const input = document.createElement('input')
+      input.value = text
+      input.style.position = 'fixed'
+      input.style.opacity = '0'
+      document.body.appendChild(input)
+      input.select()
+      const ok = document.execCommand('copy')
+      document.body.removeChild(input)
+      return ok
+    } catch {
+      return false
     }
-    return
   }
+}
+
+// 代码块复制按钮点击处理
+function onDocumentClick(e) {
+  const copyBtn = e.target.closest('.copy-btn')
+  if (!copyBtn) return
+  if (copyBtn.dataset.copying === '1') return
+  const encoded = copyBtn.getAttribute('data-code')
+  if (!encoded) return
+  let code = encoded
+  try {
+    if (typeof decodeURIComponent === 'function') code = decodeURIComponent(encoded)
+  } catch {}
+  // 解码 HTML 实体（如 &lt;、&gt;、&amp; 等）
+  code = code.replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&#x27;/g, "'")
+    .replace(/&#x2F;/g, '/')
+    .replace(/&#x3D;/g, '=')
+    .replace(/&#x60;/g, '`')
+  // 反馈期间锁定按钮，禁止重复点击
+  copyBtn.dataset.copying = '1'
+  copyBtn.disabled = true
+  copyTextToClipboard(code).then(success => {
+    notification.show(success ? '代码已复制!' : '复制失败!', success ? 'info' : 'error')
+    const originalText = copyBtn.innerText
+    copyBtn.innerText = success ? '已复制' : '复制失败'
+    setTimeout(() => {
+      copyBtn.innerText = originalText
+      copyBtn.disabled = false
+      delete copyBtn.dataset.copying
+    }, 1000)
+  })
 }
 
 // 设置折叠高度
 function setCollapsedHeights() {
-  if (typeof document === 'undefined') return
-  
-  document.querySelectorAll('.code-block-wrapper').forEach(wrapper => {
+  if (!articleRef.value) return
+
+  articleRef.value.querySelectorAll('.code-block-wrapper').forEach(wrapper => {
     const pre = wrapper.querySelector('pre')
     const code = pre.querySelector('code')
     const lineHeight = parseFloat(getComputedStyle(code).lineHeight) || 18
@@ -224,9 +235,8 @@ function setCollapsedHeights() {
 }
 
 function attachExpandBtnHandlers() {
-  if (typeof document === 'undefined') return
-  const expandBtns = document.querySelectorAll('.expand-btn')
-  expandBtns.forEach(btn => {
+  if (!articleRef.value) return
+  articleRef.value.querySelectorAll('.expand-btn').forEach(btn => {
     if (btn.dataset._expandBound) return
     const handler = function (e) {
       e.stopPropagation()
@@ -238,7 +248,7 @@ function attachExpandBtnHandlers() {
       wrapper.setAttribute('aria-expanded', isCollapsedNow ? 'false' : 'true')
       if (!isCollapsedNow) {
         btn.style.display = 'none'
-        pre.style.maxHeight = ''
+        pre.style.maxHeight = `${pre.scrollHeight + 1}px`
       } else {
         const codeElem = pre.querySelector('code')
         const lh = parseFloat(window.getComputedStyle(codeElem).lineHeight) || 18
@@ -254,9 +264,8 @@ function attachExpandBtnHandlers() {
 }
 
 function detachExpandBtnHandlers() {
-  if (typeof document === 'undefined') return
-  const expandBtns = document.querySelectorAll('.expand-btn')
-  expandBtns.forEach(btn => {
+  if (!articleRef.value) return
+  articleRef.value.querySelectorAll('.expand-btn').forEach(btn => {
     if (!btn.dataset._expandBound) return
     if (btn._expandHandler) btn.removeEventListener('click', btn._expandHandler)
     delete btn._expandHandler
@@ -310,27 +319,34 @@ watch([rawPostData, error], () => {
       frontmatter: rawPostData.value.frontmatter,
       toc: tocItems
     }
-
-    applyClientEnhancements()
   }
 }, { immediate: true })
 
 // 监听内容变化
-watch(() => post.value.content, () => applyClientEnhancements())
+watch(() => post.value.content, () => applyClientEnhancements(), { immediate: true })
 
 // 高亮 + Fancybox
-function applyClientEnhancements() {
-  if (!process.client) return
+function applyClientEnhancements(retries = 0) {
+  if (!import.meta.client || !post.value.content) return
   nextTick(() => {
     requestAnimationFrame(async () => {
-      const codeBlocks = document.querySelectorAll('article pre code')
+      const root = articleRef.value
+      if (!root) {
+        if (retries < 5) applyClientEnhancements(retries + 1)
+        return
+      }
+      const codeBlocks = root.querySelectorAll('pre code')
       if (codeBlocks.length) {
         const { default: hljs } = await import('highlight.js')
-        codeBlocks.forEach(block => hljs.highlightElement(block))
+        codeBlocks.forEach(block => {
+          if (block.dataset.highlighted) return
+          hljs.highlightElement(block)
+        })
       }
       // 初始化 Fancybox
       const { Fancybox } = await import('@fancyapps/ui/dist/fancybox/')
       try { await import('@fancyapps/ui/dist/fancybox/fancybox.css') } catch { /* CSS 注入失败可忽略 */ }
+      Fancybox.unbind('[data-fancybox="gallery"]')
       Fancybox.bind('[data-fancybox="gallery"]', {
         Hash: false,
       })
@@ -385,7 +401,7 @@ onMounted(() => {
   getArticleStats()
 
   // 监听页面可见性变化
-  const handleVisibilityChange = () => {
+  visibilityChangeHandler = () => {
     if (document.hidden) {
       // 页面隐藏时停止计时并保存
       isPageVisible = false
@@ -399,43 +415,27 @@ onMounted(() => {
       isPageVisible = true
       if (!readingTimer) {
         readingTimer = setInterval(() => {
-          if (!isPageVisible) return
-          const currentTotal = readingDuration.value
-          const newTotal = currentTotal + 1
-          readingDuration.value = newTotal
-          saveReadingDuration(newTotal)
+          if (isPageVisible) readingDuration.value++
         }, 1000)
       }
     }
   }
-
-  // 监听 visibilitychange 事件
-  document.addEventListener('visibilitychange', handleVisibilityChange)
+  document.addEventListener('visibilitychange', visibilityChangeHandler)
 
   // 启动阅读时长计时器
-  readingStartTime = Date.now()
   readingTimer = setInterval(() => {
-    if (!isPageVisible) return
-    // 计算自上次更新以来新增的时间（1秒）
-    const currentTotal = readingDuration.value
-    const newTotal = currentTotal + 1
-    readingDuration.value = newTotal
-    saveReadingDuration(newTotal)
+    if (isPageVisible) readingDuration.value++
   }, 1000)
 
   // 页面卸载前保存
-  const handleBeforeUnload = () => {
+  beforeUnloadHandler = () => {
     if (readingTimer) {
       clearInterval(readingTimer)
-      saveReadingDuration(readingDuration.value)
+      readingTimer = null
     }
+    saveReadingDuration(readingDuration.value)
   }
-
-  window.addEventListener('beforeunload', handleBeforeUnload)
-
-  // 保存事件处理器引用以便清理
-  window._visibilityChangeHandler = handleVisibilityChange
-  window._beforeUnloadHandler = handleBeforeUnload
+  window.addEventListener('beforeunload', beforeUnloadHandler)
 })
 
 onBeforeUnmount(() => {
@@ -444,37 +444,43 @@ onBeforeUnmount(() => {
 
   detachExpandBtnHandlers()
 
-  // 移除页面可见性监听
-  if (window._visibilityChangeHandler) {
-    document.removeEventListener('visibilitychange', window._visibilityChangeHandler)
+  if (visibilityChangeHandler) {
+    document.removeEventListener('visibilitychange', visibilityChangeHandler)
+    visibilityChangeHandler = null
   }
 
-  // 移除 beforeunload 监听
-  if (window._beforeUnloadHandler) {
-    window.removeEventListener('beforeunload', window._beforeUnloadHandler)
+  if (beforeUnloadHandler) {
+    window.removeEventListener('beforeunload', beforeUnloadHandler)
+    beforeUnloadHandler = null
   }
+
+  // 清理 Twikoo 轮询
+  stopTwikooPoll()
 
   // 保存最后的阅读时长
   if (readingTimer) {
     clearInterval(readingTimer)
-    // 最后再保存一次确保数据不丢失
-    saveReadingDuration(readingDuration.value)
     readingTimer = null
   }
+  saveReadingDuration(readingDuration.value)
 
-  delete window._visibilityChangeHandler
-  delete window._beforeUnloadHandler
+  // 解绑 Fancybox
+  import('@fancyapps/ui/dist/fancybox/').then(({ Fancybox }) => {
+    Fancybox.unbind('[data-fancybox="gallery"]')
+    Fancybox.close()
+  }).catch(() => {})
 })
 
 // 格式化日期
 const formattedDate = computed(() => {
-  if (!post.value.frontmatter.date) return ''
-  return `${siteConfig.author.name} 发布于 ${dayjs(post.value.frontmatter.date).format('YYYY-MM-DD')}`
+  const date = post.value.frontmatter.date
+  if (!date || !dayjs(date).isValid()) return ''
+  return `${siteConfig.author.name} 发布于 ${dayjs(date).format('YYYY-MM-DD')}`
 })
 
 const updatedDate = computed(() => {
   const updated = post.value.frontmatter.updated
-  if (!updated || updated === post.value.frontmatter.date) return ''
+  if (!updated || updated === post.value.frontmatter.date || !dayjs(updated).isValid()) return ''
   return dayjs(updated).format('YYYY-MM-DD')
 })
 
@@ -486,8 +492,11 @@ const formattedUpdatedDate = computed(() => {
 // 计算文章字数
 const wordCount = computed(() => {
   const text = post.value.content
-    .replace(/<[^>]+>/g, '') // 移除 HTML 标签
-    .replace(/\s+/g, '') // 移除空白字符
+    .replace(/<pre>[\s\S]*?<\/pre>/g, '')
+    .replace(/<button[\s\S]*?<\/button>/g, '')
+    .replace(/<span class="katex-mathml">[\s\S]*?<\/span>/g, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, '')
   return text.length
 })
 
@@ -510,21 +519,25 @@ const readingTime = computed(() => {
 // 从缓存获取阅读时长
 function getStoredReadingDuration() {
   if (typeof window === 'undefined') return 0
-  const storageKey = 'blog_reading_durations'
-  const stored = localStorage.getItem(storageKey)
-  if (!stored) return 0
-  const durations = JSON.parse(stored)
-  return durations[route.params.slug] || 0
+  try {
+    const stored = localStorage.getItem('blog_reading_durations')
+    if (!stored) return 0
+    const durations = JSON.parse(stored)
+    return durations[route.params.slug] || 0
+  } catch {
+    return 0
+  }
 }
 
 // 保存阅读时长到缓存
 function saveReadingDuration(duration) {
   if (typeof window === 'undefined') return
-  const storageKey = 'blog_reading_durations'
-  const stored = localStorage.getItem(storageKey)
-  const durations = stored ? JSON.parse(stored) : {}
-  durations[route.params.slug] = duration
-  localStorage.setItem(storageKey, JSON.stringify(durations))
+  try {
+    const stored = localStorage.getItem('blog_reading_durations')
+    const durations = stored ? JSON.parse(stored) : {}
+    durations[route.params.slug] = duration
+    localStorage.setItem('blog_reading_durations', JSON.stringify(durations))
+  } catch {}
 }
 
 // 格式化显示阅读时长
@@ -541,23 +554,43 @@ const formattedReadingDuration = computed(() => {
   return `${minutes}分钟`
 })
 
+// 停止 Twikoo 轮询并释放挂起的等待
+function stopTwikooPoll(resolved = false) {
+  if (twikooPollTimer) {
+    clearInterval(twikooPollTimer)
+    twikooPollTimer = null
+  }
+  if (twikooPollResolve) {
+    const resolver = twikooPollResolve
+    twikooPollResolve = null
+    resolver(resolved)
+  }
+}
+
+// 等待 Twikoo 加载
+function waitForTwikoo(timeout = 10000) {
+  if (typeof window.twikoo !== 'undefined') return Promise.resolve(true)
+  return new Promise(resolve => {
+    const startTime = Date.now()
+    twikooPollResolve = resolve
+    twikooPollTimer = setInterval(() => {
+      if (typeof window.twikoo !== 'undefined') {
+        stopTwikooPoll(true)
+      } else if (Date.now() - startTime >= timeout) {
+        stopTwikooPoll(false)
+      }
+    }, 100)
+  })
+}
+
 // 获取文章评论数
 async function getArticleStats() {
   if (typeof window === 'undefined' || !twikooEnvId) return
 
   const articleUrl = `/posts/${route.params.slug}`
 
-  // 等待 Twikoo 加载
-  if (typeof window.twikoo === 'undefined') {
-    await new Promise(resolve => {
-      const checkTwikoo = setInterval(() => {
-        if (typeof window.twikoo !== 'undefined') {
-          clearInterval(checkTwikoo)
-          resolve()
-        }
-      }, 100)
-    })
-  }
+  const ready = await waitForTwikoo()
+  if (!ready) return
 
   try {
     // 获取评论数
@@ -598,22 +631,11 @@ function shareToWeibo() {
 // 复制文章链接
 async function copyArticleLink() {
   if (typeof window === 'undefined') return
-  
+
   const url = `${siteConfig.url}/posts/${route.params.slug}`
-  
-  try {
-    await navigator.clipboard.writeText(url)
-    notification.show('本文链接已复制!')
-  } catch (err) {
-    console.error('复制失败:', err)
-    const input = document.createElement('input')
-    input.value = url
-    document.body.appendChild(input)
-    input.select()
-    document.execCommand('copy')
-    document.body.removeChild(input)
-    notification.show('本文链接已复制!')
-  }
+
+  const success = await copyTextToClipboard(url)
+  notification.show(success ? '本文链接已复制!' : '复制失败, 请手动复制链接')
 }
 </script>
 
@@ -705,7 +727,7 @@ async function copyArticleLink() {
 
       <div class="flex lg:gap-8 px-2 flex-col md:flex-row max-w-full">
         <section data-fade class=" flex-1 min-w-0 max-w-full">
-          <article v-html="post.content" class="article-content whitespace-normal break-words"></article>
+          <article ref="articleRef" v-html="post.content" class="article-content whitespace-normal break-words"></article>
         </section>
         <div data-fade class="sticky top-30 flex-shrink-0 hidden md:block self-start">
           <div>
@@ -919,7 +941,6 @@ async function copyArticleLink() {
   overflow-y: hidden;
   transition: max-height 0.5s ease, box-shadow 0.5s ease;
   --collapsed-height: 260px; /* 折叠高度 */
-  --expanded-height: 2000px; /* 允许展开的最大高度 */
 }
 
 .code-block-wrapper.collapsed pre {
@@ -928,7 +949,8 @@ async function copyArticleLink() {
 }
 
 .code-block-wrapper:not(.collapsed) pre {
-  max-height: var(--expanded-height);
+  max-height: none;
+  overflow-y: auto;
 }
 
 .code-block-wrapper .fold-overlay {
