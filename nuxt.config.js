@@ -8,6 +8,11 @@ export default defineNuxtConfig({
     classSuffix: '',
   },
   css: ['@/assets/main.css'],
+  app: {
+    head: {
+      htmlAttrs: { lang: 'zh-CN' },
+    },
+  },
   // 关闭 payload 抽离，否则 _payload.json 会成为独立缓存条目，且客户端以 force-cache 读取，导致 SPA 跳转长期命中旧内容
   experimental: {
     payloadExtraction: false,
