@@ -330,3 +330,54 @@ pre code.hljs {
   -ms-overflow-style: auto;
   background-color: transparent;
 }
+
+/* 资源分享按钮 */
+.article-content .share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  margin: 0 0.15em;
+  padding: 0.25em 0.75em;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.88em;
+  font-weight: 500;
+  line-height: 1.5;
+  vertical-align: middle;
+  color: #fff;
+  cursor: pointer;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.02)),
+    linear-gradient(90deg, #00e699, #00e2d8);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: box-shadow 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+}
+
+html.dark .article-content .share-btn {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.08)),
+    linear-gradient(90deg, #00e699, #00e2d8);
+}
+
+.article-content .share-btn:hover {
+  filter: brightness(0.9);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+html.dark .article-content .share-btn:hover {
+  filter: none;
+  opacity: 0.75;
+}
+
+.article-content .share-btn:active {
+  filter: brightness(0.85);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+html.dark .article-content .share-btn:active {
+  filter: none;
+  opacity: 0.65;
+}
+
+.article-content .share-btn .iconfont {
+  font-size: 0.95em;
+}

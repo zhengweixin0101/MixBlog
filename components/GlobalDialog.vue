@@ -90,9 +90,13 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useDialog } from '~/composables/useDialog'
+import { useScrollLock } from '~/composables/useScrollLock'
 
 const dialog = useDialog()
+
+useScrollLock(computed(() => dialog.state.visible))
 
 function onOverlayClick() {
   if (dialog.state.closable) dialog.hide()

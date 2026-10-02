@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, useHead, useRoute, setResponseStatus } from '#imports'
 import { useNotification } from '~/composables/useNotification'
+import { useShareDialog } from '~/composables/useShareDialog'
 import { marked } from 'marked'
 import dayjs from 'dayjs'
 
@@ -13,6 +14,7 @@ import { siteConfig } from '@/siteConfig/main.js'
 
 const route = useRoute()
 const notification = useNotification()
+const shareDialog = useShareDialog()
 
 // 按需加载 KaTeX
 let katex = null
@@ -306,6 +308,7 @@ watch([rawPostData, error], () => {
     html = renderKatex(html)
     html = highlightCodeBlocks(html)
     html = enhanceLinks(html)
+    html = shareDialog.replaceShareLinks(html)
 
     const tocItems = []
     html = html.replace(/<(h[1-6])>(.*?)<\/\1>/g, (m, tag, text) => {
@@ -909,6 +912,8 @@ async function copyArticleLink() {
         <Comment />
       </div>
     </div>
+
+    <ShareDialog />
   </main>
 </template>
 

@@ -25,6 +25,8 @@ export default defineNuxtPlugin(() => {
         const link = e.target.closest?.('a[href]')
         if (!link) return
 
+        if (link.closest('[data-no-confirm]')) return
+
         const href = link.getAttribute('href')
         if (!href) return
 
