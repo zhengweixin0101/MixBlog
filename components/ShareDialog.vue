@@ -40,11 +40,12 @@
             </div>
           </div>
 
-          <div v-else-if="shareDialog.state.error" class="py-10 flex flex-col items-center gap-3 text-sm text-red-500">
+          <div v-else-if="shareDialog.state.error" class="py-2 flex flex-col items-center gap-3 text-sm text-red-500">
             <span>{{ shareDialog.state.error }}</span>
             <button
-              class="px-3 py-1.5 rounded-lg text-xs cursor-pointer
-                     bg-black/10 dark:bg-white/15 text-#2f3f5b dark:text-white hover:bg-black/15 dark:hover:bg-white/20 transition-colors"
+              class="py-2 px-3 text-sm rounded-lg border-none text-#2f3f5b/80 dark:text-white/60
+                     bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20
+                     transition-colors duration-300 cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)]"
               @click="shareDialog.retry()"
             >重新加载</button>
           </div>
