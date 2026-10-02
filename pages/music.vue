@@ -271,61 +271,63 @@
   </div>
 
   <!-- 移动端歌曲列 -->
-  <div class="fixed inset-0 z-50 md:hidden select-none" :class="{ 'pointer-events-none': !mobileListOpen }" aria-hidden="true">
-    <transition name="fade">
-      <div v-show="mobileListOpen" class="absolute inset-0 bg-black/50 backdrop-blur" @click="closeMobileList"></div>
-    </transition>
+  <Teleport to="body">
+    <div class="fixed inset-0 z-350 md:hidden select-none" :class="{ 'pointer-events-none': !mobileListOpen }" aria-hidden="true">
+      <transition name="fade">
+        <div v-show="mobileListOpen" class="absolute inset-0 bg-black/50 backdrop-blur" @click="closeMobileList"></div>
+      </transition>
 
-    <transition name="slide-up">
-      <aside
-        ref="mobileListEl"
-        v-show="mobileListOpen"
-        class="fixed bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]
-               bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-lg text-gray-800 dark:text-gray-100 rounded-t-lg"
-      >
-        <!-- 加载中骨架屏 -->
-        <ul v-if="isLoadingList" class="space-y-2 p-3">
-          <li v-for="n in 6" :key="n" class="flex items-center p-2 py-3 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)]">
-            <div class="w-6 h-6 flex items-center justify-center mr-2">
-              <div class="w-4 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
-            </div>
-            <div class="min-w-0 flex-1 flex justify-between items-center">
-              <div class="w-24 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
-              <div class="w-16 h-3 rounded bg-gray/20 dark:bg-white/10 shimmer ml-2"></div>
-            </div>
-          </li>
-        </ul>
-        <!-- 列表为空 -->
-        <div v-else-if="!list?.length" class="flex items-center justify-center py-12 text-gray-400 dark:text-gray-500 text-sm">
-          暂无歌曲
-        </div>
-        <!-- 正常列表 -->
-        <ul v-else class="space-y-2 p-3">
-          <li
-            v-for="(item, idx) in list"
-            :key="item.musicFull || item.title || idx"
-            @click="selectMobile(idx)"
-            :class="[
-              'flex items-center p-2 py-3 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
-              idx === currentIndex
-                ? 'shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]'
-                : 'shadow-[0_0_2px_rgba(0,0,0,0.2)]'
-            ]"
-          >
-            <div class="w-6 h-6 flex items-center justify-center text-xs font-semibold mr-2 text-gray-600 dark:text-gray-300">
-              {{ idx + 1 }}
-            </div>
-            <div class="min-w-0 flex-1 flex justify-between items-center">
-              <div class="transition-color duration-300 font-semibold truncate">{{ item.title }}</div>
-              <div class="text-sm transition-color duration-300 truncate ml-2">
-                {{ item.artist }}
+      <transition name="slide-up">
+        <aside
+          ref="mobileListEl"
+          v-show="mobileListOpen"
+          class="fixed bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]
+                 bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-lg text-gray-800 dark:text-gray-100 rounded-t-lg"
+        >
+          <!-- 加载中骨架屏 -->
+          <ul v-if="isLoadingList" class="space-y-2 p-3">
+            <li v-for="n in 6" :key="n" class="flex items-center p-2 py-3 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)]">
+              <div class="w-6 h-6 flex items-center justify-center mr-2">
+                <div class="w-4 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
               </div>
-            </div>
-          </li>
-        </ul>
-      </aside>
-    </transition>
-  </div>
+              <div class="min-w-0 flex-1 flex justify-between items-center">
+                <div class="w-24 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
+                <div class="w-16 h-3 rounded bg-gray/20 dark:bg-white/10 shimmer ml-2"></div>
+              </div>
+            </li>
+          </ul>
+          <!-- 列表为空 -->
+          <div v-else-if="!list?.length" class="flex items-center justify-center py-12 text-gray-400 dark:text-gray-500 text-sm">
+            暂无歌曲
+          </div>
+          <!-- 正常列表 -->
+          <ul v-else class="space-y-2 p-3">
+            <li
+              v-for="(item, idx) in list"
+              :key="item.musicFull || item.title || idx"
+              @click="selectMobile(idx)"
+              :class="[
+                'flex items-center p-2 py-3 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
+                idx === currentIndex
+                  ? 'shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]'
+                  : 'shadow-[0_0_2px_rgba(0,0,0,0.2)]'
+              ]"
+            >
+              <div class="w-6 h-6 flex items-center justify-center text-xs font-semibold mr-2 text-gray-600 dark:text-gray-300">
+                {{ idx + 1 }}
+              </div>
+              <div class="min-w-0 flex-1 flex justify-between items-center">
+                <div class="transition-color duration-300 font-semibold truncate">{{ item.title }}</div>
+                <div class="text-sm transition-color duration-300 truncate ml-2">
+                  {{ item.artist }}
+                </div>
+              </div>
+            </li>
+          </ul>
+        </aside>
+      </transition>
+    </div>
+  </Teleport>
 
 </template>
 

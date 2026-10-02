@@ -17,6 +17,7 @@ if (process.client) {
     border-radius: 2px;
     box-shadow: 0 0 8px #00e699, 0 0 4px #00e2d8;
     transition: width 0.3s ease;
+    z-index: 800;
   }
   #nprogress .peg {
     box-shadow: 0 0 15px #00e699, 0 0 10px #00e2d8 !important;

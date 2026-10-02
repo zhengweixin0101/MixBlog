@@ -519,7 +519,7 @@ const hoveredIndex = ref(null)
             class="relative"
             @mouseenter="hoverHero = hero.name"
             @mouseleave="hoverHero = null"
-            :style="{ zIndex: hoverHero === hero.name ? 999 : idx }"
+            :style="{ zIndex: hoverHero === hero.name ? aboutConfig.author.game.heroes.length + 1 : idx }"
           >
             <img
               :src="hero.img"

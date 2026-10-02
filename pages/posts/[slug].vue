@@ -79,7 +79,7 @@ function highlightCodeBlocks(html) {
       return `
         <div class="code-block-wrapper group relative ${isCollapsed ? 'collapsed' : ''}" data-lines="${lines}" aria-expanded="${isCollapsed ? 'false' : 'true'}">
           <button
-            class="copy-btn absolute top-2 right-2 px-2 py-1 text-xs rounded-lg border border-black/20 backdrop-blur-2 dark:border-white/20 bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100 cursor-pointer"
+            class="copy-btn absolute top-2 right-2 z-20 px-2 py-1 text-xs rounded-lg border border-black/20 backdrop-blur-2 dark:border-white/20 bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100 cursor-pointer"
             data-code="${encodedCode}"
           >复制</button>
           <pre><code class="hljs ${langClass}">${code}</code></pre>
@@ -976,9 +976,5 @@ async function copyArticleLink() {
 
 .dark .code-block-wrapper .fold-overlay {
   background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgb(26, 26, 26) 100%);
-}
-
-.code-block-wrapper .copy-btn {
-  z-index: 20;
 }
 </style>

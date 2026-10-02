@@ -3,7 +3,7 @@
     <Transition name="share-dialog" :duration="250">
       <div
         v-if="shareDialog.state.visible"
-        class="share-overlay fixed inset-0 z-10000 flex items-center justify-center p-4"
+        class="share-overlay fixed inset-0 z-200 flex items-center justify-center p-4"
         @click.self="onOverlayClick"
       >
       <div class="share-backdrop absolute inset-0 bg-black/40 backdrop-blur-md" @click="onOverlayClick"></div>

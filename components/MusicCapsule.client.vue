@@ -2,7 +2,7 @@
   <div
     v-if="shouldShowCapsule"
     v-show="!isMobile"
-    class="music-capsule fixed bottom-5 left-5 z-40
+    class="music-capsule fixed bottom-5 left-5 z-400
            bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-md
            shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]
            cursor-pointer select-none rounded-full h-[44px]
