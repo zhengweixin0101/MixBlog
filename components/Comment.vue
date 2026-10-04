@@ -8,8 +8,17 @@
 </template>
 
 <script setup>
-import { onMounted, nextTick } from 'vue'
+import { onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { siteConfig } from '@/siteConfig/main.js'
+
+let observer = null
+
+function patchAutocomplete(root) {
+  root.querySelectorAll('input').forEach((input) => {
+    if (input.getAttribute('autocomplete') !== null) return
+    input.setAttribute('autocomplete', input.type === 'password' ? 'nickname' : 'off')
+  })
+}
 
 onMounted(async () => {
   await nextTick()
@@ -19,6 +28,16 @@ onMounted(async () => {
       el: '#tcomment'
     })
   }
+  const el = document.getElementById('tcomment')
+  if (!el) return
+  patchAutocomplete(el)
+  observer = new MutationObserver(() => patchAutocomplete(el))
+  observer.observe(el, { childList: true, subtree: true })
+})
+
+onBeforeUnmount(() => {
+  observer?.disconnect()
+  observer = null
 })
 </script>
 
