@@ -15,7 +15,7 @@ onMounted(async () => {
   await nextTick()
   if (window.twikoo) {
     twikoo.init({
-      envId: siteConfig.thirdParty.twikooEnvId,
+      envId: siteConfig.thirdParty.twikoo.envId,
       el: '#tcomment'
     })
   }

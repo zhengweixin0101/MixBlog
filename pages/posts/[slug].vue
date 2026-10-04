@@ -21,7 +21,7 @@ let katex = null
 await import('katex').then((mod) => { katex = mod.default })
 
 // Twikoo 评论系统
-const twikooEnvId = siteConfig.thirdParty?.twikooEnvId || ''
+const twikooEnvId = siteConfig.thirdParty?.twikoo?.envId || ''
 
 // 访问量和评论数
 const commentCount = ref(0)

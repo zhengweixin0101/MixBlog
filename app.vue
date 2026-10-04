@@ -42,9 +42,9 @@ useHead({
 
   script: [
     {
-      src: siteConfig.thirdParty.umami.js,
+      src: siteConfig.thirdParty.umami.script,
       defer: true,
-      'data-website-id': siteConfig.thirdParty.umami.siteID,
+      'data-website-id': siteConfig.thirdParty.umami.siteId,
     },
   ],
 })
