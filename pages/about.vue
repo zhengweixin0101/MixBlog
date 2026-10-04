@@ -423,7 +423,7 @@ const hoveredIndex = ref(null)
             上了解更多
           </div>
           <div class="absolute justify-center right-0 md:top-3 transition-transform duration-800 group-hover:-rotate-8">
-            <img :src="aboutConfig.author.personality.img" class="fade-in-image" loading="lazy" onload="this.classList.add('onload-fade')" />
+            <img :src="aboutConfig.author.personality.img" width="160" height="160" class="fade-in-image" loading="lazy" onload="this.classList.add('onload-fade')" />
           </div>
         </div>
       </div>
