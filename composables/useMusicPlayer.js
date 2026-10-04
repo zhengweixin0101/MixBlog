@@ -75,6 +75,7 @@ const muted = ref(false)
 const shuffleList = ref([])
 const shuffleIndex = ref(0)
 const pausedOnMusicPage = ref(false)
+const capsuleClosing = ref(false)
 
 let currentCoverBlobUrl = null
 let _audio = null
@@ -251,6 +252,7 @@ function resetTrackState({ keepTrack = false } = {}) {
 
 async function loadSong(item, audioEl) {
   audioEl.pause()
+  capsuleClosing.value = false
   currentIndex.value = list.value.indexOf(item)
   currentItem.value = item
   resetTrackState({ keepTrack: true })
@@ -409,6 +411,7 @@ function closeCapsule() {
     audioEl.src = ''
     isPlaying.value = false
   }
+  capsuleClosing.value = true
   resetTrackState()
   duration.value = 0
 }
@@ -441,6 +444,7 @@ export function useMusicPlayer() {
     shuffleList,
     shuffleIndex,
     pausedOnMusicPage,
+    capsuleClosing,
     loadList,
     ensureInfo,
     loadLyrics,

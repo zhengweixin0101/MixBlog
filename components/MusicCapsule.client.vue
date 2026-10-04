@@ -1,12 +1,13 @@
 <template>
+  <transition name="capsule">
   <div
-    v-if="shouldShowCapsule"
-    v-show="!isMobile"
+    v-show="capsuleVisible"
     class="music-capsule fixed bottom-5 left-5 z-400
            bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-md
            shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]
            cursor-pointer select-none rounded-full h-[44px]
            transition-[width] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+    :class="{ 'capsule-no-anim': !capsuleClosing }"
     data-music-capsule
     :style="{ width: capsuleWidth + 'px' }"
     @click="togglePlayAction"
@@ -19,9 +20,9 @@
       <div class="flex items-center h-full px-[6px] gap-2">
         <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 shadow-sm relative z-[1]">
           <img
-            v-if="currentItem.coverBlobUrl"
-            :src="currentItem.coverBlobUrl"
-            :alt="currentItem.title"
+            v-if="shownItem?.coverBlobUrl"
+            :src="shownItem.coverBlobUrl"
+            :alt="shownItem.title"
             class="w-full h-full object-cover fade-in-image"
             :style="{ transform: `rotate(${rotation}deg)` }"
             draggable="false"
@@ -35,7 +36,7 @@
 
         <div v-if="!isPlaying" class="flex-shrink-0 overflow-hidden">
           <span class="text-[15px] font-semibold text-#2f3f5b dark:text-white whitespace-nowrap block">
-            {{ currentItem.title }}
+            {{ shownItem?.title }}
           </span>
         </div>
 
@@ -74,10 +75,11 @@
           : 'iconfont icon-play text-lg text-#2f3f5b dark:text-white ml-0.5'"></i>
       </div>
     </transition>
+  </div>
+  </transition>
 
-    <div ref="measureEl" class="fixed -left-[9999px] top-0 whitespace-nowrap text-[15px] font-semibold pointer-events-none opacity-0">
-      {{ measureText }}
-    </div>
+  <div ref="measureEl" class="fixed -left-[9999px] top-0 whitespace-nowrap text-[15px] font-semibold pointer-events-none opacity-0">
+    {{ measureText }}
   </div>
 </template>
 
@@ -88,14 +90,21 @@ const route = useRoute()
 
 const {
   currentItem, isPlaying, lyrics, currentLyricIndex, currentTime, duration,
-  togglePlay, pausedOnMusicPage,
+  togglePlay, pausedOnMusicPage, capsuleClosing,
 } = useMusicPlayer()
 
 const isMusicPage = computed(() => route.path === '/music')
 const shouldShowCapsule = computed(() => !!currentItem.value && !isMusicPage.value && !pausedOnMusicPage.value)
+const capsuleVisible = computed(() => shouldShowCapsule.value && !isMobile.value && !capsuleClosing.value)
+const lastItem = ref(null)
+const shownItem = computed(() => currentItem.value || lastItem.value)
 const isMobile = ref(false)
 const hovered = ref(false)
 const measureEl = ref(null)
+
+watch(currentItem, (item) => {
+  if (item) lastItem.value = item
+}, { immediate: true })
 
 const progressPercent = computed(() => {
   if (!duration.value) return 0
@@ -193,19 +202,28 @@ function togglePlayAction() {
 </script>
 
 <style scoped>
-.music-capsule {
-  animation: capsule-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+.music-capsule.capsule-enter-active {
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
 }
 
-@keyframes capsule-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.music-capsule.capsule-enter-from {
+  opacity: 0;
+  transform: translateY(10px) scale(0.9);
+  width: 45px !important;
+}
+
+.music-capsule.capsule-leave-active {
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease 0.35s, transform 0.25s ease 0.35s;
+}
+
+.music-capsule.capsule-leave-to {
+  width: 45px !important;
+  opacity: 0;
+  transform: translateY(10px) scale(0.9);
+}
+
+.music-capsule.capsule-no-anim.capsule-leave-active {
+  transition: none;
 }
 
 .lyric-slide-enter-active,
