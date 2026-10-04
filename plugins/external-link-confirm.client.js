@@ -58,7 +58,7 @@ export default defineNuxtPlugin(() => {
     dialog.show({
       title: '即将前往',
       html: true,
-      content: `<span class="block my-2.5 mx-auto max-w-full rounded-lg bg-black/5 dark:bg-white/10 px-3 py-2 font-mono text-sm break-all text-#2f3f5b dark:text-#CCC">${displayUrl}</span>`,
+      content: `<span class="block my-2.5 mx-auto max-w-full rounded-lg bg-black/5 dark:bg-white/10 px-3 py-2 font-mono text-sm break-all text-#2f3f5b dark:text-#CCC">${displayUrl}</span>`,  //开发环境中unocss不生效，生产环境正常
       buttons: [
         { text: '取消', type: 'default' },
         { text: '继续', type: 'primary', onClick: openLink }
