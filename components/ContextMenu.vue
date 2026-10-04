@@ -6,7 +6,7 @@ import { useNotification } from '~/composables/useNotification'
 import { useMusicPlayer } from '~/composables/useMusicPlayer'
 
 const notification = useNotification()
-const { isPlaying: musicIsPlaying, togglePlay: musicTogglePlay, prev: musicPrev, next: musicNext, closeCapsule, currentItem: musicCurrentItem, playIndex: musicPlayIndex, list: musicList, loadList: musicLoadList, pausedOnMusicPage } = useMusicPlayer()
+const { isPlaying: musicIsPlaying, togglePlay: musicTogglePlay, prev: musicPrev, next: musicNext, closeCapsule, currentItem: musicCurrentItem, playIndex: musicPlayIndex, list: musicList, loadList: musicLoadList, pausedOnMusicPage, playMode: musicPlayMode, togglePlayMode: musicTogglePlayMode } = useMusicPlayer()
 
 const visible = ref(false)
 const x = ref(0)
@@ -143,7 +143,9 @@ const playMusic = async () => {
     musicTogglePlay()
     pausedOnMusicPage.value = false
   } else if (musicList.value?.length) {
-    musicPlayIndex(0)
+    const idx = Math.floor(Math.random() * musicList.value.length)
+    if (musicPlayMode.value === 'shuffle') musicTogglePlayMode()
+    musicPlayIndex(idx, true)
   }
   hideMenu()
 }
