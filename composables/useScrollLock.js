@@ -2,20 +2,27 @@ import { watch, onBeforeUnmount } from 'vue'
 
 let lockCount = 0
 let prevOverflow = null
+let prevScrollbarWidth = null
 
 function lock() {
   if (typeof document === 'undefined') return
   if (lockCount++ > 0) return
-  prevOverflow = document.body.style.overflow
-  document.body.style.overflow = 'hidden'
+  const html = document.documentElement
+  prevOverflow = html.style.overflow
+  prevScrollbarWidth = html.style.scrollbarWidth
+  html.style.overflow = 'hidden'
+  html.style.scrollbarWidth = 'none'
 }
 
 function unlock() {
   if (typeof document === 'undefined') return
   if (lockCount === 0) return
   if (--lockCount > 0) return
-  document.body.style.overflow = prevOverflow ?? ''
+  const html = document.documentElement
+  html.style.overflow = prevOverflow ?? ''
+  html.style.scrollbarWidth = prevScrollbarWidth ?? ''
   prevOverflow = null
+  prevScrollbarWidth = null
 }
 
 /**
