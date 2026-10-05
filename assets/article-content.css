@@ -326,9 +326,30 @@ html.dark .article-content pre {
 }
 
 pre code.hljs {
+  display: block;
+  padding: 1em;
   scrollbar-width: thin;
   -ms-overflow-style: auto;
   background-color: transparent;
+}
+
+/* Twikoo 加载后会注入 prism-okaidia，其 code[class*="language-"] 会改掉代码块的
+   字体/行高/字重/颜色/white-space，且随文章是否有评论而有无，必须显式声明压住 */
+pre code.hljs {
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 1em;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: normal;
+  color: var(--hljs-fg);
+  text-shadow: none;
+  tab-size: 4;
+  hyphens: none;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  overflow-wrap: normal;
 }
 
 /* 资源分享按钮 */

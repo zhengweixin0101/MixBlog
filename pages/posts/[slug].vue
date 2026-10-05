@@ -8,8 +8,10 @@ import dayjs from 'dayjs'
 import Comment from '@/components/Comment.vue'
 import Sidebar from '@/components/Sidebar.vue'
 import '@/assets/article-content.css'
+import '@/assets/hljs-themes.css'
 import 'katex/dist/katex.min.css'
 
+import { decodeHtmlEntities, highlightToHtml, normalizeLanguage } from '@/utils/highlight'
 import { siteConfig } from '@/siteConfig/main.js'
 
 const route = useRoute()
@@ -69,28 +71,28 @@ const articleRef = ref(null)
 
 // 代码高亮处理
 function highlightCodeBlocks(html) {
-  return html.replace(
-    /<pre><code(?: class="language-(\w+)")?>([\s\S]*?)<\/code><\/pre>/g,
-    (_, lang, code) => {
-      const langClass = lang ? `language-${lang}` : ''
-      const lines = (code.match(/\n/g) || []).length + 1
-      const isCollapsed = lines > 20
-      const encodedCode = typeof encodeURIComponent === 'function' ? encodeURIComponent(code) : code
-      return `
+  return html.replace(/<pre><code([^>]*)>([\s\S]*?)<\/code><\/pre>/g, (_, attrs, escaped) => {
+    const langMatch = attrs.match(/\blang(?:uage)?-([^\s"']+)/i)
+    const language = normalizeLanguage(langMatch?.[1])
+    const code = decodeHtmlEntities(escaped)
+    const lines = code.split('\n').length
+    const isCollapsed = lines > 20
+    const highlighted = highlightToHtml(code, language)
+    const encodedCode = encodeURIComponent(code)
+    return `
         <div class="code-block-wrapper group relative ${isCollapsed ? 'collapsed' : ''}" data-lines="${lines}" aria-expanded="${isCollapsed ? 'false' : 'true'}">
           <button
             class="copy-btn absolute top-2 right-2 z-20 px-2 py-1 text-xs rounded-lg border border-black/20 backdrop-blur-2 dark:border-white/20 bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100 cursor-pointer"
             data-code="${encodedCode}"
           >复制</button>
-          <pre><code class="hljs ${langClass}">${code}</code></pre>
+          <pre><code class="hljs language-${language}">${highlighted}</code></pre>
           ${isCollapsed ? `
           <div class="fold-overlay pointer-events-none absolute left-0 right-0 bottom-0 h-20"></div>
           <button class="expand-btn absolute left-1/2 -translate-x-1/2 bottom-5 px-3 py-2 text-xs rounded-lg border border-black/20 backdrop-blur-2 dark:border-white/20 bg-black/50 text-white dark:bg-white/10 dark:text-white cursor-pointer z-10">展开剩余代码</button>
           ` : ''}
         </div>
       `;
-    }
-  );
+  });
 }
 
 // KaTeX 渲染
@@ -136,21 +138,6 @@ function addFancyboxAttributesToAnchors(html) {
   })
 }
 
-// 代码高亮样式
-const isDark = ref(false)
-function loadHighlightStyle(darkMode) {
-  if (typeof document === 'undefined') return
-  const prevLink = document.getElementById('hljs-theme')
-  if (prevLink) prevLink.remove()
-  const link = document.createElement('link')
-  link.id = 'hljs-theme'
-  link.rel = 'stylesheet'
-  link.href = darkMode
-    ? '/hljs/vs2015.min.css'
-    : '/hljs/github.min.css'
-  document.head.appendChild(link)
-}
-
 // 复制文本
 async function copyTextToClipboard(text) {
   try {
@@ -182,18 +169,8 @@ function onDocumentClick(e) {
   if (!encoded) return
   let code = encoded
   try {
-    if (typeof decodeURIComponent === 'function') code = decodeURIComponent(encoded)
+    code = decodeURIComponent(encoded)
   } catch {}
-  // 解码 HTML 实体（如 &lt;、&gt;、&amp; 等）
-  code = code.replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&#x27;/g, "'")
-    .replace(/&#x2F;/g, '/')
-    .replace(/&#x3D;/g, '=')
-    .replace(/&#x60;/g, '`')
   // 反馈期间锁定按钮，禁止重复点击
   copyBtn.dataset.copying = '1'
   copyBtn.disabled = true
@@ -328,7 +305,7 @@ watch([rawPostData, error], () => {
 // 监听内容变化
 watch(() => post.value.content, () => applyClientEnhancements(), { immediate: true })
 
-// 高亮 + Fancybox
+// Fancybox + 折叠高度
 function applyClientEnhancements(retries = 0) {
   if (!import.meta.client || !post.value.content) return
   nextTick(() => {
@@ -337,14 +314,6 @@ function applyClientEnhancements(retries = 0) {
       if (!root) {
         if (retries < 5) applyClientEnhancements(retries + 1)
         return
-      }
-      const codeBlocks = root.querySelectorAll('pre code')
-      if (codeBlocks.length) {
-        const { default: hljs } = await import('highlight.js')
-        codeBlocks.forEach(block => {
-          if (block.dataset.highlighted) return
-          hljs.highlightElement(block)
-        })
       }
       // 初始化 Fancybox
       const { Fancybox } = await import('@fancyapps/ui/dist/fancybox/')
@@ -379,20 +348,7 @@ useHead(() => {
 })
 
 // 页面挂载
-let observer
 onMounted(() => {
-  isDark.value = document.documentElement.classList.contains('dark')
-  loadHighlightStyle(isDark.value)
-
-  observer = new MutationObserver(() => {
-    const darkNow = document.documentElement.classList.contains('dark')
-    if (darkNow !== isDark.value) {
-      isDark.value = darkNow
-      loadHighlightStyle(darkNow)
-    }
-  })
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-
   document.addEventListener('click', onDocumentClick)
 
   attachExpandBtnHandlers()
@@ -442,7 +398,6 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  observer?.disconnect()
   document.removeEventListener('click', onDocumentClick)
 
   detachExpandBtnHandlers()
@@ -964,7 +919,7 @@ async function copyArticleLink() {
   right: 0;
   bottom: 0;
   height: 20rem;
-  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+  background: linear-gradient(180deg, rgba(248, 249, 250, 0) 0%, #f8f9fa 100%);
   pointer-events: none;
   border-bottom-left-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
@@ -975,6 +930,6 @@ async function copyArticleLink() {
 }
 
 .dark .code-block-wrapper .fold-overlay {
-  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgb(26, 26, 26) 100%);
+  background: linear-gradient(180deg, rgba(30, 30, 30, 0) 0%, #1e1e1e 100%);
 }
 </style>
