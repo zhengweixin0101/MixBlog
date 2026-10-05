@@ -24,7 +24,7 @@
           <li
             v-for="(item, idx) in list"
             :key="item.musicFull || item.title || idx"
-            @click="playIndex(idx, false, false)"
+            @click="playIndex(idx)"
             :class="[
               'flex items-center p-2 py-3 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
               idx === currentIndex
@@ -352,7 +352,7 @@ const {
   playIndex: sharedPlayIndex, togglePlay: sharedTogglePlay,
   prev: sharedPrev, next: sharedNext, togglePlayMode: sharedTogglePlayMode,
   toggleMute: sharedToggleMute, seek: sharedSeek, downloadMusic: sharedDownloadMusic,
-  cleanup, getAudio, attachPermanentListeners, setOnLyricChange, setOnPlayIndex,
+  cleanup, getAudio, attachPermanentListeners, setOnLyricChange,
   cancelPendingPlay,
 } = useMusicPlayer()
 
@@ -366,14 +366,10 @@ const mobileListEl = ref(null)
 
 watch(currentTime, (v) => { if (!isSeeking.value) seekValue.value = v })
 
-async function playIndex(i, forcePlay = false, shouldScroll = true) {
+async function playIndex(i, forcePlay = false) {
   const switched = await sharedPlayIndex(i, forcePlay)
   if (!switched) return
   seekValue.value = 0
-  if (shouldScroll) {
-    scrollToCurrentItem()
-    if (mobileListOpen.value) scrollMobileToCurrentItem().catch(() => {})
-  }
 }
 
 function togglePlay() {
@@ -391,45 +387,58 @@ function musicList() {
   if (!list.value?.length) return
   mobileListOpen.value = !mobileListOpen.value
   if (mobileListOpen.value) {
-    nextTick().then(() => { scrollMobileToCurrentItem().catch(() => {}) })
+    nextTick().then(scrollMobileToCurrentItem)
   }
 }
 
 function closeMobileList() { mobileListOpen.value = false }
 
 function selectMobile(idx) {
-  playIndex(idx, false, true)
+  playIndex(idx)
   closeMobileList()
 }
 
-async function scrollMobileToCurrentItem() {
-  const el = mobileListEl.value
-  if (!el || currentIndex.value < 0) return
-  await nextTick()
-  const currentItemEl = el.querySelector(`li:nth-child(${currentIndex.value + 1})`)
-  if (!currentItemEl) return
-  const elRect = el.getBoundingClientRect()
-  const itemRect = currentItemEl.getBoundingClientRect()
-  if (itemRect.top >= elRect.top && itemRect.bottom <= elRect.bottom) return
-  const target = el.scrollTop + (itemRect.bottom - elRect.bottom) + 20
+const scrollAnims = new WeakMap()
+
+function animateScrollTop(el, target, dur) {
+  const pending = scrollAnims.get(el)
+  if (pending) cancelAnimationFrame(pending)
   const start = el.scrollTop
   const distance = target - start
-  const dur = 400
+  if (!distance) return
   const startTime = performance.now()
   function animate(now) {
     const progress = Math.min((now - startTime) / dur, 1)
     const ease = 1 - Math.pow(1 - progress, 3)
     el.scrollTop = start + distance * ease
-    if (progress < 1) requestAnimationFrame(animate)
+    if (progress < 1) scrollAnims.set(el, requestAnimationFrame(animate))
+    else scrollAnims.delete(el)
   }
-  requestAnimationFrame(animate)
+  scrollAnims.set(el, requestAnimationFrame(animate))
 }
 
-watch(currentIndex, async () => {
-  if (mobileListOpen.value) {
-    await nextTick()
-    scrollMobileToCurrentItem().catch(() => {})
-  }
+async function scrollListToIndex(el, index, dur) {
+  if (!el || index < 0) return
+  await nextTick()
+  const itemEl = el.querySelector(`li:nth-child(${index + 1})`)
+  if (!itemEl) return
+  const elRect = el.getBoundingClientRect()
+  const itemRect = itemEl.getBoundingClientRect()
+  if (itemRect.top >= elRect.top && itemRect.bottom <= elRect.bottom) return
+  animateScrollTop(el, el.scrollTop + (itemRect.bottom - elRect.bottom) + 20, dur)
+}
+
+function scrollToCurrentItem() {
+  return scrollListToIndex(listEl.value, currentIndex.value, 500)
+}
+
+function scrollMobileToCurrentItem() {
+  return scrollListToIndex(mobileListEl.value, currentIndex.value, 400)
+}
+
+watch(currentIndex, () => {
+  scrollToCurrentItem()
+  if (mobileListOpen.value) scrollMobileToCurrentItem()
 })
 
 const hideHeader = useState('hideHeader', () => false)
@@ -511,29 +520,6 @@ async function scrollLyrics() {
   scrollTimer = requestAnimationFrame(animate)
 }
 
-async function scrollToCurrentItem() {
-  const listElement = listEl.value
-  if (!listElement || currentIndex.value < 0) return
-  await nextTick()
-  const currentItemEl = listElement.querySelector(`li:nth-child(${currentIndex.value + 1})`)
-  if (!currentItemEl) return
-  const listRect = listElement.getBoundingClientRect()
-  const itemRect = currentItemEl.getBoundingClientRect()
-  if (itemRect.top >= listRect.top && itemRect.bottom <= listRect.bottom) return
-  const target = listElement.scrollTop + (itemRect.bottom - listRect.bottom) + 20
-  const start = listElement.scrollTop
-  const distance = target - start
-  const dur = 500
-  const startTime = performance.now()
-  function animate(now) {
-    const progress = Math.min((now - startTime) / dur, 1)
-    const ease = 1 - Math.pow(1 - progress, 3)
-    listElement.scrollTop = start + distance * ease
-    if (progress < 1) requestAnimationFrame(animate)
-  }
-  requestAnimationFrame(animate)
-}
-
 function handleKeydown(e) {
   if (isFullscreen.value) return
   if (e.ctrlKey || e.altKey || e.metaKey) return
@@ -548,7 +534,6 @@ function handleKeydown(e) {
 onMounted(async () => {
   attachPermanentListeners()
   setOnLyricChange(scrollLyrics)
-  setOnPlayIndex(() => { scrollToCurrentItem(); if (mobileListOpen.value) scrollMobileToCurrentItem().catch(() => {}) })
 
   await loadList()
   await nextTick()
@@ -583,7 +568,6 @@ onBeforeUnmount(() => {
   cancelPendingPlay()
   cleanup()
   setOnLyricChange(null)
-  setOnPlayIndex(null)
 
   document.removeEventListener('keydown', handleKeydown)
   document.removeEventListener('fullscreenchange', handleFullscreenChange)

@@ -228,8 +228,6 @@ function onEnded() {
   next(true)
 }
 
-let _onPlayIndex = null
-
 function attachPermanentListeners() {
   const audioEl = getAudio()
   if (!audioEl || _permanentListenersAttached) return
@@ -328,7 +326,6 @@ async function playIndex(i, forcePlay = false) {
   try { await audioEl.play() } catch {}
   if (gen !== _playGeneration) { audioEl.pause(); return false }
   isPlaying.value = true
-  if (_onPlayIndex) _onPlayIndex()
   return true
 }
 
@@ -493,6 +490,5 @@ export function useMusicPlayer() {
     getAudio,
     attachPermanentListeners,
     setOnLyricChange(fn) { _onLyricChange = fn },
-    setOnPlayIndex(fn) { _onPlayIndex = fn },
   }
 }
