@@ -367,8 +367,9 @@ const mobileListEl = ref(null)
 watch(currentTime, (v) => { if (!isSeeking.value) seekValue.value = v })
 
 async function playIndex(i, forcePlay = false, shouldScroll = true) {
+  const switched = await sharedPlayIndex(i, forcePlay)
+  if (!switched) return
   seekValue.value = 0
-  await sharedPlayIndex(i, forcePlay)
   if (shouldScroll) {
     scrollToCurrentItem()
     if (mobileListOpen.value) scrollMobileToCurrentItem().catch(() => {})

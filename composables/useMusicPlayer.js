@@ -83,6 +83,12 @@ let _permanentListenersAttached = false
 let _pageListenersAttached = false
 let _onLyricChange = null
 let _playGeneration = 0
+let _targetIndex = -1
+let _lyricsAbort = null
+const SWITCH_MIN_GAP = 3000
+const SWITCH_LOCK = 10000
+let _lastSwitchAt = 0
+let _switchLockedUntil = 0
 
 function getAudio() {
   if (typeof document === 'undefined') return null
@@ -135,12 +141,17 @@ async function ensureInfo(item) {
   item.binFull = paths.binFull
 }
 
-async function loadLyrics(item) {
-  if (!item || !item.binFull) return
+async function loadLyrics(item, gen = null) {
+  if (!item || !item.binFull) return false
+  if (_lyricsAbort) _lyricsAbort.abort()
+  const ctrl = new AbortController()
+  _lyricsAbort = ctrl
+  const isStale = () => ctrl.signal.aborted || (gen !== null && gen !== _playGeneration)
   try {
-    const res = await fetch(item.binFull)
+    const res = await fetch(item.binFull, { signal: ctrl.signal })
     if (!res.ok) throw new Error('fetch bin failed')
     const ab = await res.arrayBuffer()
+    if (isStale()) return false
     const view = new DataView(ab)
     const lyricsLength = view.getUint32(0, true)
     const decoder = new TextDecoder('utf-8')
@@ -158,10 +169,13 @@ async function loadLyrics(item) {
     } else {
       item.coverBlobUrl = ''
     }
+    return true
   } catch {
+    if (isStale()) return false
     lyrics.value = []
     groupedLyrics.value = []
     item.coverBlobUrl = ''
+    return false
   }
 }
 
@@ -250,7 +264,7 @@ function resetTrackState({ keepTrack = false } = {}) {
   }
 }
 
-async function loadSong(item, audioEl) {
+async function loadSong(item, audioEl, gen) {
   audioEl.pause()
   capsuleClosing.value = false
   currentIndex.value = list.value.indexOf(item)
@@ -258,7 +272,8 @@ async function loadSong(item, audioEl) {
   resetTrackState({ keepTrack: true })
   isLoadingSong.value = true
   try {
-    await loadLyrics(item)
+    await loadLyrics(item, gen)
+    if (gen !== _playGeneration) return false
     if (groupedLyrics.value.length) {
       currentLyricIndex.value = 0
       currentLyricIndices.value = groupedLyrics.value[0].indices
@@ -266,50 +281,55 @@ async function loadSong(item, audioEl) {
       currentLyricIndex.value = -1
       currentLyricIndices.value = []
     }
-  } catch {
-    lyrics.value = []
   } finally {
-    isLoadingSong.value = false
+    if (gen === _playGeneration) isLoadingSong.value = false
   }
+  if (gen !== _playGeneration) return false
   audioEl.src = item.musicFull
+  return true
 }
 
 
 async function playIndex(i, forcePlay = false) {
   const audioEl = getAudio()
-  if (!audioEl) return
+  if (!audioEl) return false
   const item = list.value?.[i]
-  if (!item) return
+  if (!item) return false
 
+  const isSameTrack = currentIndex.value === i && currentItem.value === item
+  if (!isSameTrack && !forcePlay) {
+    const now = Date.now()
+    if (now < _switchLockedUntil) return false
+    if (now - _lastSwitchAt < SWITCH_MIN_GAP) {
+      _switchLockedUntil = now + SWITCH_LOCK
+      notification.show('不要频繁切歌，请稍后再试', 'warning', SWITCH_LOCK)
+      return false
+    }
+    _lastSwitchAt = now
+  }
+  _targetIndex = i
   await ensureInfo(item)
-  if (!item.musicFull) return
+  if (!item.musicFull) return false
 
   attachPermanentListeners()
   attachPageListeners()
 
-  if (currentIndex.value === i && !forcePlay) {
+  if (currentIndex.value === i && currentItem.value === item) {
+    if (isLoadingSong.value) return false
     if (audioEl.paused) {
       try { await audioEl.play(); isPlaying.value = true } catch {}
     } else { audioEl.pause(); isPlaying.value = false }
-    return
+    return false
   }
 
   const gen = ++_playGeneration
-  await loadSong(item, audioEl)
-  if (gen !== _playGeneration) {
-    currentItem.value = null
-    currentIndex.value = -1
-    return
-  }
-  try { await audioEl.play(); isPlaying.value = true } catch {}
-  if (gen !== _playGeneration) {
-    audioEl.pause()
-    isPlaying.value = false
-    currentItem.value = null
-    currentIndex.value = -1
-    return
-  }
+  const loaded = await loadSong(item, audioEl, gen)
+  if (!loaded || gen !== _playGeneration) return false
+  try { await audioEl.play() } catch {}
+  if (gen !== _playGeneration) { audioEl.pause(); return false }
+  isPlaying.value = true
   if (_onPlayIndex) _onPlayIndex()
+  return true
 }
 
 function togglePlay() {
@@ -321,30 +341,32 @@ function togglePlay() {
 
 function prev() {
   if (!list.value?.length) return
-  let idx = currentIndex.value
+  const base = _targetIndex >= 0 ? _targetIndex : currentIndex.value
+  let idx = base
   if (playMode.value === 'single') {
-    idx = currentIndex.value > 0 ? currentIndex.value - 1 : list.value.length - 1
+    idx = base > 0 ? base - 1 : list.value.length - 1
   } else if (playMode.value === 'shuffle') {
     if (!shuffleList.value.length) generateShuffleList()
     shuffleIndex.value = (shuffleIndex.value - 1 + shuffleList.value.length) % shuffleList.value.length
     idx = shuffleList.value[shuffleIndex.value]
   } else {
-    idx = currentIndex.value > 0 ? currentIndex.value - 1 : list.value.length - 1
+    idx = base > 0 ? base - 1 : list.value.length - 1
   }
   playIndex(idx)
 }
 
 function next(auto = false) {
   if (!list.value?.length) return
-  let idx = currentIndex.value
+  const base = _targetIndex >= 0 ? _targetIndex : currentIndex.value
+  let idx = base
   if (playMode.value === 'single') {
-    idx = auto ? currentIndex.value : (currentIndex.value + 1) % list.value.length
+    idx = auto ? base : (base + 1) % list.value.length
   } else if (playMode.value === 'shuffle') {
     if (!shuffleList.value.length) generateShuffleList()
     shuffleIndex.value = (shuffleIndex.value + 1) % shuffleList.value.length
     idx = shuffleList.value[shuffleIndex.value]
   } else {
-    idx = (currentIndex.value + 1) % list.value.length
+    idx = (base + 1) % list.value.length
   }
   playIndex(idx)
 }
@@ -370,7 +392,8 @@ function generateShuffleList() {
     const j = Math.floor(Math.random() * (i + 1));
     [indices[i], indices[j]] = [indices[j], indices[i]]
   }
-  shuffleIndex.value = currentIndex.value >= 0 ? indices.indexOf(currentIndex.value) : 0
+  const base = _targetIndex >= 0 ? _targetIndex : currentIndex.value
+  shuffleIndex.value = base >= 0 ? indices.indexOf(base) : 0
   shuffleList.value = indices
 }
 
@@ -414,10 +437,17 @@ function closeCapsule() {
   capsuleClosing.value = true
   resetTrackState()
   duration.value = 0
+  _targetIndex = -1
+  _lastSwitchAt = 0
+  _switchLockedUntil = 0
 }
 
 function cancelPendingPlay() {
   _playGeneration++
+  _targetIndex = -1
+  _lastSwitchAt = 0
+  _switchLockedUntil = 0
+  isLoadingSong.value = false
 }
 
 function cleanup() {

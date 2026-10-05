@@ -2,7 +2,7 @@
   <transition name="fullscreen">
     <div
       v-if="visible && currentItem"
-      class="fixed inset-0 z-600 flex overflow-hidden select-none 2xl:px-80"
+      class="fixed inset-0 z-600 flex overflow-hidden select-none 2xl:px-80 bg-black"
       tabindex="0"
       ref="containerEl"
     >
