@@ -14,12 +14,12 @@
  */
 
 <template>
-  <div class="fixed bottom-4 right-4 z-500 flex-col gap-4">
-    <transition-group name="toast" tag="div">
+  <div class="fixed bottom-4 right-4 z-500 flex flex-col items-end">
+    <transition-group name="toast" tag="div" class="flex flex-col items-end gap-2">
       <div
         v-for="toast in notification.state.toasts"
         :key="toast.id"
-        class="relative px-4 py-2 rounded-lg flex items-center justify-between min-w-50 min-h-10 mb-2 overflow-hidden transition-all duration-300"
+        class="relative px-4 py-2 rounded-lg flex items-center justify-between min-w-50 min-h-10 max-w-[min(80vw,40rem)] overflow-hidden transition-all duration-300"
         :class="{
           'bg-#fefefe dark:bg-white/10 text-#2f3f5b dark:text-white font-medium dark:backdrop-blur-md shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]': toast.type === 'info',
           'bg-green-500 text-white': toast.type === 'success',
