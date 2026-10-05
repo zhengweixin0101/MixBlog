@@ -14,7 +14,7 @@
  */
 
 <template>
-  <div class="fixed bottom-4 right-4 z-500 flex flex-col items-end">
+  <div class="fixed bottom-4 right-4 z-650 flex flex-col items-end">
     <transition-group name="toast" tag="div" class="flex flex-col items-end gap-2">
       <div
         v-for="toast in notification.state.toasts"
