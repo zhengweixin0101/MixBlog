@@ -45,6 +45,8 @@ useHead({
       src: siteConfig.thirdParty.umami.script,
       defer: true,
       'data-website-id': siteConfig.thirdParty.umami.siteId,
+      // 只上报正式域名，localhost 等本地开发环境直接跳过，避免刷新次数把统计量刷高
+      'data-domains': new URL(siteConfig.url).hostname,
     },
   ],
 })
