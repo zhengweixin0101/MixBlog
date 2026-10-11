@@ -4,8 +4,10 @@ import gsap from 'gsap'
 
 import { aboutConfig } from '@/siteConfig/about.js'
 import { siteConfig } from '@/siteConfig/main.js'
+import { useUmami } from '~/composables/useUmami'
 
 const colorMode = useColorMode()
+const { getStats } = useUmami()
 
 usePageMeta('关于', `${siteConfig.description}`, '/about', `about,about me,自我介绍,个人简介,个人介绍,${aboutConfig.author.name}`)
 
@@ -110,46 +112,19 @@ const firstHalf = skills.slice(0, mid)
 const secondHalf = skills.slice(mid)
 
 // 访问数据
-const UMAMI_URL = aboutConfig.umami.url
 const UMAMI_SHARE_URL = aboutConfig.umami.shareUrl
-const WEBSITE_ID = aboutConfig.umami.siteId
-const TOKEN = aboutConfig.umami.token
-const CREATED_AT = aboutConfig.umami.createTime
-
-function getDayTimestamps(date = new Date()) {
-  const start = new Date(date)
-  start.setHours(0, 0, 0, 0)
-  const end = new Date(start)
-  end.setHours(23, 59, 59, 999)
-  return { start: start.getTime(), end: end.getTime() }
-}
 
 // 统计数据
 const { data: stats } = useAsyncData(
   'statsAll',
   async () => {
-    const now = new Date()
-    const { start: todayStart, end: todayEnd } = getDayTimestamps(now)
-    const yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
-    const { start: yStart, end: yEnd } = getDayTimestamps(yesterday)
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime()
-    const createdAtTs = new Date(CREATED_AT).getTime()
-
-    const fetchStats = (startAt, endAt) =>
-      $fetch(`${UMAMI_URL}/api/websites/${WEBSITE_ID}/stats`, {
-        headers: { Authorization: `Bearer ${TOKEN}` },
-        params: { startAt, endAt },
-      })
-
-    const [today, yesterdayStats, month, total] = await Promise.all([
-      fetchStats(todayStart, todayEnd),
-      fetchStats(yStart, yEnd),
-      fetchStats(monthStart, now.getTime()),
-      fetchStats(createdAtTs, Date.now()),
+    const [today, yesterday, month, total] = await Promise.all([
+      getStats('today'),
+      getStats('yesterday'),
+      getStats('month'),
+      getStats('total'),
     ])
-
-    return { today, yesterday: yesterdayStats, month, total }
+    return { today, yesterday, month, total }
   },
   { lazy: true, server: false }
 )
@@ -360,17 +335,15 @@ const hoveredIndex = ref(null)
               <div class="font-extrabold h-10 relative overflow-hidden">
                 <span class="opacity-0 select-none">0000</span>
                 <div
-                  class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-700 rounded w-16 h-6 transition-opacity duration-500"
-                  :class="{ 'opacity-100 animate-pulse': !isLoaded(stat), 'opacity-0': isLoaded(stat) }"
+                  class="absolute left-0 top-1/2 -translate-y-1/2 rounded w-16 h-6 transition-opacity duration-200 skeleton skeleton-on-dark"
+                  :class="{ 'opacity-100': !isLoaded(stat), 'opacity-0': isLoaded(stat) }"
                 ></div>
-                <transition name="fade">
-                  <span
-                    class="absolute left-0 top-1/2 -translate-y-1/2 transition-opacity duration-500"
-                    :class="{ 'opacity-0': !isLoaded(stat), 'opacity-100': isLoaded(stat) }"
-                  >
-                    {{ getValue(stat) }}
-                  </span>
-                </transition>
+                <span
+                  class="absolute left-0 top-1/2 -translate-y-1/2 transition-opacity duration-200"
+                  :class="{ 'opacity-0': !isLoaded(stat), 'opacity-100': isLoaded(stat) }"
+                >
+                  {{ getValue(stat) }}
+                </span>
               </div>
             </div>
           </div>

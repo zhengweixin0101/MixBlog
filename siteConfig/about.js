@@ -5,6 +5,7 @@ export const aboutConfig = {
         birthday: '2010',
         school: '滨江高级中学',
         work: '高二学生',
+
         tips: [
             { text: "学习", color: "#10b981" },
             { text: "生活", color: "#a393eb" },
@@ -22,6 +23,7 @@ export const aboutConfig = {
                 '热衷探索未知域 🚀',
             ]
         },
+
         skills: [
             { name: 'Vite', icon: 'https://cdn.zhengweixin.top/blog/about/skills/vite.svg', color: '#937df7' },
             { name: 'Vue', icon: 'https://cdn.zhengweixin.top/blog/about/skills/vue.png', color: '#b8f0ae' },
@@ -40,17 +42,20 @@ export const aboutConfig = {
             { name: 'DJI', icon: 'https://cdn.zhengweixin.top/blog/about/skills/dji.svg', color: '#000' },
             { name: 'VALORANT', icon: 'https://cdn.zhengweixin.top/blog/about/skills/valorant.svg', color: '#ff4654' },
         ],
+
         preference: {
             category: '数码科技',
             description: '手机、电脑软硬件',
             img: 'https://cdn.zhengweixin.top/blog/about/632f0dd8f33c6.webp',
         },
+
         personality: {
             name: '冒险家',
             code: 'ISFP-T',
             img: 'https://cdn.zhengweixin.top/blog/about/ISFP.svg',
             learnMore: 'https://www.16personalities.com/isfp-personality'
         },
+
         game: {
             name: 'VALORANT',
             img: 'https://cdn.zhengweixin.top/blog/about/124395.jpg',
@@ -63,6 +68,7 @@ export const aboutConfig = {
                 { name: '壹决', img: 'https://cdn.zhengweixin.top/blog/about/game/Iso.png' },
             ],
         },
+
         animes: [
             { name: "鬼灭之刃", href: "https://www.bilibili.com/bangumi/media/md21226899", img: "https://cdn.zhengweixin.top/blog/about/animes/07a4ec8e2a95558a99859e1e374fe4b634e47aaf.jpg" },
             { name: "Re：从零开始的异世界生活", href: "https://www.bilibili.com/bangumi/media/md28224394", img: "https://cdn.zhengweixin.top/blog/about/animes/3c125e1aad08643e3eff2fb7d45e740c1a052725.jpg" },
@@ -75,12 +81,9 @@ export const aboutConfig = {
         text: "Hello there!",
         colors: ['#66c6ba', '#a4e5d9', '#c8f4de'],
     },
+    
     umami: {
         cover: 'https://cdn.zhengweixin.top/blog/about/632d634f8376d.jpg',
-        url: 'https://statistics.zhengweixin.top',
         shareUrl: 'https://statistics.zhengweixin.top/share/6FBrEjH0q8vcrGxh/zhengweixin.top',
-        siteId: '7441ce23-3587-41b6-8919-e42932fc65d7',
-        token: 'Fp5LgLwc4z5dLEp89WzldmpJplRXrmgWb9cp93NowW8m1ENpPgDAOpyoY0ONEFFABOURznRM4KvlId0V0JpADgLhqqu92SdABb7omUWxP93rj3MPnwVmZbVFiyux4YbZYHXuZf7jbeZnWYRaXpDny/aBi/Bwb3a0GAXG0YwMtGYXqYbmQ12pKa6u8w9GeIBUjhe5+9fesrxG3YfBQxoxZhpAGucfCekSGMu5suVbNap7JqiS8lneNFpuelTHClillVDeSq7Cwf9O6GUoPvzfa3La8ox307y30qCMhvUEUXajaaYoxnu2dQq8sabPJ23JL41Fb3veJGplfTur/SOmS14avI+Xycb1GF2wVNp1QFPytUUz+5/EKORt1naFAjBLGExW',
-        createTime: '2025-08-15T16:00:00.000Z',
     },
 }

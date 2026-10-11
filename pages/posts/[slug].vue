@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, useHead, useRoute, setResponseStatus } from '#imports'
 import { useNotification } from '~/composables/useNotification'
 import { useShareDialog } from '~/composables/useShareDialog'
+import { useUmami } from '~/composables/useUmami'
 import { marked } from 'marked'
 import dayjs from 'dayjs'
 
@@ -17,6 +18,7 @@ import { siteConfig } from '@/siteConfig/main.js'
 const route = useRoute()
 const notification = useNotification()
 const shareDialog = useShareDialog()
+const { getStats } = useUmami()
 
 // 按需加载 KaTeX
 let katex = null
@@ -25,8 +27,9 @@ await import('katex').then((mod) => { katex = mod.default })
 // Twikoo 评论系统
 const twikooEnvId = siteConfig.thirdParty?.twikoo?.envId || ''
 
-// 访问量和评论数
-const commentCount = ref(0)
+// 访问量和评论数，null 表示加载中，失败显示 '--'
+const commentCount = ref(null)
+const postPageviews = ref(null)
 
 // 二维码浮层控制
 const showDonateQR = ref(false)
@@ -358,6 +361,7 @@ onMounted(() => {
 
   // 获取文章统计信息
   getArticleStats()
+  getPostPageviews()
 
   // 监听页面可见性变化
   visibilityChangeHandler = () => {
@@ -548,7 +552,10 @@ async function getArticleStats() {
   const articleUrl = `/posts/${route.params.slug}`
 
   const ready = await waitForTwikoo()
-  if (!ready) return
+  if (!ready) {
+    commentCount.value = '--'
+    return
+  }
 
   try {
     // 获取评论数
@@ -557,12 +564,17 @@ async function getArticleStats() {
       urls: [articleUrl],
       includeReply: true
     })
-    if (commentRes && commentRes.length > 0) {
-      commentCount.value = commentRes[0].count
-    }
+    commentCount.value = commentRes?.[0]?.count ?? 0
   } catch (err) {
     console.error('获取评论数失败:', err)
+    commentCount.value = '--'
   }
+}
+
+// 获取文章访问量
+async function getPostPageviews() {
+  const stats = await getStats('total', `/posts/${route.params.slug}`)
+  postPageviews.value = stats ? stats.pageviews : '--'
 }
 
 // 分享到微博
@@ -660,11 +672,15 @@ async function copyArticleLink() {
             </span>
             <span class="flex items-center">
               <i class="iconfont icon-comment1"></i>
-              评论数: {{ commentCount }}
+              评论数:
+              <span v-if="commentCount === null" class="ml-1 w-5 h-3.5 rounded skeleton"></span>
+              <span v-else class="ml-0.8">{{ commentCount }}</span>
             </span>
             <span class="flex items-center">
               <i class="iconfont icon-fire"></i>
-              访问量: <span id="twikoo_visitors" class="ml-0.8">0</span>
+              访问量:
+              <span v-if="postPageviews === null" class="ml-1 w-5 h-3.5 rounded skeleton"></span>
+              <span v-else class="ml-0.8">{{ postPageviews }}</span>
             </span>
           </div>
           <div class="flex flex-wrap items-center gap-3">

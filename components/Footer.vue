@@ -1,13 +1,19 @@
 <script setup>
 import { siteConfig } from '@/siteConfig/main.js'
+import { useUmami } from '~/composables/useUmami'
 import { ref, onMounted, onUnmounted } from 'vue'
 
+const { getStats } = useUmami()
+
 const currentYear = new Date().getFullYear()
-const runTime = ref('加载中...')
+// null 表示加载中
+const runTime = ref(null)
 const displayText = ref('')
 const fullText = ref('')
 const nextText = ref('')
 const isDeleting = ref(false)
+const todayPV = ref(null)
+const todayUV = ref(null)
 
 const calculateRunTime = () => {
   const startDate = new Date(siteConfig.startDate)
@@ -23,15 +29,12 @@ const calculateRunTime = () => {
 }
 
 let typingTimer = null
+let runTimeTimer = null
 
-// 在组件挂载后延迟加载 busuanzi，避免脚本在 Vue hydration 前改写 SSR 文本节点
-function loadBusuanzi() {
-  if (typeof window === 'undefined' || window.__busuanziLoaded) return
-  window.__busuanziLoaded = true
-  const s = document.createElement('script')
-  s.src = 'https://cdn.busuanzi.cc/busuanzi/3.6.9/busuanzi.min.js'
-  s.async = true
-  document.body.appendChild(s)
+async function loadTodayStats() {
+  const stats = await getStats('today')
+  todayPV.value = stats ? stats.pageviews : '--'
+  todayUV.value = stats ? stats.visitors : '--'
 }
 
 async function fetchHitokoto() {
@@ -78,8 +81,9 @@ function deleteText() {
 
 onMounted(async () => {
   calculateRunTime()
-  setInterval(calculateRunTime, 1000)
-  loadBusuanzi()
+  runTimeTimer = setInterval(calculateRunTime, 1000)
+
+  loadTodayStats()
 
   fullText.value = await fetchHitokoto()
   typeText()
@@ -87,6 +91,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   if (typingTimer) clearTimeout(typingTimer)
+  if (runTimeTimer) clearInterval(runTimeTimer)
 })
 </script>
 
@@ -97,12 +102,25 @@ onUnmounted(() => {
       <div class="flex flex-col md:flex-row justify-between">
         <div class="flex flex-col gap-y-1 text-center md:text-left">
           <div>© {{ currentYear }} {{ siteConfig.author.name }}. All rights reserved.</div>
-          <div class="hidden md:block truncate min-h-[1.25rem]">{{ displayText }}<span class="animate-pulse">|</span></div>
+          <div class="hidden md:block truncate min-h-[1.25rem]">
+            <span v-if="!fullText && !displayText" class="inline-block w-64 h-3.5 rounded skeleton align-middle"></span>
+            <template v-else>{{ displayText }}<span class="animate-pulse">|</span></template>
+          </div>
         </div>
         <div class="hidden md:flex flex-col gap-y-1 text-right">
-          <div>本站居然苟活了 {{ runTime }}</div>
-          <div>
-            今日总访问量 <span id="busuanzi_today_pv">...</span> 次 | 今日总访客数 <span id="busuanzi_today_uv">...</span> 人
+          <div class="flex items-center justify-end gap-1">
+            <span>本站居然苟活了</span>
+            <span v-if="runTime === null" class="w-36 h-3.5 rounded skeleton"></span>
+            <span v-else>{{ runTime }}</span>
+          </div>
+          <div class="flex items-center justify-end gap-1">
+            <span>今日总访问量</span>
+            <span v-if="todayPV === null" class="w-5 h-3.5 rounded skeleton"></span>
+            <span v-else>{{ todayPV }}</span>
+            <span>次 | 今日总访客数</span>
+            <span v-if="todayUV === null" class="w-5 h-3.5 rounded skeleton"></span>
+            <span v-else>{{ todayUV }}</span>
+            <span>人</span>
           </div>
         </div>
       </div>
