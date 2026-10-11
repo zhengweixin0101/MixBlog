@@ -4,22 +4,136 @@
     <span class="iconfont icon-comment mr-2"></span>
     评论
   </span>
+  <div v-if="status === 'loading'" class="flex flex-col gap-3 mt-3" :aria-busy="true">
+    <div v-for="n in 3" :key="n" class="flex gap-3">
+      <div class="w-9 h-9 rounded-full shrink-0 skeleton"></div>
+      <div class="flex-1 min-w-0 flex flex-col gap-2">
+        <div class="h-4 w-24 rounded skeleton"></div>
+        <div class="h-4 rounded skeleton" :class="n === 2 ? 'w-4/5' : 'w-full'"></div>
+        <div v-if="n === 2" class="h-4 w-2/5 rounded skeleton"></div>
+      </div>
+    </div>
+  </div>
+  <div
+    v-else-if="status === 'error'"
+    class="flex flex-col items-center gap-3 py-10 text-center text-sm text-gray-500 dark:text-gray-400"
+  >
+    <span>评论加载失败，请稍后重试</span>
+    <button
+      class="px-4 py-2 rounded-lg border-none bg-black/5 dark:bg-white/10 text-#2f3f5b dark:text-white transition-colors duration-300 hover:bg-black/10 dark:hover:bg-white/20 cursor-pointer"
+      @click="mount"
+    >
+      重新加载
+    </button>
+  </div>
   <div id="tcomment"></div>
 </template>
 
 <script setup>
-import { onMounted, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { siteConfig } from '@/siteConfig/main.js'
+
+// Twikoo 渲染出内容后收起骨架；一直空着则判定失败，避免只剩一块空白
+const SKELETON_TIMEOUT = 10000
+// 骨架最短展示时长，避免闪烁
+const MIN_SKELETON_DURATION = 500
+
+const status = ref('loading')
+let observer = null
+let timer = null
+let pendingSettle = null
+let skeletonStartAt = 0
+let scriptPromise = null
+
+function stopWatch() {
+  if (observer) {
+    observer.disconnect()
+    observer = null
+  }
+  if (timer) {
+    clearTimeout(timer)
+    timer = null
+  }
+  if (pendingSettle) {
+    clearTimeout(pendingSettle)
+    pendingSettle = null
+  }
+}
+
+function settle() {
+  stopWatch()
+  const el = document.getElementById('tcomment')
+  const next = el && el.childElementCount > 0 ? 'ready' : 'error'
+  const delay = Math.max(0, MIN_SKELETON_DURATION - (Date.now() - skeletonStartAt))
+  if (delay === 0) {
+    status.value = next
+    return
+  }
+  pendingSettle = setTimeout(() => {
+    pendingSettle = null
+    status.value = next
+  }, delay)
+}
+
+function startWatch() {
+  stopWatch()
+  skeletonStartAt = Date.now()
+  const el = document.getElementById('tcomment')
+  if (el) {
+    observer = new MutationObserver(() => {
+      if (el.childElementCount > 0) settle()
+    })
+    observer.observe(el, { childList: true })
+  }
+  timer = setTimeout(settle, SKELETON_TIMEOUT)
+}
+
+function ensureTwikoo() {
+  if (window.twikoo) return Promise.resolve()
+  // 插件注入的脚本没加载成功，重新注入一次
+  // 同一时刻只注入一个，连点重试不会堆出多个 script 标签
+  if (scriptPromise) return scriptPromise
+  scriptPromise = new Promise((resolve) => {
+    const s = document.createElement('script')
+    s.src = siteConfig.thirdParty.twikoo.script
+    s.async = true
+    s.onload = s.onerror = () => {
+      scriptPromise = null
+      resolve()
+    }
+    document.body.appendChild(s)
+  })
+  return scriptPromise
+}
+
+async function load() {
+  await ensureTwikoo()
+  if (!window.twikoo) throw new Error('Twikoo SDK 加载失败')
+  await window.twikoo.init({
+    envId: siteConfig.thirdParty.twikoo.envId,
+    el: '#tcomment'
+  })
+}
+
+async function mount() {
+  status.value = 'loading'
+  const el = document.getElementById('tcomment')
+  if (el) el.innerHTML = ''
+  startWatch()
+  try {
+    await load()
+  } catch (err) {
+    console.error('Twikoo 初始化失败:', err)
+    if (status.value === 'loading') settle()
+  }
+}
 
 onMounted(async () => {
   await nextTick()
-  if (window.twikoo) {
-    twikoo.init({
-      envId: siteConfig.thirdParty.twikoo.envId,
-      el: '#tcomment'
-    })
-  }
+  await mount()
 })
+
+onBeforeUnmount(stopWatch)
 </script>
 
 <style>
