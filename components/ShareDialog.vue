@@ -16,7 +16,7 @@
         aria-modal="true"
       >
         <div class="px-5 pt-5 pb-3">
-          <div v-if="shareDialog.state.loading" class="h-5 w-36 rounded skeleton-block"></div>
+          <div v-if="shareDialog.state.loading" class="h-5 w-36 rounded skeleton"></div>
           <div
             v-else
             class="relative inline-block max-w-full text-lg font-semibold break-words"
@@ -35,8 +35,8 @@
               :key="index"
               class="flex items-center gap-2 p-3 rounded-lg bg-black/5 dark:bg-white/10"
             >
-              <div class="w-4 h-4 rounded shrink-0 skeleton-block"></div>
-              <div class="flex-1 min-w-0 h-4 rounded skeleton-block"></div>
+              <div class="w-4 h-4 rounded shrink-0 skeleton"></div>
+              <div class="flex-1 min-w-0 h-4 rounded skeleton"></div>
             </div>
           </div>
 
@@ -221,35 +221,5 @@ onBeforeUnmount(() => {
 .thin-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(128, 128, 128, 0.35);
   border-radius: 3px;
-}
-
-.skeleton-block {
-  background-image: linear-gradient(
-    90deg,
-    rgba(0, 0, 0, 0.06),
-    rgba(0, 0, 0, 0.13),
-    rgba(0, 0, 0, 0.06)
-  );
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.4s ease-in-out infinite;
-}
-
-html.dark .skeleton-block {
-  background-image: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.06),
-    rgba(255, 255, 255, 0.14),
-    rgba(255, 255, 255, 0.06)
-  );
-  background-size: 200% 100%;
-}
-
-@keyframes skeleton-shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
 }
 </style>

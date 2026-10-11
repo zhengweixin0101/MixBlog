@@ -7,11 +7,11 @@
         <ul v-if="isLoadingList" class="space-y-2 p-1">
           <li v-for="n in 6" :key="n" class="flex items-center p-2 py-3 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)]">
             <div class="w-6 h-6 flex items-center justify-center mr-2">
-              <div class="w-4 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
+              <div class="w-4 h-4 rounded skeleton"></div>
             </div>
             <div class="min-w-0 flex-1 flex justify-between items-center">
-              <div class="w-24 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
-              <div class="w-16 h-3 rounded bg-gray/20 dark:bg-white/10 shimmer ml-2"></div>
+              <div class="w-24 h-4 rounded skeleton"></div>
+              <div class="w-16 h-3 rounded skeleton ml-2"></div>
             </div>
           </li>
         </ul>
@@ -50,18 +50,18 @@
         <!-- 加载中骨架屏 -->
         <div v-if="isLoadingList" class="mt-20 p-6 text-center">
           <div class="cover-wrap w-40 h-40 rounded-full overflow-hidden shadow-xl flex items-center justify-center mx-auto">
-            <div class="w-full h-full rounded-full bg-gray/20 dark:bg-white/10 shimmer"></div>
+            <div class="w-full h-full rounded-full skeleton"></div>
           </div>
           <div class="mt-3 text-center w-full px-4 flex flex-col items-center gap-2">
-            <div class="w-40 h-6 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
-            <div class="w-24 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
+            <div class="w-40 h-6 rounded skeleton"></div>
+            <div class="w-24 h-4 rounded skeleton"></div>
           </div>
         </div>
         <!-- 正常播放信息 -->
         <div v-else-if="currentItem" class="mt-20 p-6 text-center">
           <div class="cover-wrap w-40 h-40 rounded-full overflow-hidden shadow-xl flex items-center justify-center mx-auto">
             <!-- 加载中骨架 -->
-            <div v-if="isLoadingSong" class="w-full h-full rounded-full bg-gray/20 dark:bg-white/10 shimmer"></div>
+            <div v-if="isLoadingSong" class="w-full h-full rounded-full skeleton"></div>
             <!-- 正常封面 -->
             <img
               v-else-if="currentItem.coverBlobUrl"
@@ -80,8 +80,8 @@
           <div class="mt-3 text-center w-full px-4">
             <!-- 歌名加载中 -->
             <div v-if="isLoadingSong" class="flex flex-col items-center gap-2">
-              <div class="w-40 h-6 rounded bg-gray/20 dark:bg-white/10 shimmer mx-auto"></div>
-              <div class="w-24 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer mx-auto"></div>
+              <div class="w-40 h-6 rounded skeleton mx-auto"></div>
+              <div class="w-24 h-4 rounded skeleton mx-auto"></div>
             </div>
             <template v-else>
               <div class="text-6 font-bold truncate transition-color duration-300">{{ currentItem.title }}</div>
@@ -102,14 +102,12 @@
         >
           <!-- 歌词加载中 -->
           <div v-if="isLoadingList" class="mt-20 space-y-2 flex flex-col items-center">
-            <div v-for="n in 8" :key="n" class="w-48 h-4 rounded shimmer"
-              :class="n === 1 ? 'w-36' : n === 4 ? 'w-40' : 'w-48'"
-              :style="{ background: `linear-gradient(90deg, rgba(128,128,128,.06) 25%, rgba(128,128,128,.14) 50%, rgba(128,128,128,.06) 75%)`, backgroundSize: '200% 100%' }"></div>
+            <div v-for="n in 8" :key="n" class="w-48 h-4 rounded skeleton"
+              :class="n === 1 ? 'w-36' : n === 4 ? 'w-40' : 'w-48'"></div>
           </div>
           <div v-else-if="isLoadingSong && !lyrics?.length" class="mt-20 space-y-2 flex flex-col items-center">
-            <div v-for="n in 8" :key="n" class="w-48 h-4 rounded shimmer"
-              :class="n === 1 ? 'w-36' : n === 4 ? 'w-40' : 'w-48'"
-              :style="{ background: `linear-gradient(90deg, rgba(128,128,128,.06) 25%, rgba(128,128,128,.14) 50%, rgba(128,128,128,.06) 75%)`, backgroundSize: '200% 100%' }"></div>
+            <div v-for="n in 8" :key="n" class="w-48 h-4 rounded skeleton"
+              :class="n === 1 ? 'w-36' : n === 4 ? 'w-40' : 'w-48'"></div>
           </div>
           <div v-else-if="!currentItem" class="mt-20">请选择歌曲播放</div>
           <div v-else-if="!lyrics?.length" class="mt-20">暂无歌词</div>
@@ -288,11 +286,11 @@
           <ul v-if="isLoadingList" class="space-y-2 p-3">
             <li v-for="n in 6" :key="n" class="flex items-center p-2 py-3 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)]">
               <div class="w-6 h-6 flex items-center justify-center mr-2">
-                <div class="w-4 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
+                <div class="w-4 h-4 rounded skeleton"></div>
               </div>
               <div class="min-w-0 flex-1 flex justify-between items-center">
-                <div class="w-24 h-4 rounded bg-gray/20 dark:bg-white/10 shimmer"></div>
-                <div class="w-16 h-3 rounded bg-gray/20 dark:bg-white/10 shimmer ml-2"></div>
+                <div class="w-24 h-4 rounded skeleton"></div>
+                <div class="w-16 h-3 rounded skeleton ml-2"></div>
               </div>
             </li>
           </ul>
@@ -611,18 +609,6 @@ onBeforeUnmount(() => {
 
 .lyrics::-webkit-scrollbar {
   display: none;
-}
-
-/* 骨架屏闪烁动画 */
-.shimmer {
-  animation: shimmer 1.5s ease-in-out infinite;
-  background: linear-gradient(90deg, rgba(128,128,128,.08) 25%, rgba(128,128,128,.18) 50%, rgba(128,128,128,.08) 75%);
-  background-size: 200% 100%;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
 }
 
 /* 移动端歌曲列表动画 */

@@ -97,3 +97,40 @@ img.onload-fade:not(.hero-icon) {
 img.onload-fade.hero-icon {
   opacity: 1;
 }
+
+/* 全站统一的骨架屏占位
+   所有等待异步数据的地方都应渲染 <div class="skeleton w-… h-… rounded">
+   尺寸由调用方的原子类决定，这里只负责底色与横扫高光 */
+.skeleton {
+  --skeleton-base: rgba(128, 128, 128, 0.08);
+  --skeleton-shine: rgba(128, 128, 128, 0.18);
+  background-image: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-shine) 50%,
+    var(--skeleton-base) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+html.dark .skeleton {
+  --skeleton-base: rgba(255, 255, 255, 0.07);
+  --skeleton-shine: rgba(255, 255, 255, 0.15);
+}
+
+/* 铺在深色底上的骨架（音乐全屏等），与 html.dark 的取值再提亮一档
+   用 .skeleton.skeleton-on-dark 提高特指度，确保深色模式下也压过 html.dark .skeleton */
+.skeleton.skeleton-on-dark {
+  --skeleton-base: rgba(255, 255, 255, 0.08);
+  --skeleton-shine: rgba(255, 255, 255, 0.18);
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

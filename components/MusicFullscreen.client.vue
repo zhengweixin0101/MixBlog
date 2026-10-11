@@ -23,7 +23,7 @@
     <div class="relative z-10 w-2/5 flex flex-col items-center justify-center p-6 gap-6 text-center text-white">
       <!-- 封面 -->
       <div class="cover-wrap w-50 h-50 lg:w-60 lg:h-60 2xl:w-78 2xl:h-78 rounded-full overflow-hidden shadow-2xl shadow-[0_0_40px_rgba(255,255,255,0.25)] flex items-center justify-center">
-        <div v-if="isLoadingSong" class="w-full h-full rounded-full bg-white/10 shimmer"></div>
+        <div v-if="isLoadingSong" class="w-full h-full rounded-full skeleton skeleton-on-dark"></div>
         <img
           v-else-if="currentItem?.coverBlobUrl"
           :src="currentItem.coverBlobUrl"
@@ -42,8 +42,8 @@
       <!-- 歌曲信息 -->
       <div class="text-center">
         <template v-if="isLoadingSong">
-          <div class="w-48 h-8 rounded bg-white/10 shimmer mx-auto"></div>
-          <div class="w-32 h-6 rounded bg-white/10 shimmer mx-auto mt-2"></div>
+          <div class="w-48 h-8 rounded skeleton skeleton-on-dark mx-auto"></div>
+          <div class="w-32 h-6 rounded skeleton skeleton-on-dark mx-auto mt-2"></div>
         </template>
         <template v-else>
           <div class="text-3xl 2xl:text-4xl font-bold truncate">{{ currentItem?.title }}</div>
@@ -68,9 +68,8 @@
     <!-- 歌词 -->
     <div class="lyrics flex-1 overflow-y-auto py-78 text-center" ref="lyricsEl" tabindex="-1">
       <div v-if="isLoadingSong && !lyrics?.length" class="mt-20 space-y-3 flex flex-col items-center">
-        <div v-for="n in 8" :key="n" class="w-64 h-5 rounded shimmer"
-          :class="n === 1 ? 'w-48' : n === 4 ? 'w-56' : 'w-64'"
-          :style="{ background: 'linear-gradient(90deg, rgba(255,255,255,.08) 25%, rgba(255,255,255,.18) 50%, rgba(255,255,255,.08) 75%)', backgroundSize: '200% 100%' }"></div>
+        <div v-for="n in 8" :key="n" class="w-64 h-5 rounded skeleton skeleton-on-dark"
+          :class="n === 1 ? 'w-48' : n === 4 ? 'w-56' : 'w-64'"></div>
       </div>
       <div v-else-if="!lyrics?.length" class="mt-20">暂无歌词</div>
       <div v-else class="space-y-5">
@@ -207,17 +206,6 @@ onBeforeUnmount(() => {
 
 .lyrics::-webkit-scrollbar {
   display: none;
-}
-
-.shimmer {
-  animation: shimmer 1.5s ease-in-out infinite;
-  background: linear-gradient(90deg, rgba(128,128,128,.08) 25%, rgba(128,128,128,.18) 50%, rgba(128,128,128,.08) 75%);
-  background-size: 200% 100%;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
 }
 
 .fullscreen-enter-active {
