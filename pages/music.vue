@@ -353,7 +353,7 @@ const {
   prev: sharedPrev, next: sharedNext, togglePlayMode: sharedTogglePlayMode,
   toggleMute: sharedToggleMute, seek: sharedSeek, downloadMusic: sharedDownloadMusic,
   cleanup, getAudio, attachPermanentListeners, setOnLyricChange,
-  cancelPendingPlay,
+  cancelPendingPlay, closeCapsule, capsuleClosing,
 } = useMusicPlayer()
 
 const seekValue = ref(0)
@@ -531,6 +531,20 @@ function handleKeydown(e) {
   if (e.code === 'ArrowDown') { e.preventDefault(); seekForward(); return }
 }
 
+let autoPlayPending = false
+let autoPlayAborted = false
+
+function abandonAutoPlay() {
+  if (!autoPlayPending) return
+  autoPlayPending = false
+  autoPlayAborted = true
+  capsuleClosing.value = true
+}
+
+onBeforeRouteLeave(() => {
+  abandonAutoPlay()
+})
+
 onMounted(async () => {
   attachPermanentListeners()
   setOnLyricChange(scrollLyrics)
@@ -538,6 +552,7 @@ onMounted(async () => {
   await loadList()
   await nextTick()
 
+  if (autoPlayAborted) return
   if (!list.value?.length) return
 
   const audioEl = getAudio()
@@ -556,7 +571,10 @@ onMounted(async () => {
   const idx = Math.floor(Math.random() * list.value.length)
   if (playMode.value === 'shuffle') sharedTogglePlayMode()
 
+  autoPlayPending = true
   await sharedPlayIndex(idx, true)
+  autoPlayPending = false
+  if (autoPlayAborted) return
   scrollToCurrentItem()
 
   if (!isPlaying.value) {
@@ -565,6 +583,8 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  abandonAutoPlay()
+  if (autoPlayAborted) closeCapsule()
   cancelPendingPlay()
   cleanup()
   setOnLyricChange(null)

@@ -431,12 +431,11 @@ function closeCapsule() {
     audioEl.src = ''
     isPlaying.value = false
   }
+  cancelPendingPlay()
+  if (_lyricsAbort) { _lyricsAbort.abort(); _lyricsAbort = null }
   capsuleClosing.value = true
   resetTrackState()
   duration.value = 0
-  _targetIndex = -1
-  _lastSwitchAt = 0
-  _switchLockedUntil = 0
 }
 
 function cancelPendingPlay() {
