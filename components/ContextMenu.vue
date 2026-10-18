@@ -12,6 +12,8 @@ const visible = ref(false)
 const x = ref(0)
 const y = ref(0)
 const menuRef = ref(null)
+// 缩放起点，随鼠标在菜单中的位置取最近的那个角
+const menuOrigin = ref('top left')
 
 const route = useRoute()
 const router = useRouter()
@@ -92,11 +94,13 @@ const showMenu = async (event) => {
   const pageWidth = window.innerWidth
   const pageHeight = window.innerHeight
 
-  if (posX + menuWidth > pageWidth) posX = pageWidth - menuWidth - 5
-  if (posY + menuHeight > pageHeight) posY = pageHeight - menuHeight - 5
+  // 右侧/下方放不下时反向贴住鼠标，缩放起点即为鼠标所在的那个角
+  if (posX + menuWidth + 5 > pageWidth) posX = Math.max(5, posX - menuWidth)
+  if (posY + menuHeight + 5 > pageHeight) posY = Math.max(5, posY - menuHeight)
 
   x.value = posX
   y.value = posY
+  menuOrigin.value = `${event.clientX < posX + menuWidth / 2 ? 'left' : 'right'} ${event.clientY < posY + menuHeight / 2 ? 'top' : 'bottom'}`
 }
 
 // 隐藏菜单
@@ -380,7 +384,7 @@ onBeforeUnmount(() => {
     id="rightMenu"
     class="fixed z-700 bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-md text-gray-800 dark:text-gray-100 rounded-lg 
            shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)] p-1.5"
-    :style="{ top: y + 'px', left: x + 'px' }"
+    :style="{ top: y + 'px', left: x + 'px', transformOrigin: menuOrigin }"
   >
     <div class="flex justify-between gap-1 p-1">
       <i class="iconfont icon-arrow-left rightMenu-item-1" @click="goBack"></i>
