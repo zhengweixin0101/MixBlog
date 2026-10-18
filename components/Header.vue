@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, useRoute, useColorMode } from '#imports'
+import { ref, watch, onMounted, onBeforeUnmount, useRoute, useColorMode } from '#imports'
 import { onClickOutside } from '@vueuse/core'
 import { siteConfig } from '@/siteConfig/main.js'
 import { useNotification } from '~/composables/useNotification'
@@ -11,6 +11,7 @@ const menuRef = ref(null)
 const isMenuOpen = ref(false)
 const menuButton = ref(null)
 const mounted = ref(false)
+const isHidden = ref(false)
 
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value
@@ -33,14 +34,57 @@ function toggleTheme() {
   notification.show(`已为您切换为${next === 'dark' ? '深色' : '浅色'}模式`)
 }
 
+// 下滑隐藏 / 上滑或回到顶部浮现（主页始终显示）
+const HIDE_AFTER = 80 // 距顶不足这段距离时始终显示，避免刚滑动就收起
+const MIN_DELTA = 4 // 忽略微小抖动
+let lastY = 0
+let scrollFrame = null
+
+function canHide() {
+  return route.path !== '/'
+}
+
+function updateHeaderVisibility() {
+  scrollFrame = null
+  const y = window.scrollY
+  const diff = y - lastY
+  if (!canHide() || y <= HIDE_AFTER) {
+    isHidden.value = false
+  } else if (Math.abs(diff) > MIN_DELTA) {
+    isHidden.value = diff > 0
+    if (isHidden.value) isMenuOpen.value = false
+  }
+  lastY = y
+}
+
+function onScroll() {
+  if (scrollFrame) return
+  scrollFrame = requestAnimationFrame(updateHeaderVisibility)
+}
+
+watch(() => route.path, () => {
+  isHidden.value = false
+  lastY = window.scrollY
+})
+
 onMounted(() => {
   mounted.value = true
+  lastY = window.scrollY
+  window.addEventListener('scroll', onScroll, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  if (scrollFrame) {
+    cancelAnimationFrame(scrollFrame)
+    scrollFrame = null
+  }
+  window.removeEventListener('scroll', onScroll)
 })
 </script>
 
 <template>
   <header>
-    <nav class="fixed top-0 left-0 right-0 z-100 w-full h-[68px] bg-#f8f8f8/50 dark:bg-[#0e1111]/50 backdrop-blur-md transition-colors duration-300 border-b border-white/10 dark:border-white/10">
+    <nav class="header-nav fixed top-0 left-0 right-0 z-100 w-full h-[68px] bg-#f8f8f8/50 dark:bg-[#0e1111]/50 backdrop-blur-md border-b border-white/10 dark:border-white/10" :class="{ 'header-nav-hidden': isHidden }">
       <div class="flex items-center justify-between h-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[90vw] xl:max-w-[80vw] 2xl:max-w-[55vw] mx-auto">
         <ul class="hidden md:flex justify-start space-x-4 list-none p-0 m-0 flex-1">
           <li v-for="(item, index) in siteConfig.navItems" :key="'main-' + index" class="relative">
@@ -122,6 +166,23 @@ onMounted(() => {
 </template>
 
 <style scoped>
+/* 下滑隐藏 / 上滑浮现（主页始终显示） */
+.header-nav {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.header-nav-hidden {
+  transform: translateY(-100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-nav {
+    transition: none;
+  }
+}
+
 @keyframes gradient-flow {
   0% {
     background-position: 0% 50%;
