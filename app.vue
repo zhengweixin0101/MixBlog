@@ -31,7 +31,10 @@ useHead({
     { property: 'og:url', content: siteConfig.url },
     { name: 'twitter:title', content: siteConfig.title },
     { name: 'twitter:description', content: siteConfig.description },
-    { name: 'twitter:card', content: 'summary' }
+    { name: 'twitter:card', content: 'summary' },
+
+    // 开发环境不发 Referer
+    ...(import.meta.dev ? [{ name: 'referrer', content: 'no-referrer' }] : []),
   ],
 
   link: [
