@@ -55,8 +55,10 @@ const filteredPosts = computed(() => {
           placeholder="Search..."
           type="text"
           id="search"
-          class="neu-inset appearance-none bg-transparent w-full h-12 pl-12 pr-4 rounded-xl
-                border border-line focus:border-line-strong transition-colors duration-base
+          class="field-base appearance-none w-full h-12 pl-12 pr-4 rounded-xl
+                border border-line hover:border-line-field
+                focus:border-accent-line focus-visible:field-ring
+                transition-all duration-base
                 text-ink placeholder-ink-subtle outline-none"
         />
       </div>

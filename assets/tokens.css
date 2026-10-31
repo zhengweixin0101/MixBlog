@@ -88,7 +88,8 @@
 
   /* 进度填充带 */
   --progress-fill: oklch(0.9 0.02 76);
-  --sunken: linear-gradient(150deg, oklch(0.949 0.018 74), oklch(0.963 0.014 80));
+  /* 输入框底 */
+  --sunken: linear-gradient(150deg, oklch(0.958 0.014 78), oklch(0.972 0.01 82));
   /* 顶栏/弹层 */
   --overlay: oklch(0.932 0.017 80 / 0.6);
   --overlay-blur: 11px;
@@ -96,6 +97,8 @@
   /* 边框 */
   --line: oklch(0.62 0.1 48 / 0.2);
   --line-strong: oklch(0.55 0.022 70 / 0.42);
+  /* 输入框 hover 边 */
+  --line-field: oklch(0.6 0.075 52 / 0.34);
   --ring-soft: oklch(1 0 0 / 0.09);
 
   /* 拟态 */
@@ -104,11 +107,8 @@
     inset 0 -2px 4px -1px oklch(0.55 0.06 70 / 0.16), 0 0 1px 0 oklch(0.45 0.05 60 / 0.12),
     0 2px 4px 0 oklch(0.45 0.05 60 / 0.08), 0 4px 12px 0 oklch(0.45 0.05 60 / 0.07),
     0 6px 20px 0 oklch(0.45 0.05 60 / 0.05);
-  --neu-dark: oklch(0.55 0.06 70 / 0.28);
-  --neu-light: oklch(1 0 0 / 0.5);
-  /* 内沉 */
-  --neu-inset: inset 3px 3px 7px 0 var(--neu-dark),
-    inset -3px -3px 7px 0 var(--neu-light);
+  /* 输入框聚焦柔光 */
+  --ring-field: 0 0 0 3px oklch(0.62 0.145 45 / 0.14);
 
   --ink: oklch(0.285 0.014 75);       /* 正文 */
   --ink-strong: oklch(0.205 0.014 75);/* 标题 */
@@ -186,17 +186,17 @@ html.dark {
   --progress-fill: oklch(0.44 0.02 78);
   /* 深色下代码块上的按钮面比浅色再深一档 */
   --code-chip: var(--surface-2);
-  --sunken: linear-gradient(150deg, oklch(0.225 0.012 70), oklch(0.255 0.013 74));
+  /* 深色下输入框底 */
+  --sunken: linear-gradient(150deg, oklch(0.215 0.012 74), oklch(0.238 0.014 78));
   --overlay: oklch(0.215 0.01 70 / 0.74);
   --overlay-blur: 18px;
 
   --line: oklch(0.62 0.045 60 / 0.18);
   --line-strong: oklch(0.72 0.02 72 / 0.5);
+  /* 深色下 hover 边 */
+  --line-field: oklch(0.64 0.06 58 / 0.42);
 
-  --neu-dark: oklch(0 0 0 / 0.32);
-  --neu-light: oklch(1 0 0 / 0.05);
-  --neu-inset: inset 3px 3px 7px 0 var(--neu-dark),
-    inset -3px -3px 7px 0 var(--neu-light);
+  --ring-field: 0 0 0 3px oklch(0.7 0.14 45 / 0.2);
   --indicator-surface: linear-gradient(150deg, oklch(0.305 0.014 76), oklch(0.262 0.012 73));
   --indicator-shadow: -2px -2px 6px 0 oklch(1 0 0 / 0.07),
     2px 2px 6px 0 oklch(0 0 0 / 0.5);

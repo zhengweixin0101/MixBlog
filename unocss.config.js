@@ -15,6 +15,8 @@ export default defineConfig({
             line: {
                 DEFAULT: 'var(--line)',
                 strong: 'var(--line-strong)',
+                // 输入框 hover
+                field: 'var(--line-field)',
                 soft: 'var(--ring-soft)',
             },
             ink: {
@@ -138,10 +140,13 @@ export default defineConfig({
             'border': '1px solid var(--line)',
             'box-shadow': 'var(--shadow-lg), var(--sheen)',
         }],
-        // 内沉拟态（搜索框）
-        ['neu-inset', {
+        // 输入框底
+        ['field-base', {
             'background-image': 'var(--sunken)',
-            'box-shadow': 'var(--neu-inset)',
+        }],
+        // 输入框聚焦柔光
+        ['field-ring', {
+            'box-shadow': 'var(--ring-field)',
         }],
         // 导航指示器
         ['neu-indicator', {
