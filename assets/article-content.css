@@ -400,6 +400,11 @@ pre code.hljs {
   border-color: var(--accent-line);
 }
 
+/* 复制成功后锁定可见 */
+.article-content .copy-btn.is-pinned {
+  opacity: 1;
+}
+
 .article-content .copy-btn svg {
   position: absolute;
   inset: 0;

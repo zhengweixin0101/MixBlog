@@ -187,11 +187,11 @@ function onDocumentClick(e) {
   copyTextToClipboard(code).then(success => {
     notification.show(success ? '代码已复制!' : '复制失败!', success ? 'info' : 'error')
     if (success) {
-      copyBtn.classList.add('is-copied')
+      copyBtn.classList.add('is-copied', 'is-pinned')
       copyBtn._morph?.morphTo(getIcon('check'))
     }
     setTimeout(() => {
-      copyBtn.classList.remove('is-copied')
+      copyBtn.classList.remove('is-copied', 'is-pinned')
       copyBtn._morph?.morphTo(getIcon('copy'))
       copyBtn.disabled = false
       delete copyBtn.dataset.copying
