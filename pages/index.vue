@@ -23,22 +23,18 @@ import { siteConfig } from '@/siteConfig/main.js'
         <div data-fade class="flex flex-wrap gap-2.5 mt-8 justify-center md:justify-start">
           <NuxtLink
             to="/posts"
-            class="inline-flex items-center justify-center
-                   px-4 py-2.5 rounded-full border border-accent-line-soft bg-surface
+            class="hero-pill inline-flex items-center justify-center
+                   px-4 py-2.5 rounded-full border border-accent-line-soft
                    text-sm font-medium leading-none text-ink no-underline
-                   transition duration-base ease-spring
-                   hover:bg-accent-soft hover:border-accent
                    active:scale-[0.97]"
           >
             My Posts
           </NuxtLink>
           <NuxtLink
             to="/about"
-            class="inline-flex items-center justify-center
-                   px-4 py-2.5 rounded-full border border-accent-line-soft bg-surface
+            class="hero-pill inline-flex items-center justify-center
+                   px-4 py-2.5 rounded-full border border-accent-line-soft
                    text-sm font-medium leading-none text-ink no-underline
-                   transition duration-base ease-spring
-                   hover:bg-accent-soft hover:border-accent
                    active:scale-[0.97]"
           >
             About Me
@@ -51,10 +47,8 @@ import { siteConfig } from '@/siteConfig/main.js'
               :href="item.href"
               :target="item.external ? '_blank' : undefined"
               rel="noopener noreferrer nofollow"
-              class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5
-                     text-ink-muted no-underline
-                     transition duration-base ease-spring
-                     hover:bg-accent-soft hover:text-accent-text active:scale-95"
+              class="hero-social inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5
+                     text-ink-muted no-underline active:scale-95"
             >
               <AppIcon :name="item.icon" class="text-base" /> {{ item.text }}
             </a>
@@ -108,5 +102,30 @@ import { siteConfig } from '@/siteConfig/main.js'
   animation: wave 2s ease-in-out 1;
   animation-delay: 0.5s;
   animation-fill-mode: forwards;
+}
+
+.hero-pill {
+  background-color: var(--surface);
+  -webkit-backdrop-filter: blur(var(--surface-blur));
+  backdrop-filter: blur(var(--surface-blur));
+  transition: background-color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-spring);
+}
+
+.hero-pill:hover {
+  background-color: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.hero-social {
+  transition: background-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-spring);
+}
+
+.hero-social:hover {
+  background-color: var(--accent-soft);
+  color: var(--accent-text);
 }
 </style>
