@@ -39,7 +39,7 @@ function applyFadeIn(root) {
   })
 
   final.forEach((el, i) => {
-    if (el) el.style.animationDelay = `${(i + 1) * 0.02}s`
+    if (el) el.style.animationDelay = `${0.15 + i * 0.07}s`
   })
 
   const io = new IntersectionObserver(

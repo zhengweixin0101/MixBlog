@@ -20,7 +20,7 @@ html {
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-gutter: stable;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   color-scheme: light dark;
   forced-color-adjust: none;
 
