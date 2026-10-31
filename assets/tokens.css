@@ -190,7 +190,7 @@ html.dark {
   --overlay: oklch(0.215 0.01 70 / 0.74);
   --overlay-blur: 18px;
 
-  --line: oklch(0.72 0.09 55 / 0.22);
+  --line: oklch(0.62 0.045 60 / 0.18);
   --line-strong: oklch(0.72 0.02 72 / 0.5);
 
   --neu-dark: oklch(0 0 0 / 0.32);
