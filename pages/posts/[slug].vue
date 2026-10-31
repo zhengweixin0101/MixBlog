@@ -751,7 +751,7 @@ async function copyArticleLink() {
         </div>
       </div>
 
-      <div data-fade class="mt-16 rounded-lg bg-surface shadow-xs relative hidden sm:block">
+      <div data-fade class="mt-16 rounded-lg bg-surface shadow-xs relative hidden sm:block border border-line">
         <!-- 头像 -->
         <div class="absolute -top-7 left-1/2 -translate-x-1/2 z-10">
           <a href="/about" class="block">
