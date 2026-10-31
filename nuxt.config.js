@@ -13,7 +13,7 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: 'zh-CN' },
     },
   },
-  // 关闭 payload 抽离，否则 _payload.json 会成为独立缓存条目，且客户端以 force-cache 读取，导致 SPA 跳转长期命中旧内容
+  // 关闭 payload 抽离：_payload.json 会变成独立缓存条目并被 force-cache 读取，SPA 跳转长期命中旧内容
   experimental: {
     payloadExtraction: false,
   },

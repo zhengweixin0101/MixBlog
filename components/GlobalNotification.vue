@@ -1,16 +1,9 @@
 /**
  * 全局右下角 Toast 通知
- * 调用方式（任意页面/组件）：
  *   const notification = useNotification()
- *
- *   // 基础用法
  *   notification.show('消息内容')
- *
- *   // 完整参数：消息、类型、持续时长（ms，0 为不自动关闭）、是否可手动关闭
- *   notification.show('保存成功', 'success', 3000, true)
- *   // type: 'info' | 'success' | 'error' | 'warning'
- *
- *   notification.remove(id)            // 手动移除某条（id 见 state.toasts）
+ *   notification.show('保存成功', 'success', 3000, true)  // 消息 / 类型 / 时长(ms，0 不自动关) / 可手动关
+ *   notification.remove(id)                              // type: info | success | error | warning
  */
 
 <template>
@@ -19,26 +12,27 @@
       <div
         v-for="toast in notification.state.toasts"
         :key="toast.id"
-        class="relative px-4 py-2 rounded-lg flex items-center justify-between min-w-50 min-h-10 max-w-[min(80vw,40rem)] overflow-hidden transition-all duration-300"
+        class="relative px-4 py-2 rounded-lg flex items-center justify-between min-w-50 min-h-10 max-w-[min(80vw,40rem)] overflow-hidden transition-all duration-base"
         :class="{
-          'bg-#fefefe dark:bg-white/10 text-#2f3f5b dark:text-white font-medium dark:backdrop-blur-md shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]': toast.type === 'info',
+          'border border-line bg-overlay text-ink shadow-lg': toast.type === 'info',
           'bg-green-500 text-white': toast.type === 'success',
           'bg-red-500 text-white': toast.type === 'error',
           'bg-yellow-500 text-white': toast.type === 'warning'
         }"
       >
-        <span class="z-1">{{ toast.message }}</span>
+        <span class="z-1 font-semibold">{{ toast.message }}</span>
 
         <span
           v-if="toast.closable"
-          class="z-1 ml-5 text-white font-bold hover:text-gray-200 cursor-pointer"
+          class="z-1 ml-5 font-medium opacity-60 hover:opacity-100 transition-all cursor-pointer select-none"
+          :class="toast.type === 'info' ? 'text-ink-muted hover:text-ink' : 'text-white font-bold hover:text-gray-200'"
           @click="notification.remove(toast.id)"
         >×</span>
 
         <div
           class="absolute inset-0 origin-left animate-progress"
           :class="{
-            'bg-black/5 dark:bg-white/20': toast.type === 'info',
+            'bg-progress-fill opacity-70': toast.type === 'info',
             'bg-green-400': toast.type === 'success',
             'bg-red-400': toast.type === 'error',
             'bg-yellow-400': toast.type === 'warning'
@@ -57,6 +51,7 @@ const notification = useNotification()
 </script>
 
 <style>
+/* 进出场动画 */
 .toast-enter-from {
   opacity: 0;
   transform: translateY(-10px);

@@ -15,7 +15,6 @@
         alt=""
         loading="lazy"
         draggable="false"
-        onload="this.classList.add('onload-fade')"
       />
       <div class="absolute inset-0 bg-black/75"></div>
     </div>
@@ -32,7 +31,6 @@
           :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '35s' }"
           loading="lazy"
           draggable="false"
-          onload="this.classList.add('onload-fade')"
         />
         <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
           无封面
@@ -47,20 +45,20 @@
         </template>
         <template v-else>
           <div class="text-3xl 2xl:text-4xl font-bold truncate">{{ currentItem?.title }}</div>
-          <div class="text-md 2xl:text-xl opacity-80 truncate mt-1">{{ currentItem?.artist }}</div>
+          <div class="text-base 2xl:text-xl opacity-80 truncate mt-1">{{ currentItem?.artist }}</div>
         </template>
       </div>
 
       <!-- 播放控件 -->
       <div class="flex items-center gap-6 mt-4">
-        <button @click="prev" class="text-white hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-color">
-          <i class="text-5 iconfont icon-backward"></i>
+        <button @click="prev" class="text-white hover:text-accent appearance-none bg-transparent border-none cursor-pointer transition-color">
+          <AppIcon name="skip-back-solid" class="text-4.5" />
         </button>
-        <button @click="togglePlay" class="text-white hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-color">
-          <i class="text-5 iconfont" :class="isPlaying ? 'icon-pause' : 'icon-play'"></i>
+        <button @click="togglePlay" class="text-white hover:text-accent appearance-none bg-transparent border-none cursor-pointer transition-color">
+          <AppIcon :name="isPlaying ? 'pause-solid' : 'play-solid'" class="text-6" />
         </button>
-        <button @click="next" class="text-white hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-color">
-          <i class="text-5 iconfont icon-forward"></i>
+        <button @click="next" class="text-white hover:text-accent appearance-none bg-transparent border-none cursor-pointer transition-color">
+          <AppIcon name="skip-forward-solid" class="text-4.5" />
         </button>
       </div>
     </div>
@@ -77,7 +75,7 @@
           v-for="(line, i) in lyrics"
           :key="i"
           :class="[
-            'lyric-line text-5 lg:text-6 2xl:text-7 transition-all duration-300',
+            'lyric-line text-5 lg:text-6 2xl:text-7 transition-all duration-base',
             currentLyricIndices.includes(i)
               ? 'current text-gradient font-semibold scale-130'
               : 'text-white'

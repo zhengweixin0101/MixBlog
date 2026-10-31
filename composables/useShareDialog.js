@@ -1,5 +1,6 @@
 import { reactive } from 'vue'
 import { siteConfig } from '@/siteConfig/main.js'
+import { iconSvgMarkup } from '@/utils/icons'
 
 /**
  * 资源分享弹窗
@@ -120,7 +121,7 @@ function replaceShareLinks(html) {
         const id = parseShareId(decodeEntities(hrefMatch[1] ?? hrefMatch[2] ?? ''))
         if (!id) return match
         const label = decodeEntities(inner.replace(/<[^>]+>/g, '')).trim()
-        return `<button type="button" class="share-btn" data-share-id="${id}" title="点击选择网盘"><i class="iconfont icon-download"></i>${escapeHtml(label || '资源下载')}</button>`
+        return `<button type="button" class="share-btn" data-share-id="${id}" title="点击选择网盘"><i class="share-btn-icon">${iconSvgMarkup('download')}</i>${escapeHtml(label || '资源下载')}</button>`
     })
 }
 

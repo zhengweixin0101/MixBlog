@@ -20,18 +20,18 @@ export const siteConfig = {
     },
 
     socialLinks: [
-        { icon: 'icon-envelope', text: 'Mail', href: 'mailto:zhengweixin0101@outlook.com', external: true, },
-        { icon: 'icon-github', text: 'Github', href: 'https://github.com/zhengweixin0101', external: true, },
-        { icon: 'icon-rss', text: 'RSS', href: '/rss.xml', external: true, },
+        { icon: 'mail', text: 'Mail', href: 'mailto:zhengweixin0101@outlook.com', external: true, },
+        { icon: 'github', text: 'Github', href: 'https://github.com/zhengweixin0101', external: true, },
+        { icon: 'rss', text: 'RSS', href: '/rss.xml', external: true, },
     ],
 
     navItems: [
-        { label: '主页', href: '/', icon: 'icon-portalIndex' },
-        { label: '文章', href: '/posts', icon: 'icon-Pen' },
-        { label: '音乐', href: '/music', icon: 'icon-Music' },
-        { label: '友链', href: '/links', icon: 'icon-link' },
-        { label: '说说', href: '/talks', icon: 'icon-wodeshuoshuo' },
-        { label: '关于', href: '/about', icon: 'icon-guanyu' },
+        { label: '主页', href: '/', icon: 'home' },
+        { label: '文章', href: '/posts', icon: 'pen' },
+        { label: '音乐', href: '/music', icon: 'music' },
+        { label: '友链', href: '/links', icon: 'link' },
+        { label: '说说', href: '/talks', icon: 'talks' },
+        { label: '关于', href: '/about', icon: 'about' },
     ],
 
     donate: [
@@ -53,7 +53,6 @@ export const siteConfig = {
     },
 
     thirdParty: {
-        iconfont: '//at.alicdn.com/t/c/font_4401174_263k5kr0du4.css',
         twikoo: {
             script: 'https://cdn.jsdelivr.net/npm/twikoo@2.0.12/dist/twikoo.min.js',
             envId: "https://twikoo.api.zhengweixin.top",

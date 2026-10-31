@@ -26,7 +26,7 @@ function unlock() {
 }
 
 /**
- * 弹窗打开时锁定 body 滚动，关闭后还原
+ * 打开时锁定页面滚动，关闭后还原
  * 用法：useScrollLock(computed(() => dialog.state.visible))
  */
 export function useScrollLock(visible) {

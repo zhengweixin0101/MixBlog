@@ -1,5 +1,5 @@
 <template>
-  <div class="relative min-h-screen flex flex-col text-#2f3f5b dark:text-white transition-colors duration-300">
+  <div class="relative min-h-screen flex flex-col text-ink transition-colors duration-base">
     <Header v-if="!hideHeader" />
     <div class="flex flex-1">
       <div class="flex-1 w-full flex flex-col">

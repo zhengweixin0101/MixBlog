@@ -1,345 +1,379 @@
+/* 正文排版
+   - 颜色/字号/边框全部走 tokens，不写裸 hex
+   - 标题走 --font-display */
+
 .article-content {
-  color: #2f3f5b;
-  line-height: 1.6;
-  font-size: 16px;
+  color: var(--ink);
+  line-height: var(--leading-relaxed);
+  font-size: var(--text-base);
   overflow-wrap: break-word;
   word-break: break-word;
-  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+  letter-spacing: 0.01em;
+  transition: color var(--dur-base) var(--ease-out);
 }
 
-html.dark .article-content {
-  color: #CCC;
-}
-
-.article-content h1,
+/* 标题 */
 .article-content h1,
 .article-content h2,
 .article-content h3,
 .article-content h4,
 .article-content h5,
 .article-content h6 {
-  color: #2f3f5b;
-  font-weight: bold;
-  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
-}
-
-html.dark .article-content h1,
-html.dark .article-content h1,
-html.dark .article-content h2,
-html.dark .article-content h3,
-html.dark .article-content h4,
-html.dark .article-content h5,
-html.dark .article-content h6 {
-  color: #ffffff;
-  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+  color: var(--ink-strong);
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  scroll-margin-top: 5rem;
+  transition: color var(--dur-base) var(--ease-out);
 }
 
 .article-content h1 {
-  font-size: 1.75rem;
-  margin: 2.5rem 0 1.8rem;
+  font-size: var(--text-2xl);
+  margin: 2.75rem 0 1.5rem;
 }
 
 .article-content h2 {
-  font-size: 1.5rem;
-  margin: 2.2rem 0 1.5rem;
+  font-size: var(--text-xl);
+  margin: 2.5rem 0 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
 }
 
 .article-content h3 {
-  font-size: 1.25rem;
-  margin: 1.8rem 0 1.3rem;
+  font-size: var(--text-lg);
+  margin: 2rem 0 1rem;
 }
 
 .article-content h4 {
-  font-size: 1rem;
-  margin: 1.5rem 0 1rem;
+  font-size: var(--text-base);
+  margin: 1.75rem 0 0.875rem;
 }
 
 .article-content h5 {
-  font-size: 0.875rem;
-  margin: 1.2rem 0 0.9rem;
+  font-size: var(--text-sm);
+  margin: 1.5rem 0 0.75rem;
 }
 
 .article-content h6 {
-  font-size: 0.75rem;
-  margin: 1rem 0 0.8rem;
+  font-size: var(--text-xs);
+  margin: 1.25rem 0 0.625rem;
+  color: var(--ink-muted);
 }
 
+.article-content > :first-child {
+  margin-top: 0;
+}
+
+/* 段落与行内 */
 .article-content p {
-  margin: 0.75em 0;
+  margin: 0.9em 0;
 }
 
+.article-content strong {
+  font-weight: 600;
+  color: var(--ink-strong);
+  /* 高亮笔效果，明暗两套一致 */
+  background: var(--accent-soft);
+  padding: 0.1em 0.3em;
+  margin: 0 -0.05em;
+  border-radius: var(--radius-xs);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.article-content mark {
+  background: var(--accent-soft);
+  color: var(--ink-strong);
+  padding: 0.1em 0.3em;
+  border-radius: var(--radius-xs);
+}
+
+.article-content em {
+  /* 保留斜体语义，但中文正文不用它做强调*/
+  font-style: italic;
+}
+
+.article-content small {
+  font-size: var(--text-xs);
+  color: var(--ink-subtle);
+}
+
+.article-content del {
+  color: var(--ink-subtle);
+  text-decoration-color: var(--danger);
+}
+
+.article-content abbr[title] {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
+.article-content sup,
+.article-content sub {
+  font-size: 0.7em;
+  line-height: 0;
+}
+
+/* 列表 */
 .article-content ul,
 .article-content ol {
-  padding-left: 1.2rem;
-  margin: 0.75em 0;
+  padding-left: 1.4rem;
+  margin: 0.9em 0;
+}
+
+.article-content li {
+  margin: 0.35em 0;
 }
 
 .article-content li::marker {
-  color: #2f3f5b;
+  color: var(--accent-text);
+  font-weight: 600;
 }
 
-html.dark .article-content li::marker {
-  color: #00e699;
+.article-content li > ul,
+.article-content li > ol {
+  margin: 0.35em 0;
 }
 
+/* 嵌套列表的 marker 降一级权重，避免和一级列表抢注意力 */
+.article-content li li::marker {
+  color: var(--ink-subtle);
+  font-weight: 400;
+}
+
+/* 任务列表 */
+.article-content li input[type='checkbox'] {
+  margin-right: 0.5em;
+  accent-color: var(--accent-text);
+  vertical-align: middle;
+}
+
+.article-content li:has(> input[type='checkbox']) {
+  list-style: none;
+  margin-left: -1.4rem;
+}
+
+/* 引用 */
 .article-content blockquote {
-  background-color: rgba(0, 0, 0, 0.05);
-  border-left: 6px solid;
-  border-image: linear-gradient(to bottom, #00e699, #00e2d8) 1;
-  padding-left: 0.8em;
-  color: #2f3f5b;
-  font-style: italic;
-  margin: 1em 0;
-  border-radius: 8px;
+  background-color: var(--surface-2);
+  border-left: 3px solid var(--accent-line);
+  padding: 0.75em 1.1em;
+  margin: 1.25em 0;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--ink-muted);
+  font-size: 0.975em;
 }
 
-html.dark .article-content blockquote {
-  background-color: rgba(245, 245, 245, 0.1);
-  color: #aaa;
+.article-content blockquote p {
+  margin: 0.4em 0;
 }
 
+.article-content blockquote > :first-child {
+  margin-top: 0;
+}
+
+.article-content blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* 引用里再套引用：收窄内边距，避免两层色条叠在一起 */
+.article-content blockquote blockquote {
+  background: var(--surface-3);
+  border-left-width: 2px;
+  padding: 0.5em 0.9em;
+}
+
+/* 分隔线 */
 .article-content hr {
   border: none;
-  height: 2px;
-  margin: 1.5rem 0;
-  background-color: rgba(0, 0, 0, 0.15);
-  border-radius: 1px;
+  height: 1px;
+  margin: 2.25rem 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--line-strong) 20%,
+    var(--line-strong) 80%,
+    transparent
+  );
 }
 
-html.dark .article-content hr {
-  background-color: rgba(255, 255, 255, 0.15);
-  border-radius: 1px;
-}
-
+/* 图片 */
 .article-content img {
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   max-width: 100%;
   max-height: 40vh;
   object-fit: contain;
   width: auto;
   height: auto;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 1.25rem auto;
   cursor: pointer;
 }
 
-.article-content strong {
-  font-weight: bold;
-  background: linear-gradient(to right, #00e69930, #00e2d830);
-}
-
-html.dark .article-content strong {
-  background: linear-gradient(to right, #00e699, #00e2d8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
-}
-
+/* 链接 */
 .article-content a:not(:has(img)) {
-  color: #2f3f5b;
+  color: var(--accent-text);
   position: relative;
   font-weight: 500;
   text-decoration: none;
   cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-out);
 }
 
 .article-content a:not(:has(img))::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
-  bottom: -1px;
+  bottom: -2px;
   width: 100%;
   height: 1px;
-  border-bottom: 1px dotted #2f3f5b;
-  opacity: 1;
-  transition: opacity 0.3s ease;
+  background-image: linear-gradient(
+    to right,
+    var(--accent-line),
+    var(--accent-line)
+  );
+  background-size: 4px 1px;
+  background-repeat: repeat-x;
+  opacity: 0.85;
+  transition: opacity var(--dur-base) var(--ease-out);
   pointer-events: none;
+}
+
+.article-content a:not(:has(img))::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 2px;
+  width: 0;
+  background-image: var(--accent-gradient);
+  border-radius: 2px;
+  transition: width var(--dur-slow) var(--ease-out);
+  pointer-events: none;
+}
+
+.article-content a:not(:has(img)):hover {
+  color: var(--accent);
 }
 
 .article-content a:not(:has(img)):hover::after {
   opacity: 0;
 }
 
-.article-content a:not(:has(img))::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -1px;
-  height: 2px;
-  width: 0;
-  background: linear-gradient(to right, #00e699, #00e2d8);
-  border-radius: 2px;
-  transition: width 0.4s ease;
-  pointer-events: none;
-}
-
 .article-content a:not(:has(img)):hover::before {
   width: 100%;
 }
 
-html.dark .article-content a:not(:has(img)) {
-  background: linear-gradient(to right, #00e699, #00e2d8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  text-decoration: none;
-  cursor: pointer;
-  position: relative;
-}
-
-html.dark .article-content a:not(:has(img))::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -1px;
-  width: 100%;
-  height: 1px;
-  border-bottom: 1px dotted #00e699;
-  opacity: 1;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-html.dark .article-content a:not(:has(img)):hover::after {
-  opacity: 0;
-}
-
-html.dark .article-content a:not(:has(img))::before {
-  background: linear-gradient(to right, #00e699, #00e2d8);
-}
-
+/* 表格 */
 .article-content table {
   width: 100%;
-  border-collapse: collapse;
-  margin: 1.5em 0;
-  font-size: 16px;
-  border-radius: 8px;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 1.75em 0;
+  font-size: 0.95em;
+  border-radius: var(--radius-md);
   overflow: hidden;
+  border: 1px solid var(--line);
 
-  color: #333;
-  background-color: #fff;
-  border: none;
+  color: var(--ink);
+  background-color: var(--surface);
 }
 
-.article-content thead {
-  background-color: #f0f0f0;
-  color: #222;
+.article-content thead th {
+  background-color: var(--surface-stripe);
+  color: var(--ink-strong);
+  font-weight: 600;
 }
 
 .article-content th,
 .article-content td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #ddd;
-  border-right: 1px solid #ddd;
+  padding: 0.7em 1em;
+  border-bottom: 1px solid var(--line);
+  border-left: 1px solid var(--line);
   text-align: left;
+}
+
+.article-content th:first-child,
+.article-content td:first-child {
+  border-left: none;
+}
+
+.article-content td {
   background: none;
 }
 
-.article-content th:last-child,
-.article-content td:last-child {
-  border-right: none;
-}
-
+/* 斑马纹：必须排在 tr:hover 之前，否则同特异性下会被偶数行规则压掉 */
 .article-content tbody tr:nth-child(even) {
-  background-color: #fafafa;
-}
-
-.article-content tbody tr:nth-child(odd) {
-  background-color: #fff;
+  background-color: var(--surface-stripe);
 }
 
 .article-content tbody tr {
-  transition: background-color 300ms ease;
+  transition: background-color var(--dur-base) var(--ease-out);
 }
 
 .article-content tbody tr:hover {
-  background-color: #c8e6d9;
+  background-color: var(--accent-soft);
 }
 
-html.dark .article-content table {
-  color: #ccc;
-  background-color: #1a1a1a;
+.article-content tbody tr:last-child td {
+  border-bottom: none;
 }
 
-html.dark .article-content thead {
-  background-color: #222222;
-  color: #fff;
-}
-
-html.dark .article-content th,
-html.dark .article-content td {
-  border-bottom: 1px solid #333;
-  border-right: 1px solid #333;
-}
-
-html.dark .article-content th:last-child,
-html.dark .article-content td:last-child {
-  border-right: none;
-}
-
-html.dark .article-content tbody tr:nth-child(even) {
-  background-color: #222;
-}
-
-html.dark .article-content tbody tr:nth-child(odd) {
-  background-color: #1a1a1a;
-}
-
-html.dark .article-content tbody tr {
-  transition: background-color 300ms ease;
-}
-
-html.dark .article-content tbody tr:hover {
-  background-color: #004836;
-}
-
+/* 行内代码 */
 .article-content code:not(pre code) {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 0.2em 0.4em;
-  border-radius: 4px;
+  padding: 0.15em 0.4em;
+  margin: 0 0.05em;
+  border-radius: var(--radius-xs);
 
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--surface-3);
+  color: var(--ink-strong);
+  font-size: 0.875em;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  word-break: break-all;
 }
 
-html.dark .article-content code:not(pre code) {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #fff;
+/* 详情列表 */
+.article-content dl {
+  margin: 1em 0;
 }
 
+.article-content dt {
+  font-weight: 600;
+  color: var(--ink-strong);
+  margin-top: 0.75em;
+}
+
+.article-content dd {
+  margin: 0.25em 0 0 1em;
+  color: var(--ink-muted);
+}
+
+/* 代码块 */
 .article-content pre {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 8px;
+  margin: 1.25rem 0;
+  border-radius: var(--radius-lg);
   overflow-x: auto;
   white-space: pre;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
-  background-color: #f8f9fa;
-}
-
-html.dark .article-content pre {
-  background-color: #1e1e1e;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
-}
-
-pre code.hljs {
-  display: block;
-  padding: 1em;
-  scrollbar-width: thin;
-  -ms-overflow-style: auto;
-  background-color: transparent;
+  border: 1px solid var(--line);
+  background-color: var(--surface-4);
 }
 
 /* Twikoo 加载后会注入 prism-okaidia，其 code[class*="language-"] 会改掉代码块的
    字体/行高/字重/颜色/white-space，且随文章是否有评论而有无，必须显式声明压住 */
 pre code.hljs {
-  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-  font-size: 1em;
+  display: block;
+  padding: 1.15em 1.25em;
+  scrollbar-width: thin;
+  -ms-overflow-style: auto;
+  background-color: transparent;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
   font-weight: 400;
-  line-height: 1.6;
+  line-height: 1.7;
   letter-spacing: normal;
   color: var(--hljs-fg);
   text-shadow: none;
@@ -352,53 +386,69 @@ pre code.hljs {
   overflow-wrap: normal;
 }
 
+/* 代码块复制按钮 */
+.article-content .copy-btn {
+  transition: opacity var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
+}
+
+/* 复制成功：对勾与描边落到强调色 */
+.article-content .copy-btn.is-copied {
+  color: var(--accent-text);
+  border-color: var(--accent-line);
+}
+
+.article-content .copy-btn svg {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
 /* 资源分享按钮 */
 .article-content .share-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.3em;
   margin: 0 0.15em;
-  padding: 0.25em 0.75em;
+  padding: 0.25em 0.8em;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-family: inherit;
   font-size: 0.88em;
   font-weight: 500;
   line-height: 1.5;
   vertical-align: middle;
-  color: #fff;
   cursor: pointer;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.02)),
-    linear-gradient(90deg, #00e699, #00e2d8);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  transition: box-shadow 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
-}
-
-html.dark .article-content .share-btn {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.08)),
-    linear-gradient(90deg, #00e699, #00e2d8);
+  background-image: var(--accent-gradient-solid);
+  background-color: oklch(0.46 0.13 45);
+  color: var(--on-accent);
+  box-shadow: var(--shadow-xs);
+  transition: background-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .article-content .share-btn:hover {
-  filter: brightness(0.9);
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-}
-
-html.dark .article-content .share-btn:hover {
-  filter: none;
-  opacity: 0.75;
+  background-image: var(--accent-gradient-solid-hover);
+  background-color: oklch(0.42 0.13 45);
+  box-shadow: var(--shadow-sm);
 }
 
 .article-content .share-btn:active {
-  filter: brightness(0.85);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  background-image: var(--accent-gradient-solid);
+  background-color: oklch(0.42 0.13 45);
+  box-shadow: var(--shadow-xs);
 }
 
-html.dark .article-content .share-btn:active {
-  filter: none;
-  opacity: 0.65;
+.article-content .share-btn .share-btn-icon {
+  display: inline-flex;
 }
 
-.article-content .share-btn .iconfont {
-  font-size: 0.95em;
+.article-content .share-btn svg {
+  width: 0.95em;
+  height: 0.95em;
 }

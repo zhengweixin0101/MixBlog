@@ -82,11 +82,6 @@ export const linksConfig = {
                     link: 'https://music.zhengweixin.top',
                 },
                 {
-                    name: "ShinX's Pan",
-                    description: '我的个人网盘',
-                    link: 'https://pan.zhengweixin.top/@s/avAs2XK8',
-                },
-                {
                     name: '123Pan',
                     description: '123网盘浏览器无限制下载',
                     link: 'https://123pan.zhengweixin.top',

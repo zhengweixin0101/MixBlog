@@ -1,6 +1,5 @@
 /**
  * 返回链接
- * 调用方式：
  *   <BackLink />                                  // 默认：跳转 /，文字「← 返回首页」
  *   <BackLink to="/posts" text="← 返回文章列表" /> // 自定义跳转地址与文字
  */
@@ -8,13 +7,13 @@
 <template>
   <NuxtLink
     :to="to"
-    class="custom-gradient-link inline-flex relative font-medium text-#2f3f5b no-underline"
+    class="custom-gradient-link inline-flex relative font-medium text-ink no-underline"
   >
     <span class="dark:text-gradient">{{ text }}</span>
     <span
       class="absolute inset-0 -z-10
-            bg-gradient-to-r from-#00e699/30 to-#00e2d8/30
-            dark:hidden transition-colors duration-300"
+            bg-accent-soft
+            dark:hidden transition-colors duration-base"
     ></span>
   </NuxtLink>
 </template>
@@ -29,7 +28,8 @@ defineProps({
 <style>
 .custom-gradient-link {
   position: relative;
-  border-bottom: 1.5px dotted white;
+  /* 点线颜色走 token */
+  border-bottom: 1.5px dotted var(--line-strong);
   transition: border-bottom-color 0.5s ease;
   --underline-width: 0%;
 }
@@ -39,7 +39,7 @@ defineProps({
   bottom: 0;
   left: 0;
   height: 2px;
-  background: linear-gradient(90deg, #00e699, #00e2d8);
+  background: var(--accent-gradient);
   width: var(--underline-width);
   transition: width 0.3s ease;
   border-radius: 9999px;

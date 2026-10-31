@@ -7,72 +7,67 @@ import { siteConfig } from '@/siteConfig/main.js'
     <div class="flex flex-col-reverse md:flex-row items-center justify-between w-full gap-10 mt--10">
       <!-- 左侧 -->
       <div class="text-center md:text-left">
-        <p data-fade class="text-4xl sm:text-5xl font-bold">
+        <p data-fade class="text-4xl sm:text-5xl font-display font-semibold tracking-tight text-ink">
           Hello!<span id="wave-hand">👋</span>
         </p>
-        <h1 data-fade class="mt-4 text-5xl sm:text-6xl leading-tight break-words">
+        <h1 data-fade class="mt-4 text-5xl sm:text-6xl font-display font-semibold leading-[1.08] tracking-tight text-balance text-ink">
           I'm
-          <span class="relative inline-block ml-2">
-            <span class="text-#2f3f5b dark:text-gradient">
-              {{ siteConfig.author.name }}
-            </span>
-            <span
-              class="absolute inset-0 -z-10
-                    bg-gradient-to-r from-#00e699/50 to-#00e2d8/50
-                    dark:hidden transition-colors duration-300"
-            ></span>
-          </span>
+          <span class="text-gradient ml-2">{{ siteConfig.author.name }}</span>
         </h1>
         <p
           data-fade
-          class="mt-5 max-w-xl text-[#2f3f5b] dark:text-[#e4e7eb] transition-colors duration-300 text-base sm:text-lg mx-auto md:mx-0"
+          class="mt-5 max-w-xl text-ink-muted transition-colors duration-base text-lg mx-auto md:mx-0"
         >
           {{ siteConfig.author.description }}
         </p>
-        <div data-fade class="flex flex-wrap gap-4 mt-8 justify-center md:justify-start">
+        <div data-fade class="flex flex-wrap gap-2.5 mt-8 justify-center md:justify-start">
           <NuxtLink
             to="/posts"
             class="inline-flex items-center justify-center
-                   px-4 py-2 rounded border border-white
-                   font-bold text-[#2f3f5b] dark:text-white transition-colors bg-transparent no-underline
-                   hover:shadow-[0_0_10px_rgba(34,197,94,0.7)] transition-shadow duration-300
-                   shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]"
+                   px-4 py-2.5 rounded-full border border-accent-line-soft bg-surface
+                   text-sm font-medium leading-none text-ink no-underline
+                   transition duration-base ease-spring
+                   hover:bg-accent-soft hover:border-accent
+                   active:scale-[0.97]"
           >
             My Posts
           </NuxtLink>
           <NuxtLink
             to="/about"
             class="inline-flex items-center justify-center
-                   px-4 py-2 rounded border border-white
-                   font-bold text-[#2f3f5b] dark:text-white transition-colors bg-transparent no-underline
-                   hover:shadow-[0_0_10px_rgba(34,197,94,0.7)] transition-shadow duration-300
-                   shadow-[0_0_5px_rgba(47,63,91,1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.5)]"
+                   px-4 py-2.5 rounded-full border border-accent-line-soft bg-surface
+                   text-sm font-medium leading-none text-ink no-underline
+                   transition duration-base ease-spring
+                   hover:bg-accent-soft hover:border-accent
+                   active:scale-[0.97]"
           >
             About Me
           </NuxtLink>
         </div>
-          <div data-fade class="mt-6 flex flex-wrap justify-center md:justify-start gap-4 text-sm">
+          <div data-fade class="mt-6 flex flex-wrap justify-center md:justify-start gap-1.5 text-sm">
             <a
               v-for="item in siteConfig.socialLinks"
               :key="item.href"
               :href="item.href"
               :target="item.external ? '_blank' : undefined"
               rel="noopener noreferrer nofollow"
-              class="text-gray-700 hover:text-gray-400 dark:text-gray-400 dark:hover:text-white no-underline transition-colors"
+              class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5
+                     text-ink-muted no-underline
+                     transition duration-base ease-spring
+                     hover:bg-accent-soft hover:text-accent-text active:scale-95"
             >
-              <i class="iconfont" :class="item.icon"></i> {{ item.text }}
+              <AppIcon :name="item.icon" class="text-base" /> {{ item.text }}
             </a>
           </div>
       </div>
       <!-- 头像 -->
-      <div data-fade="3" class="w-40 h-40 sm:w-56 sm:h-56 md:w-70 md:h-70 rounded-full shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+      <div data-fade="3" class="w-40 h-40 sm:w-56 sm:h-56 md:w-70 md:h-70 rounded-full shadow-lg ring-1 ring-line-soft">
         <img
           :src="siteConfig.author.avatar"
           alt="Avatar"
-          class="rounded-full w-full h-full object-cover transition-transform duration-300 md:hover:rotate-360 fade-in-image"
+          class="rounded-full w-full h-full object-cover transition-transform duration-base md:hover:rotate-360 fade-in-image"
           draggable="false"
           loading="lazy"
-          onload="this.classList.add('onload-fade')"
         />
       </div>
     </div>

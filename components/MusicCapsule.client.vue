@@ -3,8 +3,7 @@
   <div
     v-show="capsuleVisible"
     class="music-capsule fixed bottom-5 left-5 z-400
-           bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-md
-           shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]
+           border border-line bg-overlay shadow-lg
            cursor-pointer select-none rounded-full h-[44px]
            transition-[width] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
     :class="{ 'capsule-no-anim': !capsuleClosing }"
@@ -17,7 +16,7 @@
   >
     <!-- 内容区 -->
     <div class="relative w-full h-full overflow-hidden rounded-full">
-      <div class="flex items-center h-full px-[6px] gap-2">
+      <div class="relative z-[1] flex items-center h-full px-[6px] gap-2">
         <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 shadow-sm relative z-[1]">
           <img
             v-if="shownItem?.coverBlobUrl"
@@ -27,15 +26,14 @@
             :style="{ transform: `rotate(${rotation}deg)` }"
             draggable="false"
             loading="lazy"
-            onload="this.classList.add('onload-fade')"
           />
-          <div v-else class="w-full h-full flex items-center justify-center text-xs text-gray-400 dark:text-gray-500 bg-gray/10 dark:bg-white/5">
-            <i class="iconfont icon-music text-xs"></i>
+          <div v-else class="w-full h-full flex items-center justify-center text-xs text-ink-subtle bg-surface-2">
+            <AppIcon name="music" class="text-xs" />
           </div>
         </div>
 
         <div v-if="!isPlaying" class="flex-shrink-0 overflow-hidden">
-          <span class="text-[15px] font-semibold text-#2f3f5b dark:text-white whitespace-nowrap block">
+          <span class="text-[15px] font-semibold text-ink whitespace-nowrap block">
             {{ shownItem?.title }}
           </span>
         </div>
@@ -44,7 +42,7 @@
           <transition name="lyric-slide" mode="out-in">
             <div
               :key="currentLyricIndex"
-              class="text-[15px] text-gray-600 dark:text-gray-300 whitespace-nowrap"
+              class="text-[15px] text-ink-muted whitespace-nowrap"
             >
               {{ currentLyricText }}
             </div>
@@ -55,10 +53,10 @@
       <!-- 播放进度条 -->
       <div
         v-if="duration"
-        class="absolute inset-0 origin-left pointer-events-none"
+        class="absolute inset-0 origin-left pointer-events-none z-0"
         :class="{
-          'bg-black/5 dark:bg-white/20': progressPercent < 100,
-          'bg-#00e699/20': progressPercent >= 100,
+          'bg-progress-fill': progressPercent < 100,
+          'bg-accent-soft': progressPercent >= 100,
         }"
         :style="{ transform: `scaleX(${progressPercent / 100})` }"
       ></div>
@@ -70,9 +68,11 @@
         class="absolute inset-0 rounded-full flex items-center justify-center z-10
                bg-white/60 dark:bg-black/50 backdrop-blur-sm"
       >
-        <i :class="isPlaying
-          ? 'iconfont icon-pause text-lg text-#2f3f5b dark:text-white'
-          : 'iconfont icon-play text-lg text-#2f3f5b dark:text-white ml-0.5'"></i>
+        <AppIcon
+          :name="isPlaying ? 'pause-solid' : 'play-solid'"
+          class="text-xl text-ink"
+          :class="isPlaying ? '' : 'ml-0.5'"
+        />
       </div>
     </transition>
   </div>
@@ -90,7 +90,7 @@ const route = useRoute()
 
 const {
   currentItem, isPlaying, lyrics, currentLyricIndex, currentTime, duration,
-  togglePlay, pausedOnMusicPage, capsuleClosing,
+  togglePlay, pauseSilently, pausedOnMusicPage, isUserPaused, capsuleClosing,
 } = useMusicPlayer()
 
 const isMusicPage = computed(() => route.path === '/music')
@@ -119,8 +119,10 @@ let musicPlayTimer = null
 
 watch([isMobile, isMusicPage], ([mobile, musicPage]) => {
   clearTimeout(musicPlayTimer)
-  if (mobile && !musicPage && isPlaying.value) togglePlay()
-  if (musicPage && !isPlaying.value && currentItem.value) {
+  // 移动端离开音乐页时系统暂停
+  if (mobile && !musicPage && isPlaying.value) pauseSilently()
+  // 进入音乐页时仅在非用户主动暂停的情况下恢复播放
+  if (musicPage && !isPlaying.value && currentItem.value && !isUserPaused.value) {
     musicPlayTimer = setTimeout(() => {
       togglePlay()
       pausedOnMusicPage.value = false
@@ -147,7 +149,7 @@ function measureWidth() {
       return
     }
     const textW = el.getBoundingClientRect().width
-    capsuleWidth.value = Math.max(45, Math.ceil(6 + 32 + 8 + textW + 15))
+    capsuleWidth.value = Math.max(45, Math.ceil(6 + 32 + 8 + textW + 15 + 2))
   })
 }
 

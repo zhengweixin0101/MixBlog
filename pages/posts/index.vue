@@ -4,11 +4,9 @@ import { siteConfig } from '@/siteConfig/main.js'
 
 usePageMeta('文章', `${siteConfig.description}`, '/posts', '文章,列表,posts,list')
 
-// 搜索和筛选相关状态
 const searchTerm = ref('')
 const selectedTag = ref('')
 
-// 读取文章列表
 const { data: postsRaw } = await useAsyncData('posts-list', () =>
   $fetch(`${siteConfig.apiUrl}/api/articles`),
   { server: true }
@@ -43,49 +41,37 @@ const filteredPosts = computed(() => {
 <template>
   <main v-fade-in>
     <section class="py-12 w-full max-w-screen-xl mx-auto">
-      <h1 data-fade class="text-3xl mt-40">
-        <span
-          class="relative inline-block transition-colors duration-300
-                text-#2f3f5b dark:text-gradient"
-        >
-          文章
-          <span
-            class="absolute inset-0 -z-10
-                  bg-gradient-to-r from-#00e699/50 to-#00e2d8/50
-                  dark:hidden transition-colors duration-300"
-          ></span>
-        </span>
+      <h1 data-fade class="text-3xl mt-40 font-display font-semibold tracking-tight text-balance">
+        <span class="text-gradient">文章</span>
       </h1>
-      <p data-fade class="mt-2 text-#2f3f5b dark:text-gray-300 transition-colors duration-300">
+      <p data-fade class="mt-2 text-ink-muted transition-colors duration-base">
         一些奇思妙想的文章。
       </p>
 
       <div data-fade class="relative mt-6 sm:mt-8 w-full">
-        <i class="iconfont icon-sousuo absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+        <AppIcon name="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-ink-subtle pointer-events-none" />
         <input
           v-model="searchTerm"
           placeholder="Search..."
           type="text"
           id="search"
-          class="w-full h-12 pl-10 pr-4 rounded-xl border-none
-                bg-gray-200/50 text-#2f3f5b placeholder-gray-500
-                dark:bg-white/10 dark:text-white dark:placeholder-gray-500
-                transition-colors transition-shadow duration-300 
-                focus:outline-none shadow-[0_0_0_0.5px_#00e699] dark:shadow-none focus:shadow-[0_0_0_1px_#00e699]"
+          class="neu-inset appearance-none bg-transparent w-full h-12 pl-12 pr-4 rounded-xl
+                border border-line focus:border-line-strong transition-colors duration-base
+                text-ink placeholder-ink-subtle outline-none"
         />
       </div>
 
-      <div data-fade class="mt-4 flex flex-wrap items-baseline justify-start gap-2 text-sm text-#2f3f5b dark:text-gray-400 transition-colors duration-300">
+      <div data-fade class="mt-4 flex flex-wrap items-baseline justify-start gap-2 text-sm text-ink-muted transition-colors duration-base">
         <span class="font-bold">Tag:</span>
         <button
           v-for="tag in allTags"
           :key="tag"
           @click="toggleTag(tag)"
           :class="{
-            'bg-black/15 text-#2f3f5b dark:bg-white/30 dark:text-white': selectedTag === tag,
-            'bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80': selectedTag !== tag
+            'bg-accent-soft text-ink border-accent-line': selectedTag === tag,
+            'bg-surface-2 text-ink-muted hover:text-ink': selectedTag !== tag
           }"
-          class="inline-block px-2 py-1 text-xs rounded-full transition-colors duration-300 cursor-pointer shadow-none border-none"
+          class="inline-block px-2 py-1 text-xs rounded-full transition duration-base ease-spring cursor-pointer shadow-none border-none active:scale-95"
         >
           {{ tag }}
         </button>
@@ -94,24 +80,24 @@ const filteredPosts = computed(() => {
       <ul :key="selectedTag + '-' + searchTerm" class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
         <li data-fade
           v-for="post in filteredPosts"
-          class="relative w-full h-160px rounded-xl list-none shadow-[0_0_2px_rgba(0,0,0,0.2)] hover:shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]
-                 bg-#fefefe dark:bg-white/10 transition-all duration-300"
+          class="card-base relative w-full h-160px list-none bg-surface hover:shadow-md hover:border-accent-line
+                 transition-all duration-base"
         >
           <NuxtLink
             :to="`/posts/${post.slug}`"
             class="block h-full no-underline cursor-pointer"
           >
             <div class="h-full p-4 no-underline" >
-              <h4 class="text-#2f3f5b dark:text-white text-xm transition-colors duration-300">{{ post.title }}</h4>
-              <p class="mt-1 text-#2f3f5b dark:text-gray-400 text-sm transition-colors duration-300">
+              <h4 class="text-ink text-base font-semibold leading-snug transition-colors duration-base">{{ post.title }}</h4>
+              <p class="mt-1.5 text-ink-muted text-sm leading-relaxed transition-colors duration-base">
                 {{ post.description || '暂无描述' }}
               </p>
 
-              <div class="absolute left-4 bottom-4 text-sm text-gray-400 pointer-events-none flex items-center">
-                <i class="iconfont icon-zhong text-#2f3f5b dark:bg-gradient-to-r dark:text-gradient"></i>
+              <div class="absolute left-4 bottom-4 text-sm text-ink-subtle pointer-events-none flex items-center">
+                <AppIcon name="clock" />
                 <time
                   :datetime="post.date !== '' ? post.date : null"
-                  class="text-#2f3f5b dark:bg-gradient-to-r dark:text-gradient ml-0.5"
+                  class="ml-0.5"
                 >
                   {{ post.date || '未知日期' }}
                 </time>
@@ -121,7 +107,7 @@ const filteredPosts = computed(() => {
                 <span
                   v-for="tag in post.tags"
                   :key="tag"
-                  class="px-2 py-1 text-xs rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300"
+                  class="px-2 py-1 text-xs rounded-full bg-surface-4 text-ink-muted"
                 >
                   {{ tag }}
                 </span>

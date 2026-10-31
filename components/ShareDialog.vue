@@ -9,21 +9,15 @@
       <div class="share-backdrop absolute inset-0 bg-black/40 backdrop-blur-md" @click="onOverlayClick"></div>
 
       <div
-        class="share-card relative w-full max-w-md rounded-xl bg-#fefefe/90 dark:bg-#1a1a1a/90 backdrop-blur-md
-               text-#2f3f5b dark:text-white shadow-[0_0_12px_rgba(0,0,0,0.3)] dark:shadow-[0_0_12px_rgba(255,255,255,0.15)]
-               border border-white/40 dark:border-white/10 overflow-hidden"
+        class="share-card relative w-full max-w-md rounded-xl border border-line bg-overlay
+               text-ink shadow-lg
+               overflow-hidden"
         role="dialog"
         aria-modal="true"
       >
         <div class="px-5 pt-5 pb-3">
           <div v-if="shareDialog.state.loading" class="h-5 w-36 rounded skeleton"></div>
-          <div
-            v-else
-            class="relative inline-block max-w-full text-lg font-semibold break-words"
-          >
-            <span class="absolute inset-0 -z-10
-                  bg-gradient-to-r from-#00e699/50 to-#00e2d8/50
-                  dark:hidden transition-colors duration-300"></span>
+          <div v-else class="inline-block max-w-full text-lg font-semibold break-words text-gradient">
             {{ shareDialog.state.share?.name || '资源分享' }}
           </div>
         </div>
@@ -33,7 +27,7 @@
             <div
               v-for="index in skeletonRows"
               :key="index"
-              class="flex items-center gap-2 p-3 rounded-lg bg-black/5 dark:bg-white/10"
+              class="flex items-center gap-2 p-3 rounded-lg bg-surface-2"
             >
               <div class="w-4 h-4 rounded shrink-0 skeleton"></div>
               <div class="flex-1 min-w-0 h-4 rounded skeleton"></div>
@@ -43,9 +37,9 @@
           <div v-else-if="shareDialog.state.error" class="py-2 flex flex-col items-center gap-3 text-sm text-red-500">
             <span>{{ shareDialog.state.error }}</span>
             <button
-              class="py-2 px-3 text-sm rounded-lg border-none text-#2f3f5b/80 dark:text-white/60
-                     bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20
-                     transition-colors duration-300 cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)]"
+              class="py-2 px-3 text-sm rounded-lg border-none text-ink-muted dark:text-white/60
+                     bg-surface-2 hover:bg-surface-3
+                     transition-colors duration-base cursor-pointer shadow-xs"
               @click="shareDialog.retry()"
             >重新加载</button>
           </div>
@@ -55,33 +49,44 @@
               v-for="(drive, index) in drives"
               :key="index"
               class="group relative flex items-center gap-2 p-3 rounded-lg
-                     bg-black/5 dark:bg-white/10 hover:bg-#00e699/15 dark:hover:bg-#00e699/20
-                     border border-transparent hover:border-#00e699/50 transition-all duration-200"
+                     bg-surface-2 hover:bg-accent-soft
+                     border border-transparent hover:border-accent-line transition-all duration-base"
             >
-              <i class="iconfont icon-download text-sm text-#2f3f5b dark:text-#00e699 shrink-0"></i>
+              <AppIcon name="download" class="text-sm text-ink text-accent shrink-0" />
               <a
                 :href="drive.url"
                 target="_blank"
                 rel="noopener noreferrer nofollow"
                 data-no-confirm
-                class="flex-1 min-w-0 text-sm font-medium break-words no-underline text-#2f3f5b dark:text-#CCC
-                       after:absolute after:inset-0 after:content-[''] dark:group-hover:text-#00e699 transition-colors"
+                class="flex-1 min-w-0 text-sm leading-5 font-medium break-words no-underline text-ink dark:text-#CCC
+                       after:absolute after:inset-0 after:content-[''] dark:group-hover:text-accent transition-colors"
               >{{ drive.driveName || '网盘链接' }}</a>
 
               <span
                 v-if="drive.accessCode"
-                class="relative z-1 shrink-0 flex items-center gap-1 px-2 py-1 rounded-md text-xs
-                       bg-black/10 dark:bg-white/10 text-#2f3f5b dark:text-white/80"
+                class="relative z-1 shrink-0 h-5 cursor-pointer [perspective:300px]"
+                :title="`复制提取码`"
+                @click="copyAccessCode(drive, $event)"
               >
-                提取码 <span class="font-mono tracking-wider">{{ drive.accessCode }}</span>
-                <button
-                  class="p-0 border-0 bg-transparent cursor-pointer text-#2f3f5b/50 dark:text-white/50 hover:text-#00e699 transition-colors"
-                  :title="`复制提取码 ${drive.accessCode}`"
-                  @click="copyAccessCode(drive, $event)"
+                <span
+                  class="relative flex h-full items-center gap-1 px-2 rounded-md text-xs
+                         bg-surface-3 group-hover:bg-surface-4
+                         border border-transparent group-hover:border-accent-line
+                         group-hover:shadow-xs
+                         [transform-style:preserve-3d]
+                         transition-all duration-slow"
+                  :class="copiedCode === drive.accessCode ? '[transform:rotateY(180deg)]' : ''"
                 >
-                  <i v-if="copiedCode !== drive.accessCode" class="iconfont icon-copy"></i>
-                  <span v-else class="text-#00e699 text-xs">已复制</span>
-                </button>
+                  <span class="leading-4 whitespace-nowrap [backface-visibility:hidden]">
+                    提取码:<span class="font-mono tracking-wider group-hover:text-accent-text transition-colors">{{ drive.accessCode }}</span>
+                  </span>
+                  <span
+                    class="absolute inset-0 flex items-center justify-center rounded-md text-accent-text
+                           [backface-visibility:hidden] [transform:rotateY(180deg)]"
+                  >
+                    <span class="leading-4 whitespace-nowrap"><AppIcon name="check" />复制成功</span>
+                  </span>
+                </span>
               </span>
             </div>
           </div>
@@ -109,7 +114,6 @@ const drives = computed(() => {
   return Array.isArray(list) ? list.filter(d => d?.url) : []
 })
 
-// 弹窗打开时锁定页面滚动
 useScrollLock(computed(() => shareDialog.state.visible))
 
 function onOverlayClick() {
@@ -221,5 +225,9 @@ onBeforeUnmount(() => {
 .thin-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(128, 128, 128, 0.35);
   border-radius: 3px;
+}
+
+.share-card {
+  contain: paint;
 }
 </style>

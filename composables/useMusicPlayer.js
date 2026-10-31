@@ -75,6 +75,8 @@ const muted = ref(false)
 const shuffleList = ref([])
 const shuffleIndex = ref(0)
 const pausedOnMusicPage = ref(false)
+// 用户主动暂停标记，用于区分用户手动暂停与系统/页面切换导致的暂停，只有前者才禁止进入音乐页时自动恢复播放
+const isUserPaused = ref(false)
 const capsuleClosing = ref(false)
 
 let currentCoverBlobUrl = null
@@ -315,8 +317,8 @@ async function playIndex(i, forcePlay = false) {
   if (currentIndex.value === i && currentItem.value === item) {
     if (isLoadingSong.value) return false
     if (audioEl.paused) {
-      try { await audioEl.play(); isPlaying.value = true } catch {}
-    } else { audioEl.pause(); isPlaying.value = false }
+      try { await audioEl.play(); isPlaying.value = true; isUserPaused.value = false } catch {}
+    } else { audioEl.pause(); isPlaying.value = false; isUserPaused.value = true }
     return false
   }
 
@@ -326,14 +328,28 @@ async function playIndex(i, forcePlay = false) {
   try { await audioEl.play() } catch {}
   if (gen !== _playGeneration) { audioEl.pause(); return false }
   isPlaying.value = true
+  isUserPaused.value = false
   return true
 }
 
 function togglePlay() {
   const audioEl = getAudio()
   if (!audioEl) return
-  if (audioEl.paused) audioEl.play().then(() => { isPlaying.value = true }).catch(() => {})
-  else { audioEl.pause(); isPlaying.value = false }
+  if (audioEl.paused) {
+    audioEl.play().then(() => { isPlaying.value = true; isUserPaused.value = false }).catch(() => {})
+  } else {
+    audioEl.pause()
+    isPlaying.value = false
+    isUserPaused.value = true
+  }
+}
+
+// 系统级暂停不标记为用户主动暂停
+function pauseSilently() {
+  const audioEl = getAudio()
+  if (!audioEl) return
+  audioEl.pause()
+  isPlaying.value = false
 }
 
 function prev() {
@@ -431,6 +447,7 @@ function closeCapsule() {
     audioEl.src = ''
     isPlaying.value = false
   }
+  isUserPaused.value = false
   cancelPendingPlay()
   if (_lyricsAbort) { _lyricsAbort.abort(); _lyricsAbort = null }
   capsuleClosing.value = true
@@ -470,6 +487,7 @@ export function useMusicPlayer() {
     shuffleList,
     shuffleIndex,
     pausedOnMusicPage,
+    isUserPaused,
     capsuleClosing,
     loadList,
     ensureInfo,
@@ -477,6 +495,7 @@ export function useMusicPlayer() {
     buildGroupedLyrics,
     playIndex,
     togglePlay,
+    pauseSilently,
     prev,
     next,
     togglePlayMode,

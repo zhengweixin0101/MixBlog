@@ -5,7 +5,7 @@
       <aside class="musicList max-w-65 overflow-y-auto relative hidden md:block" ref="listEl">
         <!-- 加载中骨架屏 -->
         <ul v-if="isLoadingList" class="space-y-2 p-1">
-          <li v-for="n in 6" :key="n" class="flex items-center p-2 py-3 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)]">
+          <li v-for="n in 6" :key="n" class="flex items-center p-2 py-3 rounded-lg bg-surface shadow-xs">
             <div class="w-6 h-6 flex items-center justify-center mr-2">
               <div class="w-4 h-4 rounded skeleton"></div>
             </div>
@@ -16,7 +16,7 @@
           </li>
         </ul>
         <!-- 列表为空 -->
-        <div v-else-if="!list?.length" class="flex items-center justify-center h-full text-gray-400 dark:text-gray-500 text-sm">
+        <div v-else-if="!list?.length" class="flex items-center justify-center h-full text-ink-subtle text-sm">
           暂无歌曲
         </div>
         <!-- 正常列表 -->
@@ -26,18 +26,18 @@
             :key="item.musicFull || item.title || idx"
             @click="playIndex(idx)"
             :class="[
-              'flex items-center p-2 py-3 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
+              'flex items-center p-2 py-3 rounded-lg cursor-pointer bg-surface transition-all duration-base',
               idx === currentIndex
-                ? 'shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]'
-                : 'shadow-[0_0_2px_rgba(0,0,0,0.2)]'
+                ? 'border border-accent-line bg-accent-soft'
+                : 'border border-line shadow-xs'
             ]"
           >
-            <div class="w-6 h-6 flex items-center justify-center text-xs font-semibold mr-2 text-gray-600 dark:text-gray-300">
+            <div class="w-6 h-6 flex items-center justify-center text-xs font-semibold mr-2 text-ink-muted">
               {{ idx + 1 }}
             </div>
             <div class="min-w-0 flex-1 flex justify-between items-center">
-              <div class="transition-color duration-300 font-semibold truncate">{{ item.title }}</div>
-              <div class="text-xs transition-color duration-300 truncate ml-2">
+              <div class="transition-color duration-base font-semibold truncate">{{ item.title }}</div>
+              <div class="text-xs transition-color duration-base truncate ml-2">
                 {{ item.artist }}
               </div>
             </div>
@@ -46,7 +46,7 @@
       </aside>
 
       <!-- 右侧播放界面 -->
-      <div class="flex-1 flex flex-col min-h-0 ml-1 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] transition-all duration-300">
+      <div class="card-base flex-1 flex flex-col min-h-0 ml-1 bg-surface transition-all duration-base">
         <!-- 加载中骨架屏 -->
         <div v-if="isLoadingList" class="mt-20 p-6 text-center">
           <div class="cover-wrap w-40 h-40 rounded-full overflow-hidden shadow-xl flex items-center justify-center mx-auto">
@@ -71,9 +71,8 @@
               :style="{ animationPlayState: isPlaying ? 'running' : 'paused', animationDuration: '40s' }"
               loading="lazy"
               draggable="false"
-              onload="this.classList.add('onload-fade')"
             />
-            <div v-else class="w-full h-full flex items-center justify-center text-sm text-gray-500">
+            <div v-else class="w-full h-full flex items-center justify-center text-sm text-ink-subtle">
               无封面
             </div>
           </div>
@@ -84,8 +83,8 @@
               <div class="w-24 h-4 rounded skeleton mx-auto"></div>
             </div>
             <template v-else>
-              <div class="text-6 font-bold truncate transition-color duration-300">{{ currentItem.title }}</div>
-              <div class="text-sm transition-color duration-300 text-gray-600 dark:text-gray-300 truncate">
+              <div class="text-6 font-bold truncate transition-color duration-base">{{ currentItem.title }}</div>
+              <div class="text-sm transition-color duration-base text-ink-muted truncate">
                 {{ currentItem.artist }}
               </div>
             </template>
@@ -116,10 +115,10 @@
               v-for="(line, i) in lyrics"
               :key="i"
               :class="[ 
-                'lyric-line sm:text-5 transition-all duration-300',
+                'lyric-line sm:text-5 transition-all duration-base',
                 currentLyricIndices.includes(i)
                   ? 'current text-gradient font-semibold scale-115'
-                  : 'text-gray-600 dark:text-white'
+                  : 'text-ink-muted'
               ]"
               :style="currentLyricIndices.includes(i) ? { filter: 'none' } : { filter: 'blur(1.5px)' }"
             >
@@ -135,8 +134,8 @@
           </div>
         </div>
 
-        <div class="hidden md:block absolute bottom-1 right-2 cursor-pointer opacity-50" @click="toggleFullscreen"> 
-          <i class="text-lg iconfont icon-quanping"></i>
+        <div class="hidden md:block absolute bottom-2 right-3 cursor-pointer opacity-50" @click="toggleFullscreen"> 
+          <AppIcon name="maximize" class="text-lg" />
         </div>
       </div>
     </div>
@@ -144,7 +143,7 @@
     <!-- 底部控制栏 -->
     <div
       data-fade
-      class="my-4 p-5 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] duration-300"
+      class="my-4 p-5 rounded-lg bg-surface shadow-xs duration-base"
     >
       <!-- 移动端 -->
       <div class="md:hidden flex flex-col gap-3">
@@ -152,7 +151,7 @@
         <div class="w-full flex items-center gap-2">
           <span class="text-xs w-10 text-right">{{ formatTime(currentTime) }}</span>
           <input
-            class="flex-1 h-1.5 rounded-full bg-gray/20 dark:bg-white/10 appearance-none cursor-pointer accent-gray dark:accent-white"
+            class="flex-1 h-1.5 rounded-full bg-surface-2 appearance-none cursor-pointer accent-accent"
             type="range"
             min="0"
             :max="duration"
@@ -163,7 +162,7 @@
             @pointerdown="isSeeking = true"
             @pointerup="isSeeking = false"
             @pointerleave="isSeeking = false"
-            :style="{ background: `linear-gradient(to right, #00e699 0%, #00e699 ${duration ? (seekValue/duration*100) : 0}%, #D9D9D9 ${duration ? (seekValue/duration*100) : 0}%, #D9D9D9 100%)` }"
+            :style="getProgressTrackStyle()"
           />
           <span class="text-xs w-10">{{ formatTime(duration) }}</span>
         </div>
@@ -172,34 +171,30 @@
         <div class="w-full flex items-center justify-between px-2">
           <!-- 左侧列表 -->
           <div class="flex items-center gap-2">
-            <button @click="musicList" :disabled="!list?.length" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
-              <i class="iconfont icon-liebiao"></i>
+            <button @click="musicList" :disabled="!list?.length" class="p-2 rounded-full text-ink hover:bg-surface-2 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <AppIcon name="list-music" class="text-lg" />
             </button>
           </div>
 
           <!-- 中间控制 -->
           <div class="flex items-center gap-4">
-            <button @click="prev" :disabled="!list?.length" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
-              <i class="iconfont icon-backward"></i>
+            <button @click="prev" :disabled="!list?.length" class="p-2 rounded-full text-ink hover:bg-surface-2 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <AppIcon name="skip-back-solid" class="text-lg" />
             </button>
 
-            <button @click="togglePlay" :disabled="!list?.length" class="p-3 rounded-full bg-#00e699 text-white shadow-[0_0_2px_rgba(0,0,0,0.2)] appearance-none border-none cursor-pointer transition-all">
-              <i :class="isPlaying ? 'iconfont icon-pause' : 'iconfont icon-play'"></i>
+            <button @click="togglePlay" :disabled="!list?.length" class="p-3 rounded-full bg-accent text-white shadow-xs appearance-none border-none cursor-pointer transition-all">
+              <AppIcon :name="isPlaying ? 'pause-solid' : 'play-solid'" class="text-xl" />
             </button>
 
-            <button @click="next" :disabled="!list?.length" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
-              <i class="iconfont icon-forward"></i>
+            <button @click="next" :disabled="!list?.length" class="p-2 rounded-full text-ink hover:bg-surface-2 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <AppIcon name="skip-forward-solid" class="text-lg" />
             </button>
           </div>
 
           <!-- 右侧功能 -->
           <div class="flex items-center gap-2">
-            <button @click="togglePlayMode" class="p-2 rounded-full text-#2f3f5b dark:text-white hover:bg-gray/10 dark:hover:bg-white/5 appearance-none bg-transparent border-none cursor-pointer transition-all">
-              <i :class="{
-                'iconfont icon-repeat': playMode === 'loop',
-                'iconfont icon-repeat-1': playMode === 'single',
-                'iconfont icon-shuffle1': playMode === 'shuffle'
-              }"></i>
+            <button @click="togglePlayMode" class="p-2 rounded-full text-ink hover:bg-surface-2 appearance-none bg-transparent border-none cursor-pointer transition-all">
+              <AppIcon :name="playMode === 'single' ? 'repeat-1' : playMode === 'shuffle' ? 'shuffle' : 'repeat'" class="text-lg" />
             </button>
           </div>
         </div>
@@ -209,16 +204,16 @@
       <div class="hidden md:flex items-center gap-4 flex-wrap justify-between">
         <!-- 左侧播放控制 -->
         <div class="flex items-center gap-4">
-          <button @click="prev" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-            <i class="iconfont icon-backward"></i>
+          <button @click="prev" :disabled="!list?.length" class="text-ink hover:opacity-50 dark:hover:opacity-100 dark:hover:text-accent appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <AppIcon name="skip-back-solid" class="text-lg" />
           </button>
 
-          <button @click="togglePlay" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-            <i :class="isPlaying ? 'iconfont icon-pause' : 'iconfont icon-play'"></i>
+          <button @click="togglePlay" :disabled="!list?.length" class="text-ink hover:opacity-50 dark:hover:opacity-100 dark:hover:text-accent appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <AppIcon :name="isPlaying ? 'pause-solid' : 'play-solid'" class="text-xl" />
           </button>
 
-          <button @click="next" :disabled="!list?.length" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-            <i class="iconfont icon-forward"></i>
+          <button @click="next" :disabled="!list?.length" class="text-ink hover:opacity-50 dark:hover:opacity-100 dark:hover:text-accent appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <AppIcon name="skip-forward-solid" class="text-lg" />
           </button>
         </div>
 
@@ -226,7 +221,7 @@
         <div class="flex-1 flex items-center gap-2 mx-2 min-w-[200px]">
           <span class="text-xs w-10 text-right">{{ formatTime(currentTime) }}</span>
           <input
-            class="flex-1 h-1.5 rounded-full bg-gray/20 dark:bg-white/10 appearance-none cursor-pointer accent-gray dark:accent-white"
+            class="flex-1 h-1.5 rounded-full bg-surface-2 appearance-none cursor-pointer accent-accent"
             type="range"
             min="0"
             :max="duration"
@@ -237,31 +232,27 @@
             @pointerdown="isSeeking = true"
             @pointerup="isSeeking = false"
             @pointerleave="isSeeking = false"
-            :style="{ background: `linear-gradient(to right, #00e699 0%, #00e699 ${seekValue/duration*100}%, #D9D9D9 ${seekValue/duration*100}%, #D9D9D9 100%)` }"
+            :style="getProgressTrackStyle()"
           />
           <span class="text-xs w-10">{{ formatTime(duration) }}</span>
         </div>
 
         <!-- 右侧功能 -->
         <div class="flex items-center gap-4">
-          <button @click="togglePlayMode" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-            <i :class="{
-              'iconfont icon-repeat': playMode === 'loop',
-              'iconfont icon-repeat-1': playMode === 'single',
-              'iconfont icon-shuffle1': playMode === 'shuffle'
-            }"></i>
+          <button @click="togglePlayMode" class="text-ink hover:opacity-50 dark:hover:opacity-100 dark:hover:text-accent appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <AppIcon :name="playMode === 'single' ? 'repeat-1' : playMode === 'shuffle' ? 'shuffle' : 'repeat'" class="text-lg" />
           </button>
 
-          <button @click="toggleMute" class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all">
-            <i :class="muted ? 'iconfont icon-volumeCross' : 'iconfont icon-volumeHigh'"></i>
+          <button @click="toggleMute" class="text-ink hover:opacity-50 dark:hover:opacity-100 dark:hover:text-accent appearance-none bg-transparent border-none cursor-pointer transition-all">
+            <AppIcon :name="muted ? 'volume-mute' : 'volume'" class="text-lg" />
           </button>
 
           <button
             v-if="currentItem?.musicFull"
             @click="downloadMusic"
-            class="text-#2f3f5b dark:text-white hover:opacity-50 dark:hover:opacity-100 dark:hover:text-#00e699 appearance-none bg-transparent border-none cursor-pointer transition-all"
+            class="text-ink hover:opacity-50 dark:hover:opacity-100 dark:hover:text-accent appearance-none bg-transparent border-none cursor-pointer transition-all"
           >
-            <i class="iconfont icon-download"></i>
+            <AppIcon name="download" class="text-lg" />
           </button>
         </div>
       </div>
@@ -279,12 +270,12 @@
         <aside
           ref="mobileListEl"
           v-show="mobileListOpen"
-          class="fixed bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]
-                 bg-#fefefe/80 dark:bg-#1a1a1a/70 backdrop-blur-lg text-gray-800 dark:text-gray-100 rounded-t-lg"
+          class="fixed bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto shadow-lg
+                 border-t border-line bg-overlay text-ink rounded-t-lg"
         >
           <!-- 加载中骨架屏 -->
           <ul v-if="isLoadingList" class="space-y-2 p-3">
-            <li v-for="n in 6" :key="n" class="flex items-center p-2 py-3 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)]">
+            <li v-for="n in 6" :key="n" class="flex items-center p-2 py-3 rounded-lg bg-surface shadow-xs">
               <div class="w-6 h-6 flex items-center justify-center mr-2">
                 <div class="w-4 h-4 rounded skeleton"></div>
               </div>
@@ -295,7 +286,7 @@
             </li>
           </ul>
           <!-- 列表为空 -->
-          <div v-else-if="!list?.length" class="flex items-center justify-center py-12 text-gray-400 dark:text-gray-500 text-sm">
+          <div v-else-if="!list?.length" class="flex items-center justify-center py-12 text-ink-subtle text-sm">
             暂无歌曲
           </div>
           <!-- 正常列表 -->
@@ -305,18 +296,18 @@
               :key="item.musicFull || item.title || idx"
               @click="selectMobile(idx)"
               :class="[
-                'flex items-center p-2 py-3 rounded-lg cursor-pointer bg-#fefefe dark:bg-white/10 transition-all duration-300',
+                'flex items-center p-2 py-3 rounded-lg cursor-pointer bg-surface transition-all duration-base',
                 idx === currentIndex
-                  ? 'shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]'
-                  : 'shadow-[0_0_2px_rgba(0,0,0,0.2)]'
+                  ? 'border border-accent-line bg-accent-soft'
+                  : 'border border-line shadow-xs'
               ]"
             >
-              <div class="w-6 h-6 flex items-center justify-center text-xs font-semibold mr-2 text-gray-600 dark:text-gray-300">
+              <div class="w-6 h-6 flex items-center justify-center text-xs font-semibold mr-2 text-ink-muted">
                 {{ idx + 1 }}
               </div>
               <div class="min-w-0 flex-1 flex justify-between items-center">
-                <div class="transition-color duration-300 font-semibold truncate">{{ item.title }}</div>
-                <div class="text-sm transition-color duration-300 truncate ml-2">
+                <div class="transition-color duration-base font-semibold truncate">{{ item.title }}</div>
+                <div class="text-sm transition-color duration-base truncate ml-2">
                   {{ item.artist }}
                 </div>
               </div>
@@ -362,6 +353,25 @@ const isFullscreen = useState('showMusicFullscreen', () => false)
 const mobileListOpen = ref(false)
 const mobileListEl = ref(null)
 
+const progressPercent = computed(() => {
+  const total = Number(duration.value)
+  const value = Number(seekValue.value)
+
+  if (!Number.isFinite(total) || total <= 0) return null
+  if (!Number.isFinite(value)) return 0
+
+  return Math.min(Math.max((value / total) * 100, 0), 100)
+})
+
+function getProgressTrackStyle(value = progressPercent.value) {
+  if (value === null) return { background: 'var(--surface-3)' }
+
+  const percent = Number.isFinite(value) ? Math.min(Math.max(value, 0), 100) : 0
+  return {
+    background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${percent}%, var(--surface-3) ${percent}%, var(--surface-3) 100%)`
+  }
+}
+
 watch(currentTime, (v) => { if (!isSeeking.value) seekValue.value = v })
 
 async function playIndex(i, forcePlay = false) {
@@ -378,7 +388,13 @@ function togglePlay() {
 function prev() { sharedPrev() }
 function next() { sharedNext(false) }
 function togglePlayMode() { sharedTogglePlayMode() }
-function toggleMute() { sharedToggleMute() }
+function toggleMute() {
+  const wasMuted = muted.value
+  sharedToggleMute()
+  if (muted.value !== wasMuted) {
+    notification.show(muted.value ? '已开启静音' : '已关闭静音', 'info')
+  }
+}
 function downloadMusic() { sharedDownloadMusic() }
 
 function musicList() {

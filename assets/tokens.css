@@ -1,0 +1,237 @@
+/** 设计令牌层 —— 全站唯一的取值来源 */
+
+:root {
+  color-scheme: light;
+
+  /* 字体 */
+  --font-display: 'Fraunces', 'Songti SC', 'Noto Serif CJK SC', 'Source Han Serif SC',
+    'Source Han Serif CN', 'STSong', SimSun, Georgia, serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'HarmonyOS Sans SC', 'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC',
+    Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+
+  /* 字号 */
+  /* clamp(下限, 偏好值, 上限) */
+  --text-xs: 0.8125rem;                                        /* 13 */
+  --text-sm: 0.875rem;                                         /* 14 */
+  --text-base: 1rem;                                           /* 16 */
+  --text-lg: clamp(1.0625rem, 1rem + 0.28vw, 1.125rem);        /* 17→18 */
+  --text-xl: clamp(1.1875rem, 1.12rem + 0.36vw, 1.3125rem);    /* 19→21 */
+  --text-2xl: clamp(1.375rem, 1.25rem + 0.6vw, 1.625rem);      /* 22→26 */
+  --text-3xl: clamp(1.625rem, 1.4rem + 1vw, 2.125rem);         /* 26→34 */
+  --text-4xl: clamp(2rem, 1.6rem + 1.8vw, 3rem);               /* 32→48 */
+
+  /* 行高 */
+  --leading-tight: 1.25;
+  --leading-snug: 1.4;
+  --leading-normal: 1.65;
+  --leading-relaxed: 1.8;
+
+  /* 行宽 */
+  --measure: 68ch;
+  --measure-tight: 52ch;
+
+  /* 间距 */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* 圆角 */
+  --radius-xs: 4px;
+  --radius-sm: 7px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;   /* 小卡片 / 控件 */
+  --radius-2xl: 26px;  /* 弹层 */
+  --radius-full: 999px;
+  /* 卡片椭圆圆角：水平 20 / 垂直 16 */
+  --radius-card: 20px / 16px;
+  /* 荧光笔底圆角 */
+  --radius-marker: 8px / 5px;
+
+  /* 浅色 */
+  --bg: oklch(0.965 0.009 84);
+  --bg-grad-light: linear-gradient(
+    180deg,
+    oklch(0.925 0.017 80) 0%,
+    oklch(0.952 0.012 83) 30%,
+    oklch(0.972 0.008 84) 52%,
+    oklch(0.972 0.008 84) 100%
+  );
+  --bg-grad-dark: linear-gradient(
+    180deg,
+    oklch(0.118 0.008 66) 0%,
+    oklch(0.168 0.009 70) 32%,
+    oklch(0.2 0.01 74) 52%,
+    oklch(0.2 0.01 74) 100%
+  );
+  --bg-gradient: var(--bg-grad-light);
+
+  /* 卡片面 */
+  --surface: oklch(0.995 0.009 85 / 0.74);
+  --surface-blur: 8px;
+  --surface-2: oklch(0.9 0.02 76);
+  --surface-3: oklch(0.868 0.022 74);
+  --surface-4: oklch(0.93 0.014 82);
+  /* 正文表格斑马纹（压在 --surface 表面上的交错行，比 surface-2 浅一档） */
+  --surface-stripe: oklch(0.94 0.016 80);
+
+  /* 压在代码块上的按钮面 */
+  --code-chip: var(--surface-3);
+
+  /* 进度填充带 */
+  --progress-fill: oklch(0.9 0.02 76);
+  --sunken: linear-gradient(150deg, oklch(0.949 0.018 74), oklch(0.963 0.014 80));
+  /* 顶栏/弹层 */
+  --overlay: oklch(0.932 0.017 80 / 0.6);
+  --overlay-blur: 11px;
+
+  /* 边框 */
+  --line: oklch(0.62 0.1 48 / 0.2);
+  --line-strong: oklch(0.55 0.022 70 / 0.42);
+  --ring-soft: oklch(1 0 0 / 0.09);
+
+  /* 拟态 */
+  --indicator-surface: linear-gradient(180deg, oklch(0.953 0.015 82), oklch(0.936 0.017 79));
+  --indicator-shadow: inset 0 1px 0 0 oklch(1 0 0 / 0.22),
+    inset 0 -2px 4px -1px oklch(0.55 0.06 70 / 0.16), 0 0 1px 0 oklch(0.45 0.05 60 / 0.12),
+    0 2px 4px 0 oklch(0.45 0.05 60 / 0.08), 0 4px 12px 0 oklch(0.45 0.05 60 / 0.07),
+    0 6px 20px 0 oklch(0.45 0.05 60 / 0.05);
+  --neu-dark: oklch(0.55 0.06 70 / 0.28);
+  --neu-light: oklch(1 0 0 / 0.5);
+  /* 内沉 */
+  --neu-inset: inset 3px 3px 7px 0 var(--neu-dark),
+    inset -3px -3px 7px 0 var(--neu-light);
+
+  --ink: oklch(0.285 0.014 75);       /* 正文 */
+  --ink-strong: oklch(0.205 0.014 75);/* 标题 */
+  --ink-muted: oklch(0.45 0.012 75);  /* 次要 */
+  --ink-subtle: oklch(0.52 0.012 78); /* 说明/元信息 */
+
+  /* 强调色 */
+  --accent: oklch(0.62 0.145 45);
+  --accent-2: oklch(0.57 0.15 28);
+  --accent-text: oklch(0.5 0.12 45);
+  /* 主题圆钮的 hover 色 */
+  --accent-hover-fixed: oklch(0.59 0.13 46);
+  --accent-strong: oklch(0.5 0.125 45);/* 实心按钮底色 */
+  --accent-soft: oklch(0.93 0.045 60);
+  --accent-line: oklch(0.68 0.11 45);  /* 强调边框 */
+  --accent-line-soft: oklch(0.76 0.07 48);
+  --accent-gradient: linear-gradient(90deg, var(--accent), var(--accent-2));
+  --on-accent: oklch(0.99 0.002 85);
+  --accent-gradient-solid: linear-gradient(90deg, oklch(0.46 0.13 45), oklch(0.5 0.14 30));
+  --accent-hover: oklch(0.57 0.14 44);
+  --accent-gradient-solid-hover: linear-gradient(90deg, oklch(0.42 0.13 45), oklch(0.46 0.14 30));
+
+  /* 状态色 */
+  --danger: oklch(0.55 0.19 25);
+  --success: oklch(0.55 0.13 158);
+  --warning: oklch(0.58 0.13 70);
+  --danger-surface: oklch(0.55 0.19 25);
+  --success-surface: oklch(0.55 0.13 158);
+  --warning-surface: oklch(0.55 0.13 70);
+  --on-status: oklch(0.99 0.002 85);
+
+  /* 阴影 */
+  --shadow-hue: 55;
+  --shadow-xs: 0 1px 2px oklch(0.35 0.02 var(--shadow-hue) / 0.04);
+  --shadow-sm: 0 2px 8px -2px oklch(0.35 0.03 var(--shadow-hue) / 0.07);
+  --shadow-md: 0 10px 24px -8px oklch(0.35 0.03 var(--shadow-hue) / 0.1);
+  --shadow-lg: 0 16px 38px -24px oklch(0.62 0.1 48 / 0.16);
+  --sheen: inset 0 1px 0 oklch(1 0 0 / 0.9);
+  --ring: 0 0 0 3px oklch(0.62 0.145 45 / 0.32);
+
+  /* 动效 */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);       /* 通用出场缓动 */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);    /* 通用进出缓动 */
+  --ease-spring: cubic-bezier(0.34, 1.36, 0.44, 1); /* 带回弹（导航指示器） */
+  --dur-fast: 130ms;   /* hover / 微交互 */
+  --dur-base: 220ms;   /* 常规状态过渡（颜色、边框、阴影） */
+  --dur-slow: 380ms;   /* 大面积过渡（背景渐变交叉淡入、骨架屏、图片淡入） */
+  --dur-slide: 440ms;  /* 顶栏导航指示器滑动（Header.vue .nav-indicator） */
+  --dur-fade: 480ms;   /* 滚动浮现动画时长（main.css .fade-in-start [data-fade]） */
+  --ease-fade: cubic-bezier(0.16, 1, 0.3, 1); /* 滚动浮现缓动 */
+  --dur-reveal: 440ms; /* 主题切换的圆形扩散 */
+
+  /* 骨架屏 */
+  --skeleton-base: oklch(0.5 0.01 80 / 0.09);
+  --skeleton-shine: oklch(0.5 0.01 80 / 0.19);
+
+  --selection-bg: oklch(0.8 0.12 55 / 0.28);
+  --selection-fg: var(--ink-strong);
+}
+
+html.dark {
+  color-scheme: dark;
+
+  /* 深色 */
+  --bg: oklch(0.185 0.008 70);
+  --bg-gradient: var(--bg-grad-dark);
+  --surface: oklch(0.99 0.012 82 / 0.07);
+  --surface-blur: 8px;
+  --surface-2: oklch(0.262 0.013 74);
+  --surface-3: oklch(0.3 0.014 76);
+  --surface-4: oklch(0.33 0.014 76);
+  /* 深色下表格底是 7% 提亮面（有效 L≈0.24），斑马纹要比它更亮才看得出来 */
+  --surface-stripe: var(--surface-4);
+  /* 暗色下进度条单独提亮 */
+  --progress-fill: oklch(0.44 0.02 78);
+  /* 深色下代码块上的按钮面比浅色再深一档 */
+  --code-chip: var(--surface-2);
+  --sunken: linear-gradient(150deg, oklch(0.225 0.012 70), oklch(0.255 0.013 74));
+  --overlay: oklch(0.215 0.01 70 / 0.74);
+  --overlay-blur: 18px;
+
+  --line: oklch(0.72 0.09 55 / 0.22);
+  --line-strong: oklch(0.72 0.02 72 / 0.5);
+
+  --neu-dark: oklch(0 0 0 / 0.32);
+  --neu-light: oklch(1 0 0 / 0.05);
+  --neu-inset: inset 3px 3px 7px 0 var(--neu-dark),
+    inset -3px -3px 7px 0 var(--neu-light);
+  --indicator-surface: linear-gradient(150deg, oklch(0.305 0.014 76), oklch(0.262 0.012 73));
+  --indicator-shadow: -2px -2px 6px 0 oklch(1 0 0 / 0.07),
+    2px 2px 6px 0 oklch(0 0 0 / 0.5);
+
+  --ink: oklch(0.905 0.01 80);
+  --ink-strong: oklch(0.962 0.006 85);
+  --ink-muted: oklch(0.74 0.01 80);
+  --ink-subtle: oklch(0.64 0.01 80);
+
+  /* 深色底上把强调色提亮、降 chroma */
+  --accent: oklch(0.7 0.14 45);
+  --accent-2: oklch(0.66 0.15 28);
+  --accent-text: oklch(0.8 0.11 50);
+  --accent-strong: oklch(0.55 0.14 45);
+  --accent-soft: oklch(0.3 0.06 45);
+  --accent-line: oklch(0.62 0.1 45);
+  --accent-line-soft: oklch(0.5 0.05 48);
+  --on-accent: oklch(0.99 0.002 85);
+  --accent-hover: oklch(0.64 0.13 45);
+  --accent-gradient-solid-hover: linear-gradient(90deg, oklch(0.5 0.13 45), oklch(0.54 0.14 30));
+
+  --danger: oklch(0.68 0.16 25);
+  --success: oklch(0.7 0.13 158);
+  --warning: oklch(0.75 0.13 72);
+
+  --shadow-xs: 0 1px 2px oklch(0 0 0 / 0.22);
+  --shadow-sm: 0 2px 8px -2px oklch(0 0 0 / 0.26);
+  --shadow-md: 0 10px 24px -8px oklch(0 0 0 / 0.3);
+  --shadow-lg: 0 16px 38px -24px oklch(0 0 0 / 0.5);
+  --sheen: inset 0 1px 0 oklch(1 0 0 / 0.05);
+  --ring: 0 0 0 3px oklch(0.7 0.14 45 / 0.38);
+
+  --skeleton-base: oklch(1 0 0 / 0.06);
+  --skeleton-shine: oklch(1 0 0 / 0.14);
+
+  --selection-bg: oklch(0.75 0.12 50 / 0.3);
+  --selection-fg: var(--ink-strong);
+}

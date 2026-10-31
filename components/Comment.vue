@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full border border-dashed border-gray-500 mt-10 mb-8"></div>
+  <div class="w-full border border-dashed border-line mt-10 mb-8"></div>
   <span class="inline-flex items-center text-2xl font-bold mb-2">
-    <span class="iconfont icon-comment mr-2"></span>
+    <AppIcon name="comment" class="mr-2" />
     评论
   </span>
   <div v-if="status === 'loading'" class="flex flex-col gap-3 mt-3" :aria-busy="true">
@@ -16,11 +16,11 @@
   </div>
   <div
     v-else-if="status === 'error'"
-    class="flex flex-col items-center gap-3 py-10 text-center text-sm text-gray-500 dark:text-gray-400"
+    class="flex flex-col items-center gap-3 py-10 text-center text-sm text-ink-subtle"
   >
     <span>评论加载失败，请稍后重试</span>
     <button
-      class="px-4 py-2 rounded-lg border-none bg-black/5 dark:bg-white/10 text-#2f3f5b dark:text-white transition-colors duration-300 hover:bg-black/10 dark:hover:bg-white/20 cursor-pointer"
+      class="px-4 py-2 rounded-lg border-none bg-surface-2 text-ink transition-colors duration-base hover:bg-black/10 dark:hover:bg-white/20 cursor-pointer"
       @click="mount"
     >
       重新加载
@@ -33,7 +33,7 @@
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { siteConfig } from '@/siteConfig/main.js'
 
-// Twikoo 渲染出内容后收起骨架；一直空着则判定失败，避免只剩一块空白
+// Twikoo 渲染出内容后收起骨架；超时仍为空则判定失败，避免只剩一块空白
 const SKELETON_TIMEOUT = 10000
 // 骨架最短展示时长，避免闪烁
 const MIN_SKELETON_DURATION = 500
@@ -90,8 +90,7 @@ function startWatch() {
 
 function ensureTwikoo() {
   if (window.twikoo) return Promise.resolve()
-  // 插件注入的脚本没加载成功，重新注入一次
-  // 同一时刻只注入一个，连点重试不会堆出多个 script 标签
+  // 插件注入的脚本可能没加载成功，这里重新注入；同一时刻只注入一个，连点重试不会堆出多个 script
   if (scriptPromise) return scriptPromise
   scriptPromise = new Promise((resolve) => {
     const s = document.createElement('script')
@@ -144,19 +143,19 @@ onBeforeUnmount(stopWatch)
 /* 输入框样式 */
 .el-input-group {
   border-radius: 12px;
-  border: 0.1px solid #2f3f5b30;
+  border: 0.1px solid var(--line);
 }
 
 .el-input-group:focus-within {
-  border: 1.5px solid #2f3f5b99;
+  border: 1.5px solid var(--line-strong);
 }
 
 html.dark .el-input-group {
-  border-color: #ffffff30;
+  border-color: var(--line);
 }
 
 html.dark .el-input-group:focus-within {
-  border-color: #ffffff99;
+  border-color: var(--line-strong);
 }
 
 .twikoo .el-input-group__prepend {
@@ -171,7 +170,7 @@ html.dark .el-input-group:focus-within {
 }
 
 html.dark .twikoo .el-input__inner {
-  background-color: #ffffff10 !important;
+  background-color: var(--surface-2) !important;
 }
 
 .el-textarea__inner {
@@ -180,15 +179,15 @@ html.dark .twikoo .el-input__inner {
 }
 
 html.dark .el-textarea__inner {
-  background-color: #ffffff10 !important;
+  background-color: var(--surface-2) !important;
 }
 
 .el-textarea__inner:focus-within {
-  border: 1.5px solid #2f3f5b99 !important;
+  border: 1.5px solid var(--line-strong) !important;
 }
 
 html.dark .el-textarea__inner:focus-within {
-  border: 1.5px solid #ffffff99 !important;
+  border: 1.5px solid var(--line-strong) !important;
 }
 
 /* 表情面板样式 */
@@ -272,11 +271,11 @@ html.dark .OwO-packages li:hover {
 
 /* 按钮样式 */
 .tk-comments-title svg, .tk-action svg {
-  fill: #2f3f5b !important;
+  fill: var(--ink) !important;
 }
 
 html.dark .tk-comments-title svg, html.dark .tk-action svg {
-  fill: #ffffffdb !important;
+  fill: var(--ink) !important;
 }
 
 .tk-preview,
@@ -291,7 +290,7 @@ html.dark .tk-comments-title svg, html.dark .tk-action svg {
 }
 
 .el-loading-spinner .circular .path {
-  stroke: #2f3f5b;
+  stroke: var(--ink);
 }
 
 html.dark .el-loading-spinner .circular .path {
@@ -302,7 +301,7 @@ html.dark .el-loading-spinner .circular .path {
 .tk-action-count,
 .tk-extra-text,
 .tk-actions a {
-  color: #2f3f5b;
+  color: var(--ink);
 }
 
 html.dark .tk-ruser,
@@ -331,7 +330,7 @@ html.dark .tk-extra-text {
 }
 
 .tk-icon svg path {
-  fill: #2f3f5b;
+  fill: var(--ink);
 }
 
 html.dark .tk-icon svg path {
@@ -346,7 +345,7 @@ html.dark .tk-icon svg path {
 }
 
 html.dark .tk-comment {
-  background: #ffffff10;
+  background: var(--surface-2);
 }
 
 .tk-replies .tk-comment {

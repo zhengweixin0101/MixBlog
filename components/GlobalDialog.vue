@@ -1,6 +1,5 @@
 /**
  * 全局弹窗
- * 调用方式（任意页面/组件）：
  *   const dialog = useDialog()
  *
  *   // 基础用法：自定义标题、内容、按钮（文字 + 点击操作）
@@ -32,16 +31,16 @@
       <div class="dialog-backdrop absolute inset-0 bg-black/40 backdrop-blur-md" @click="onOverlayClick"></div>
 
       <div
-        class="dialog-card relative w-full max-w-md rounded-xl bg-#fefefe/90 dark:bg-#1a1a1a/80 backdrop-blur-md
-               text-#2f3f5b dark:text-white shadow-[0_0_12px_rgba(0,0,0,0.3)] dark:shadow-[0_0_12px_rgba(255,255,255,0.15)]
-               border border-white/40 dark:border-white/10 overflow-hidden"
+        class="dialog-card relative w-full max-w-md rounded-xl border border-line bg-overlay
+               text-ink shadow-lg
+               overflow-hidden"
         role="dialog"
         aria-modal="true"
       >
         <button
           v-if="dialog.state.showClose"
           class="absolute right-3 top-3 z-1 p-0 bg-transparent border-0 text-2xl leading-none cursor-pointer
-                 text-#2f3f5b/50 dark:text-white/50 hover:text-#2f3f5b dark:hover:text-white transition-colors"
+                 text-ink-subtle dark:text-white/50 hover:text-ink dark:hover:text-white transition-colors"
           aria-label="关闭"
           @click="dialog.hide()"
         >×</button>
@@ -50,10 +49,7 @@
           v-if="dialog.state.title"
           class="px-5 pt-5 pb-2 text-center"
         >
-          <div class="relative inline-block text-xl font-semibold text-#2f3f5b dark:text-gradient">
-            <span class="absolute inset-0 -z-10
-                  bg-gradient-to-r from-#00e699/50 to-#00e2d8/50
-                  dark:hidden transition-colors duration-300"></span>
+          <div class="inline-block text-xl font-semibold text-gradient">
             {{ dialog.state.title }}
           </div>
         </div>
@@ -61,7 +57,7 @@
         <div
           v-if="dialog.state.content"
           class="px-5 pb-4 text-base leading-relaxed whitespace-pre-wrap break-words
-                 text-#2f3f5b/90 dark:text-white/80"
+                 text-ink dark:text-white/80"
           :class="{ 'pt-2': dialog.state.title }"
         >
           <span v-if="dialog.state.html" v-html="dialog.state.content"></span>
@@ -70,17 +66,15 @@
 
         <div
           v-if="dialog.state.buttons.length"
-          class="flex gap-2 px-5 py-4 border-t border-black/5 dark:border-white/10"
+          class="flex gap-2 px-5 py-4 border-t border-line"
         >
           <div
             v-for="(btn, index) in dialog.state.buttons"
             :key="index"
-            class="flex-1 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer"
+            class="flex-1 flex items-center justify-center px-4 py-3 rounded-lg text-sm font-medium transition-all duration-base cursor-pointer"
             :class="btn.type === 'primary'
-              ? `bg-[linear-gradient(rgba(0,0,0,0.08),rgba(0,0,0,0.08)),linear-gradient(90deg,#00e699,#00e2d8)]
-                 dark:bg-[linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.2)),linear-gradient(90deg,#00e699,#00e2d8)]
-                 text-white hover:brightness-90 dark:hover:opacity-75 shadow-sm`
-              : 'bg-black/10 dark:bg-white/15 text-#2f3f5b dark:text-white hover:bg-black/15 dark:hover:bg-white/20'"
+              ? `bg-accent text-ink hover:bg-[var(--accent-hover)] shadow-sm`
+              : 'bg-surface-2 text-ink hover:bg-surface-3'"
             @click="onBtnClick(btn)"
           >{{ btn.text }}</div>
         </div>
@@ -135,5 +129,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 .dialog-leave-to .dialog-card {
   transform: scale(0.92) translateY(10px);
   opacity: 0;
+}
+
+.dialog-card {
+  contain: paint;
 }
 </style>

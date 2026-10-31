@@ -97,8 +97,8 @@ onUnmounted(() => {
 
 <template>
   <div>
-    <div class="w-full h-0.3 bg-#2f3f5b/20 dark:bg-gray-700 my-8 transition-colors duration-300"></div>
-    <footer class="mb-10 w-full text-sm text-#2f3f5b dark:text-gray-300 px-4">
+    <div class="w-full h-0.3 bg-line my-8 transition-colors duration-base"></div>
+    <footer class="mb-10 w-full text-sm text-ink-muted px-4">
       <div class="flex flex-col md:flex-row justify-between">
         <div class="flex flex-col gap-y-1 text-center md:text-left">
           <div>© {{ currentYear }} {{ siteConfig.author.name }}. All rights reserved.</div>

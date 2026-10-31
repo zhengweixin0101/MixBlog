@@ -2,17 +2,10 @@
   <main v-fade-in>
     <section class="py-12 w-full max-w-screen-xl mx-auto">
       <!-- 标题 -->
-      <h1 data-fade class="text-3xl mt-40">
-        <span class="relative inline-block transition-colors duration-300 text-#2f3f5b dark:text-gradient">
-          说说
-          <span
-            class="absolute inset-0 -z-10
-                  bg-gradient-to-r from-#00e699/50 to-#00e2d8/50
-                  dark:hidden transition-colors duration-300"
-          ></span>
-        </span>
+      <h1 data-fade class="text-3xl mt-40 font-display font-semibold tracking-tight text-balance">
+        <span class="text-gradient">说说</span>
       </h1>
-      <p data-fade class="mt-2 text-#2f3f5b dark:text-gray-300 transition-colors duration-300">
+      <p data-fade class="mt-2 text-ink-muted transition-colors duration-base">
         随时随地，分享生活。
       </p>
 
@@ -21,9 +14,9 @@
         <li data-fade
           v-for="talk in talks"
           :key="talk.id"
-          class="break-inside-avoid mb-5 rounded-xl px-4 pt-4 pb-2 bg-white dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] transition-color duration-300"
+          class="card-base break-inside-avoid mb-5 px-4 pt-4 pb-2 bg-surface transition-colors duration-base"
         >
-          <div class="text-#2f3f5b dark:text-white text-base whitespace-pre-line leading-relaxed">
+          <div class="text-ink text-base whitespace-pre-line leading-relaxed">
             <!-- 内容 -->
             <span v-html="renderContent(talk)"></span>
 
@@ -40,37 +33,35 @@
                   :alt="img.alt"
                   class="w-16 h-16 object-cover rounded-lg cursor-pointer shadow-[0_0_8px_0_rgba(0,0,0,0.2)] fade-in-image"
                   loading="lazy"
-                  @load="(e) => e.target.classList.add('onload-fade')"
-                  @error="(e) => e.target.classList.add('onload-fade')"
                 />
               </a>
             </div>
           </div>
 
           <!-- 分割线 -->
-          <hr class="mt-3 border-dashed border-t border-gray-300 dark:border-gray-600" />
+          <hr class="mt-3 border-dashed border-t border-line" />
 
-          <div class="flex justify-between text-gray-400 text-xs flex-wrap gap-y-2 mt-2">
+          <div class="flex justify-between text-ink-subtle text-xs flex-wrap gap-y-2 mt-2">
             <div class="flex items-center gap-1.5">
               <!-- 时间 -->
-              <span class="flex items-center px-1.5 py-1 rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">
-                <i class="iconfont icon-zhong"></i><span class="ml-0.5">{{ formatDate(talk.created_at) }}</span>
+              <span class="flex items-center px-1.5 py-1 rounded-full bg-surface-4 text-ink-muted">
+                <AppIcon name="clock" /><span class="ml-0.5">{{ formatDate(talk.created_at) }}</span>
               </span>
               <!-- 位置 -->
-              <span v-if="talk.location?.length" class="flex items-center px-1.5 py-1 rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">
-                <i class="iconfont icon-dingwei1"></i><span class="ml-0.5">{{ talk.location }}</span>
+              <span v-if="talk.location?.length" class="flex items-center px-1.5 py-1 rounded-full bg-surface-4 text-ink-muted">
+                <AppIcon name="map-pin" /><span class="ml-0.5">{{ talk.location }}</span>
               </span>
               <!-- 链接 -->
-              <div v-if="talk.links?.length" class="flex items-center px-1.5 py-1 rounded-full bg-red-300/20 transition-colors duration-300">
+              <div v-if="talk.links?.length" class="flex items-center px-1.5 py-1 rounded-full bg-red-300/20 transition-colors duration-base">
                 <a
                   v-for="(link, idx) in talk.links"
                   :key="idx"
                   :href="link.url"
                   target="_blank"
                   rel="noopener noreferrer nofollow"
-                  class="text-#f56c6c no-underline hover:opacity-60 px-0.5 transition-opacity duration-200"
+                  class="text-#f56c6c no-underline hover:opacity-60 [will-change:opacity] px-0.5 transition-opacity duration-base"
                 >
-                  <i class="iconfont icon-link text-12px"></i><span class="ml-1">{{ link.text }}</span>
+                  <AppIcon name="link" class="text-12px" /><span class="ml-1">{{ link.text }}</span>
                 </a>
               </div>
             </div>
@@ -78,7 +69,7 @@
               <span
                 v-for="(tag, idx) in talk.tags"
                 :key="idx"
-                class="flex items-center px-1.5 py-1 rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300"
+                class="flex items-center px-1.5 py-1 rounded-full bg-surface-4 text-ink-muted"
               >
                 <span>{{ tag }}</span>
               </span>
@@ -91,7 +82,7 @@
       <!-- 加载更多 -->
       <div v-if="!finished" data-fade class="mt-4 flex justify-center">
         <button
-          class="px-4 py-2 bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 hover:opacity-70 rounded-full transition-all duration-300 cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)] hover:shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699] border-none"
+          class="px-4 py-2 bg-surface-2 text-ink-muted hover:text-ink hover:opacity-70 rounded-full transition-all duration-base cursor-pointer border border-line shadow-xs hover:shadow-md hover:border-accent-line border-none"
           :disabled="loading"
           @click="fetchTalks"
         >
@@ -120,12 +111,10 @@ import '@fancyapps/ui/dist/fancybox/fancybox.css'
 
 usePageMeta('说说', `${siteConfig.description}`, '/talks', '说说,talks')
 
-// 格式化时间
 dayjs.extend(utc)
 dayjs.extend(timezone)
 const formatDate = (date) => dayjs(date).tz('Asia/Shanghai').format('YYYY-MM-DD HH:mm')
 
-// Masonry 容器
 const masonryContainer = ref(null)
 let macyInstance = null
 
@@ -146,7 +135,6 @@ async function initMasonry() {
   }
 }
 
-// 请求数据
 const talks = ref([])
 const page = ref(1)
 const pageSize = 20
@@ -155,7 +143,6 @@ const finished = ref(false)
 
 const TALKS_API = `${siteConfig.apiUrl}/api/talks`
 
-// 首屏数据
 const { data: initialData } = await useAsyncData('talks', async () => {
   try {
     return await $fetch(`${TALKS_API}?page=1&pageSize=${pageSize}`)
@@ -171,7 +158,6 @@ const { data: initialData } = await useAsyncData('talks', async () => {
 talks.value = initialData.value.data || []
 if (initialData.value.totalPages <= 1) finished.value = true
 
-// 加载更多
 async function fetchTalks() {
   if (loading.value || finished.value) return
   loading.value = true
@@ -198,7 +184,6 @@ function escapeHtml(str) {
     .replace(/'/g, '&#39;')
 }
 
-//获取图片数量
 function getImgBlocks(talk) {
   if (!talk.content) return []
   const matches = [...talk.content.matchAll(/<talkImg>(.*?)<\/talkImg>/g)]
@@ -209,21 +194,19 @@ function getImgBlocks(talk) {
   })
 }
 
-//渲染内容
 function renderContent(talk) {
   let html = talk.content
 
-  // 移除 <talkImg> 标签 和 <talkLink> 标签
+  // 图片/链接占位标签由 getImgBlocks / talk.links 单独渲染，正文里要移除
   html = html.replace(/\n*<talkImg>.*?<\/talkImg>/g, '')
   html = html.replace(/\n*<talkLink>.*?<\/talkLink>/g, '')
 
-  // 代码块
   html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
     lang = lang || 'text';
-    return `<div class="w-full px-2 py-1 flex flex-row justify-between items-center text-amber-500 dark:text-zinc-400"></div><pre class="my-1 bg-gray-100 dark:bg-white/10 dark:border-gray-700 rounded-lg p-2 text-sm font-mono text-#1f2937 dark:text-gray-200 shadow-inner" style="white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word;"><code>${escapeHtml(code)}</code></pre>`
+    return `<pre class="my-1 bg-surface-4 border border-line rounded-lg p-3 text-sm font-mono text-ink overflow-x-auto" style="white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word;"><code>${escapeHtml(code)}</code></pre>`
   })
 
-  // 任务列表
+  // 任务列表 整块匹配连续的 `- [ ] / - [x]` 行，转成禁用的 checkbox
   let taskIdCounter = 1;
   html = html.replace(
     /((?:- \[(?: |x)\] .+\n?)+)/g,
@@ -238,10 +221,8 @@ function renderContent(talk) {
     }
   )
 
-  // 加粗
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
   html = html.replace(/__(.+?)__/g, '<strong>$1</strong>')
-  // 斜体
   html = html.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>')
   html = html.replace(/(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g, '<em>$1</em>')
 
@@ -251,14 +232,6 @@ function renderContent(talk) {
 onMounted(() => {
   nextTick().then(() => initMasonry())
   Fancybox.bind('[data-fancybox]', { Hash: false })
-
-  // 处理已缓存的图片
-  const images = document.querySelectorAll('img.fade-in-image')
-  images.forEach((img) => {
-    if (img.complete) {
-      img.classList.add('onload-fade')
-    }
-  })
 })
 </script>
 
@@ -269,16 +242,16 @@ onMounted(() => {
   appearance: none;
   width: 16px;
   height: 16px;
-  border: 2px solid #9ca3af;
-  border-radius: 4px;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-xs);
   background-color: transparent;
   position: relative;
 }
 
 /* 选中状态 */
 .custom-checkbox:checked {
-  background-color: #22c55e;
-  border-color: #22c55e;
+  background-color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* 勾 */

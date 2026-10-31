@@ -20,7 +20,7 @@
           </g>
         </svg>
       </div>
-      <h1 data-fade class="mt-8 text-3xl sm:text-5xl font-bold text-#2f3f5b dark:text-#CCC">未找到页面!</h1>
+      <h1 data-fade class="mt-8 text-3xl sm:text-5xl font-display font-semibold tracking-tight text-ink">未找到页面!</h1>
       <div data-fade class="mt-10 flex flex-row items-center justify-center gap-4">
         <BackLink to="/" text="← 返回首页" />
       </div>
@@ -33,19 +33,3 @@ import { siteConfig } from '@/siteConfig/main.js'
 
 usePageMeta('未找到', '该页面不存在或已被删除。', '', 'Not Found,404,不存在')
 </script>
-
-<style>
-/* 闪烁动画 */
-@keyframes flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
-  20%, 22%, 24%, 55% { opacity: 0.4; }
-}
-.animate-flicker {
-  animation: flicker 1.5s infinite;
-}
-
-/* 阴影光晕 */
-.drop-shadow-glow {
-  filter: drop-shadow(0 0 10px #facc15);
-}
-</style>

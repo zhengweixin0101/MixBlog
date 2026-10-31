@@ -1,17 +1,15 @@
 import { siteConfig } from '@/siteConfig/main.js'
 
 /**
- * Umami 统计
- * 全站访问量统一走自建 Umami
+ * Umami 统计：全站访问量统一走自建 Umami
  *
  * 接口统一是 GET /api/websites/{siteId}/stats，一次返回
- * pageviews / visitors / visits / bounces / totaltime 五个指标，
- * 以时间范围切分 today / yesterday / month / total，
- * 第二个参数 path 是可选的页面过滤。
+ * pageviews / visitors / visits / bounces / totaltime，以时间范围切分
+ * today / yesterday / month / total，第二个参数 path 是可选的页面过滤。
  *
- * 全部在浏览器端请求，命中 localStorage 缓存则不发请求；
- * 缓存条目带 TTL，跨页面共享同一份 key（页脚与关于页的「今日」共用），
- * 并发同 key 请求自动去重。请求失败时降级回落到过期缓存，避免数字变空。
+ * 全部在浏览器端请求；命中 localStorage 缓存（带 TTL）则不发请求，
+ * 跨页面共享同一份 key（页脚与关于页的「今日」共用），同 key 并发自动去重，
+ * 请求失败时降级回落到过期缓存，避免数字变空。
  */
 
 const { url: UMAMI_URL, siteId: UMAMI_SITE_ID, token: UMAMI_TOKEN, createTime: UMAMI_CREATE_TIME } = siteConfig.thirdParty.umami
@@ -29,7 +27,7 @@ function dayRange(date) {
     return { startAt: start.getTime(), endAt: end.getTime() }
 }
 
-// 时间范围即数据分片，startAt 为该分片的唯一标识（日/月的起点、当天的零点、固定的建站时间）
+// 时间范围即数据分片，startAt 是该分片的唯一标识（日/月起点、当天零点、建站时间）
 const RANGES = {
     today: {
         ttl: 5 * 60 * 1000,

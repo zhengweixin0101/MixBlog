@@ -13,6 +13,8 @@ import '@/assets/hljs-themes.css'
 import 'katex/dist/katex.min.css'
 
 import { decodeHtmlEntities, highlightToHtml, normalizeLanguage } from '@/utils/highlight'
+import { getIcon } from '@/utils/icons'
+import { canonicalD, createMorph } from 'morphicons/dom'
 import { siteConfig } from '@/siteConfig/main.js'
 
 const route = useRoute()
@@ -85,13 +87,18 @@ function highlightCodeBlocks(html) {
     return `
         <div class="code-block-wrapper group relative ${isCollapsed ? 'collapsed' : ''}" data-lines="${lines}" aria-expanded="${isCollapsed ? 'false' : 'true'}">
           <button
-            class="copy-btn absolute top-2 right-2 z-20 px-2 py-1 text-xs rounded-lg border border-black/20 backdrop-blur-2 dark:border-white/20 bg-black/50 text-white dark:bg-white/10 dark:text-white opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100 cursor-pointer"
+            type="button"
+            class="copy-btn appearance-none absolute top-2 right-2 z-20 w-7 h-7 rounded-lg border border-line bg-code-chip text-ink-muted shadow-xs opacity-0 group-hover:opacity-100 focus-visible:opacity-100 hover:border-accent-line hover:shadow-md cursor-pointer"
             data-code="${encodedCode}"
-          >复制</button>
+            aria-label="复制代码"
+            title="复制代码"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="${canonicalD(getIcon('copy'))}"/></svg>
+          </button>
           <pre><code class="hljs language-${language}">${highlighted}</code></pre>
           ${isCollapsed ? `
           <div class="fold-overlay pointer-events-none absolute left-0 right-0 bottom-0 h-20"></div>
-          <button class="expand-btn absolute left-1/2 -translate-x-1/2 bottom-5 px-3 py-2 text-xs rounded-lg border border-black/20 backdrop-blur-2 dark:border-white/20 bg-black/50 text-white dark:bg-white/10 dark:text-white cursor-pointer z-10">展开剩余代码</button>
+          <button class="expand-btn appearance-none absolute left-1/2 -translate-x-1/2 bottom-5 px-3 py-2 text-xs rounded-lg border border-line bg-code-chip text-ink-muted shadow-sm transition-colors duration-base hover:border-accent-line hover:shadow-md hover:text-ink cursor-pointer z-10">展开剩余代码</button>
           ` : ''}
         </div>
       `;
@@ -179,10 +186,13 @@ function onDocumentClick(e) {
   copyBtn.disabled = true
   copyTextToClipboard(code).then(success => {
     notification.show(success ? '代码已复制!' : '复制失败!', success ? 'info' : 'error')
-    const originalText = copyBtn.innerText
-    copyBtn.innerText = success ? '已复制' : '复制失败'
+    if (success) {
+      copyBtn.classList.add('is-copied')
+      copyBtn._morph?.morphTo(getIcon('check'))
+    }
     setTimeout(() => {
-      copyBtn.innerText = originalText
+      copyBtn.classList.remove('is-copied')
+      copyBtn._morph?.morphTo(getIcon('copy'))
       copyBtn.disabled = false
       delete copyBtn.dataset.copying
     }, 1000)
@@ -308,6 +318,23 @@ watch([rawPostData, error], () => {
 // 监听内容变化
 watch(() => post.value.content, () => applyClientEnhancements(), { immediate: true })
 
+// 把 SSR 直出的复制按钮 SVG 懒升级成 morphicons 驱动的形变实例
+function upgradeCopyButtons() {
+  articleRef.value?.querySelectorAll('.copy-btn').forEach(btn => {
+    if (btn._morph) return
+    const path = btn.querySelector('svg path')
+    if (!path) return
+    btn._morph = createMorph(path, getIcon('copy'), { strokeWidth: 2.4 })
+  })
+}
+
+function killCopyButtonMorphs() {
+  articleRef.value?.querySelectorAll('.copy-btn').forEach(btn => {
+    btn._morph?.destroy()
+    delete btn._morph
+  })
+}
+
 // Fancybox + 折叠高度
 function applyClientEnhancements(retries = 0) {
   if (!import.meta.client || !post.value.content) return
@@ -327,6 +354,7 @@ function applyClientEnhancements(retries = 0) {
       })
       // 计算折叠高度并初始化按钮文本
       setCollapsedHeights()
+      upgradeCopyButtons()
     })
   })
 }
@@ -431,6 +459,12 @@ onBeforeUnmount(() => {
     Fancybox.unbind('[data-fancybox="gallery"]')
     Fancybox.close()
   }).catch(() => {})
+
+  // 销毁复制按钮的形变驱动
+  killCopyButtonMorphs()
+
+  // 清理复制链接按钮的复位计时器
+  if (copyLinkTimer) clearTimeout(copyLinkTimer)
 })
 
 // 格式化日期
@@ -516,7 +550,7 @@ const formattedReadingDuration = computed(() => {
   return `${minutes}分钟`
 })
 
-// 停止 Twikoo 轮询并释放挂起的等待
+// 停止轮询并释放挂起的 Promise
 function stopTwikooPoll(resolved = false) {
   if (twikooPollTimer) {
     clearInterval(twikooPollTimer)
@@ -598,14 +632,34 @@ function shareToWeibo() {
   )
 }
 
+// 复制文章链接按钮状态
+const copyLinkBtn = ref(null)
+const copyLinkIconName = ref('link')
+const copyLinkCopied = ref(false)
+let copyLinkTimer = null
+
 // 复制文章链接
 async function copyArticleLink() {
   if (typeof window === 'undefined') return
+
+  const btn = copyLinkBtn.value
+  if (!btn || btn.disabled) return
+  btn.disabled = true
+  if (copyLinkTimer) clearTimeout(copyLinkTimer)
 
   const url = `${siteConfig.url}/posts/${route.params.slug}`
 
   const success = await copyTextToClipboard(url)
   notification.show(success ? '本文链接已复制!' : '复制失败, 请手动复制链接')
+  copyLinkCopied.value = success
+  copyLinkIconName.value = success ? 'check' : 'link'
+
+  // 反馈期间锁定按钮，复制成功后复位
+  copyLinkTimer = setTimeout(() => {
+    copyLinkCopied.value = false
+    copyLinkIconName.value = 'link'
+    btn.disabled = false
+  }, 1000)
 }
 </script>
 
@@ -631,7 +685,7 @@ async function copyArticleLink() {
           </g>
         </svg>
       </div>
-      <h1 data-fade class="mt-8 text-3xl sm:text-5xl font-bold text-#2f3f5b dark:text-#CCC">未找到文章!</h1>
+      <h1 data-fade class="mt-8 text-3xl sm:text-5xl font-display font-semibold tracking-tight text-ink">未找到文章!</h1>
       <div data-fade class="mt-10 flex flex-row items-center justify-center gap-4">
         <BackLink to="/posts" text="← 返回列表" />
       </div>
@@ -639,45 +693,31 @@ async function copyArticleLink() {
 
     <div v-else>
       <div class="py-6">
-        <h1 data-fade class="text-3xl mt-40">
-          <span
-            class="relative inline-block transition-colors duration-300
-                  text-#2f3f5b
-                  dark:text-transparent
-                  dark:bg-gradient-to-r dark:from-[#00e699] dark:to-[#00e2d8]
-                  dark:bg-clip-text dark:-webkit-bg-clip-text
-                  dark:-webkit-text-fill-color-transparent"
-          >
-            {{ post.frontmatter.title || '无标题文章' }}
-            <span
-              class="absolute inset-0 -z-10
-                    bg-gradient-to-r from-[#00e69980] to-[#00e2d850]
-                    dark:hidden"
-            ></span>
-          </span>
+        <h1 data-fade class="text-3xl mt-40 font-display leading-tight tracking-tight text-balance">
+          <span class="text-gradient">{{ post.frontmatter.title || '无标题文章' }}</span>
         </h1>
-        <div data-fade class="text-sm text-#2f3f5b dark:text-gray-400 mt-4 pb-4 flex flex-col gap-2 transition-colors duration-300" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
+        <div data-fade class="text-sm text-ink-muted mt-4 pb-4 flex flex-col gap-2 transition-colors duration-base" style="border-bottom: 2px solid rgba(153, 153, 153, 0.4);">
           <div class="flex flex-wrap items-center gap-3 !hidden sm:!flex">
             <span class="flex items-center">
-              <i class="iconfont icon-word"></i>
+              <AppIcon name="words" />
               字数总计: {{ formattedWordCount }}
             </span>
             <span class="flex items-center">
-              <i class="iconfont icon-zhong"></i>
+              <AppIcon name="clock" />
               预计需要: {{ readingTime }}分钟
             </span>
             <span class="flex items-center">
-              <i class="iconfont icon-eye"></i>
+              <AppIcon name="eye" />
               阅读时长: {{ formattedReadingDuration }}
             </span>
             <span class="flex items-center">
-              <i class="iconfont icon-comment1"></i>
+              <AppIcon name="comment" />
               评论数:
               <span v-if="commentCount === null" class="ml-1 w-5 h-3.5 rounded skeleton"></span>
               <span v-else class="ml-0.8">{{ commentCount }}</span>
             </span>
             <span class="flex items-center">
-              <i class="iconfont icon-fire"></i>
+              <AppIcon name="flame" />
               访问量:
               <span v-if="postPageviews === null" class="ml-1 w-5 h-3.5 rounded skeleton"></span>
               <span v-else class="ml-0.8">{{ postPageviews }}</span>
@@ -685,16 +725,16 @@ async function copyArticleLink() {
           </div>
           <div class="flex flex-wrap items-center gap-3">
             <span class="flex items-center">
-              <i class="iconfont icon-bianjisekuai"></i>
+              <AppIcon name="calendar" />
               {{ formattedDate }}
             </span>
             <span v-if="formattedUpdatedDate" class="flex items-center">
-              <i class="iconfont icon-gengxin"></i>
+              <AppIcon name="history" />
               {{ formattedUpdatedDate }}
             </span>
           </div>
           <div class="flex items-center gap-2">
-            <span v-for="tag in post.frontmatter.tags || []" :key="tag" class="px-2 py-1 text-xs rounded-full bg-black/5 text-#2f3f5b dark:bg-white/10 dark:text-white/80 transition-colors duration-300">{{ tag }}</span>
+            <span v-for="tag in post.frontmatter.tags || []" :key="tag" class="px-2 py-1 text-xs rounded-full bg-surface-2 text-ink-muted hover:text-ink transition-colors duration-base">{{ tag }}</span>
           </div>
         </div>
       </div>
@@ -711,7 +751,7 @@ async function copyArticleLink() {
         </div>
       </div>
 
-      <div data-fade class="mt-16 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] relative hidden sm:block">
+      <div data-fade class="mt-16 rounded-lg bg-surface shadow-xs relative hidden sm:block">
         <!-- 头像 -->
         <div class="absolute -top-7 left-1/2 -translate-x-1/2 z-10">
           <a href="/about" class="block">
@@ -720,7 +760,6 @@ async function copyArticleLink() {
                 :alt="siteConfig.author.name"
                 class="w-16 h-16 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-[0_0_20px_rgba(0,0,0,0.3)] fade-in-image"
                 loading="lazy"
-                onload="this.classList.add('onload-fade')"
               />
           </a>
         </div>
@@ -728,10 +767,10 @@ async function copyArticleLink() {
         <!-- 作者信息 -->
         <div class="pt-10 text-center">
           <div>
-            <div class="font-bold text-2xl text-#2f3f5b dark:text-white mb-1">
+            <div class="font-display text-2xl font-semibold text-ink mb-1">
               {{ siteConfig.author.name }}
             </div>
-            <div class="text-sm text-gray-500 dark:text-gray-400">
+            <div class="text-sm text-ink-subtle">
               {{ siteConfig.author.description }}
             </div>
           </div>
@@ -741,8 +780,8 @@ async function copyArticleLink() {
             <span class="post-copyright__original inline-flex items-center px-2 py-1 text-xs rounded-full bg-green-200 text-green-900 dark:bg-green-900 dark:text-green-300">
               原创
             </span>
-            <div class="text-sm text-gray-600 dark:text-gray-300">
-              <span class="text-#2f3f5b dark:text-white text-4">
+            <div class="text-sm text-ink-muted">
+              <span class="text-ink text-4">
                 {{ post.frontmatter.title || '无标题文章' }}
               </span>
             </div>
@@ -756,28 +795,28 @@ async function copyArticleLink() {
                 @mouseenter="showDonateQR = true"
                 @mouseleave="showDonateQR = false"
                 title="打赏作者"
-                class="h-10 px-4 text-sm rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)] flex items-center gap-1"
+                class="appearance-none h-10 px-4 text-sm rounded-lg border border-line bg-surface-4 text-ink-muted hover:border-accent-line hover:shadow-md transition-colors duration-base cursor-pointer flex items-center gap-1"
               >
-                <i class="iconfont icon-dashang"></i> 打赏作者 
+                <AppIcon name="donate" /> 打赏作者 
               </button>
               
               <!-- 打赏二维码浮层 -->
               <transition
-                enter-active-class="transition-all duration-200 ease-out"
+                enter-active-class="transition-all duration-base ease-out"
                 enter-from-class="opacity-0 scale-95 translate-y-2"
                 enter-to-class="opacity-100 scale-100 translate-y-0"
-                leave-active-class="transition-all duration-100 ease-in"
+                leave-active-class="transition-all duration-fast ease-in"
                 leave-from-class="opacity-100 scale-100 translate-y-0"
                 leave-to-class="opacity-0 scale-95 translate-y-2"
               >
                 <div 
                   v-if="showDonateQR"
-                  class="absolute bottom-full left-1/2 -translate-x-1/2 z-50 p-4 mb-3 bg-#fefefe/95 dark:bg-#1a1a1a/95 rounded-lg 
-                         shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]"
+                  class="absolute bottom-full left-1/2 -translate-x-1/2 z-50 p-4 mb-3 border border-line bg-overlay rounded-lg
+                         shadow-lg"
                   @mouseenter="showDonateQR = true"
                   @mouseleave="showDonateQR = false"
                 >
-                <span class="text-md text-red-400 font-bold">
+                <span class="text-base text-danger font-bold">
                   感谢您赐予我前进的力量！
                 </span>
                 <div class="text-center mt-3">
@@ -793,10 +832,9 @@ async function copyArticleLink() {
                           :alt="`${method.name}打赏二维码`"
                           class="w-28 h-28 fade-in-image"
                           loading="lazy"
-                          onload="this.classList.add('onload-fade')"
                         />
                       </div>
-                      <div class="text-xs text-gray-600 dark:text-gray-400 mt-2">{{ method.name }}</div>
+                      <div class="text-xs text-ink-muted mt-2">{{ method.name }}</div>
                     </div>
                   </div>
                 </div>
@@ -810,24 +848,24 @@ async function copyArticleLink() {
                 @mouseenter="showMobileQR = true"
                 @mouseleave="showMobileQR = false"
                 title="使用手机访问这篇文章"
-                class="w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)]"
+                class="appearance-none w-10 h-10 rounded-lg border border-line bg-surface-4 text-ink-muted hover:border-accent-line hover:shadow-md transition-colors duration-base flex items-center justify-center cursor-pointer"
               >
-                <i class="iconfont icon-erweima"></i>
+                <AppIcon name="qr-code" />
               </button>
               
               <!-- 二维码浮层 -->
               <transition
-                enter-active-class="transition-all duration-200 ease-out"
+                enter-active-class="transition-all duration-base ease-out"
                 enter-from-class="opacity-0 scale-95 translate-y-2"
                 enter-to-class="opacity-100 scale-100 translate-y-0"
-                leave-active-class="transition-all duration-100 ease-in"
+                leave-active-class="transition-all duration-fast ease-in"
                 leave-from-class="opacity-100 scale-100 translate-y-0"
                 leave-to-class="opacity-0 scale-95 translate-y-2"
               >
                 <div 
                   v-if="showMobileQR"
-                  class="absolute bottom-full left-1/2 -translate-x-1/2 z-50 p-4 mb-3 bg-#fefefe/95 dark:bg-#1a1a1a/95 rounded-lg 
-                         shadow-[0_0_2px_rgba(0,0,0,0.3)] dark:shadow-[0_0_2px_rgba(255,255,255,0.6)]"
+                  class="absolute bottom-full left-1/2 -translate-x-1/2 z-50 p-4 mb-3 border border-line bg-overlay rounded-lg
+                         shadow-lg"
                   @mouseenter="showMobileQR = true"
                   @mouseleave="showMobileQR = false"
                 >
@@ -838,10 +876,9 @@ async function copyArticleLink() {
                       alt="文章二维码"
                       class="w-28 h-28 fade-in-image"
                       loading="lazy"
-                      onload="this.classList.add('onload-fade')"
                     />
                   </div>
-                  <div class="text-xs text-gray-600 dark:text-gray-400 mt-2">使用手机扫码查看</div>
+                  <div class="text-xs text-ink-muted mt-2">使用手机扫码查看</div>
                 </div>
                 </div>
               </transition>
@@ -850,27 +887,29 @@ async function copyArticleLink() {
             <button
               title="分享本文到微博"
               @click="shareToWeibo"
-              class="w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)]"
+              class="appearance-none w-10 h-10 rounded-lg border border-line bg-surface-4 text-ink-muted hover:border-accent-line hover:shadow-md transition-colors duration-base flex items-center justify-center cursor-pointer"
             >
-              <i class="iconfont icon-xinlangweibo"></i>
+              <AppIcon name="share" />
             </button>
             
             <button
+              ref="copyLinkBtn"
               title="复制本文链接"
               @click="copyArticleLink"
-              class="w-10 h-10 rounded-lg border-none text-#2f3f5b/80 dark:text-white/60 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors duration-300 flex items-center justify-center cursor-pointer shadow-[0_0_2px_rgba(0,0,0,0.2)]"
+              :class="{ 'is-copied': copyLinkCopied }"
+              class="copy-link-btn appearance-none w-10 h-10 rounded-lg border border-line bg-surface-4 text-ink-muted hover:border-accent-line hover:shadow-md transition-colors duration-base flex items-center justify-center cursor-pointer"
             >
-              <i class="iconfont icon-link"></i>
+              <AppIcon :name="copyLinkIconName" />
             </button>
           </div>
 
           <!-- 版权提示 -->
-          <div class="text-xs text-gray-500 dark:text-gray-400 p-3">
+          <div class="text-xs text-ink-subtle p-3">
             本文采用 
             <a
               href="https://creativecommons.org/licenses/by-nc-sa/4.0/" 
               target="_blank" rel="noopener noreferrer" 
-              class="text-gray-500 dark:text-gray-400 hover:text-blue-400 transition-colors"
+              class="text-ink-subtle hover:text-accent-text transition-colors duration-base"
             >
               CC BY-NC-SA 4.0
             </a>
@@ -889,20 +928,6 @@ async function copyArticleLink() {
 </template>
 
 <style>
-/* 闪烁动画 */
-@keyframes flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
-  20%, 22%, 24%, 55% { opacity: 0.4; }
-}
-.animate-flicker {
-  animation: flicker 1.5s infinite;
-}
-
-/* 阴影光晕 */
-.drop-shadow-glow {
-  filter: drop-shadow(0 0 10px #facc15);
-}
-
 /* 代码块折叠样式 */
 .code-block-wrapper {
   position: relative;
@@ -935,7 +960,11 @@ async function copyArticleLink() {
   right: 0;
   bottom: 0;
   height: 20rem;
-  background: linear-gradient(180deg, rgba(248, 249, 250, 0) 0%, #f8f9fa 100%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--surface-4) 0%, transparent) 0%,
+    var(--surface-4) 100%
+  );
   pointer-events: none;
   border-bottom-left-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
@@ -945,7 +974,9 @@ async function copyArticleLink() {
   display: none;
 }
 
-.dark .code-block-wrapper .fold-overlay {
-  background: linear-gradient(180deg, rgba(30, 30, 30, 0) 0%, #1e1e1e 100%);
+/* 复制本文链接按钮 */
+.copy-link-btn.is-copied {
+  color: var(--accent-text);
+  border-color: var(--accent-line);
 }
 </style>

@@ -1,8 +1,17 @@
+@import './tokens.css';
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   scrollbar-width: thin;
+}
+
+*,
+*::before,
+*::after {
+  border-width: 0;
+  border-style: solid;
 }
 
 html {
@@ -15,24 +24,43 @@ html {
   color-scheme: light dark;
   forced-color-adjust: none;
 
-  background-color: #f7f9fe;
+  /* 这层只是 overscroll 兜底，防止滚过头露出白边，真正的渐变底在 Background.vue。 */
+  background-color: var(--bg);
+  transition: background-color var(--dur-slow) var(--ease-out);
 
   /* 保留换行符 */
   white-space: pre-line;
 
-  /* 滚动条样式 */
-  scrollbar-color: rgba(60, 60, 67, 0.5) rgba(0, 0, 0, 0);
+  /* 滚动条 */
+  scrollbar-color: oklch(0.55 0.01 80 / 0.45) transparent;
+  scrollbar-width: thin;
+}
+
+html.dark {
+  color-scheme: dark;
+  scrollbar-color: oklch(0.7 0.01 80 / 0.35) transparent;
+}
+
+html.light {
+  color-scheme: light;
 }
 
 body {
   width: 100%;
   min-height: 100%;
   white-space: pre-line;
-}
 
-html.dark {
-  color-scheme: dark;
-  background-color: #0e1111;
+  /* 全站基线字体与排版节奏 */
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-variant-ligatures: common-ligatures contextual;
+  transition: color var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out);
 }
 
 @supports not (scrollbar-gutter: stable) {
@@ -41,18 +69,39 @@ html.dark {
   }
 }
 
-html.light {
-  color-scheme: light;
-}
-
 /* 选中文本 */
 ::selection {
-  background-color: #00e69950;
+  background-color: var(--selection-bg);
+  color: var(--selection-fg);
 }
 
 ::-moz-selection {
-  background-color: #ffcc00;
-  color: #000000;
+  background-color: var(--selection-bg);
+  color: var(--selection-fg);
+}
+
+/* 焦点可见性 */
+:focus-visible {
+  outline: 2px solid var(--accent-line);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+/* 鼠标点击不显示焦点环，键盘 Tab 才显示 */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* 滚动容器获得焦点时不要画环，否则整个代码块会被一圈线包住 */
+pre:focus,
+pre:focus-visible,
+[tabindex]:focus:not(:focus-visible) {
+  outline: none;
+}
+
+::selection,
+::marker {
+  text-shadow: none;
 }
 
 /* 浮现动画 */
@@ -63,7 +112,7 @@ html.light {
 }
 
 .fade-in-start [data-fade] {
-  animation: fade-in 0.5s cubic-bezier(0.6, 0, 0.4, 1) forwards;
+  animation: fade-in var(--dur-fade) var(--ease-fade) forwards;
   visibility: visible;
 }
 
@@ -74,10 +123,10 @@ html.light {
   }
 }
 
-/* 全局图片加载动画 */
+/* 全局图片加载动画。.onload-fade 由 plugins/img-load.client.js 统一打上 */
 img:not([class*="f-"]):not(.twikoo img) {
   opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity var(--dur-slow) var(--ease-out);
 }
 
 img.fade-in-image {
@@ -88,22 +137,17 @@ img.fade-in-image[style*="opacity: 1"] {
   opacity: 1 !important;
 }
 
-/* 图片加载完成后显示 */
 img.onload-fade:not(.hero-icon) {
   opacity: 1 !important;
 }
 
-/* 英雄图标特殊处理 - 不使用!important */
+/* 关于页游戏卡片中的角色图标特殊处理 - 不使用 !important */
 img.onload-fade.hero-icon {
   opacity: 1;
 }
 
-/* 全站统一的骨架屏占位
-   所有等待异步数据的地方都应渲染 <div class="skeleton w-… h-… rounded">
-   尺寸由调用方的原子类决定，这里只负责底色与横扫高光 */
+/* 全站统一的骨架屏占位 */
 .skeleton {
-  --skeleton-base: rgba(128, 128, 128, 0.08);
-  --skeleton-shine: rgba(128, 128, 128, 0.18);
   background-image: linear-gradient(
     90deg,
     var(--skeleton-base) 25%,
@@ -111,19 +155,14 @@ img.onload-fade.hero-icon {
     var(--skeleton-base) 75%
   );
   background-size: 200% 100%;
-  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  animation: skeleton-shimmer 1.6s var(--ease-in-out) infinite;
 }
 
-html.dark .skeleton {
-  --skeleton-base: rgba(255, 255, 255, 0.07);
-  --skeleton-shine: rgba(255, 255, 255, 0.15);
-}
-
-/* 铺在深色底上的骨架（音乐全屏等），与 html.dark 的取值再提亮一档
-   用 .skeleton.skeleton-on-dark 提高特指度，确保深色模式下也压过 html.dark .skeleton */
+/* 深色底上的骨架，比 html.dark 的取值再提亮一档；
+   用 .skeleton.skeleton-on-dark 提高特指度，确保压过 html.dark 的继承值 */
 .skeleton.skeleton-on-dark {
-  --skeleton-base: rgba(255, 255, 255, 0.08);
-  --skeleton-shine: rgba(255, 255, 255, 0.18);
+  --skeleton-base: oklch(1 0 0 / 0.08);
+  --skeleton-shine: oklch(1 0 0 / 0.2);
 }
 
 @keyframes skeleton-shimmer {
@@ -132,5 +171,110 @@ html.dark .skeleton {
   }
   100% {
     background-position: -200% 0;
+  }
+}
+
+/* 404 图标，两个 404 入口共用 */
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+  }
+  20%, 22%, 24%, 55% {
+    opacity: 0.4;
+  }
+}
+
+.animate-flicker {
+  animation: flicker 1.5s infinite;
+}
+
+.drop-shadow-glow {
+  filter: drop-shadow(0 0 10px #facc15);
+}
+
+/* 主题切换的圆形过渡
+   默认的交叉淡入淡出会把圆形边界糊掉，这里关掉，改由 clip-path 接管
+   扩散画在新快照上，收回画在旧快照上，两者互斥。 */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.theme-reveal-forth::view-transition-old(root) {
+  z-index: 1;
+}
+
+html.theme-reveal-forth::view-transition-new(root) {
+  z-index: 2;
+  animation: theme-reveal-forth var(--dur-reveal) var(--ease-in-out) both;
+}
+
+html.theme-reveal-back::view-transition-old(root) {
+  z-index: 2;
+  animation: theme-reveal-back var(--dur-reveal) var(--ease-in-out) both;
+}
+
+html.theme-reveal-back::view-transition-new(root) {
+  z-index: 1;
+}
+
+@keyframes theme-reveal-forth {
+  from {
+    clip-path: circle(0 at var(--reveal-x) var(--reveal-y));
+  }
+  to {
+    clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
+  }
+}
+
+@keyframes theme-reveal-back {
+  from {
+    clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
+  }
+  to {
+    clip-path: circle(0 at var(--reveal-x) var(--reveal-y));
+  }
+}
+
+/* 换装的这一瞬间关掉各元素自己的颜色过渡，
+   否则新快照会取到「渐变到一半」的配色。快照生成后即移除 */
+html.theme-swap,
+html.theme-swap *,
+html.theme-swap *::before,
+html.theme-swap *::after {
+  transition: none !important;
+}
+
+/* 降级，尊重系统的减少动态效果。CSS 层兜底，防止 JS 挂掉时动画照播 */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* 浮现动画直接落到最终状态，否则永远 visibility:hidden */
+  [data-fade] {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+    animation: none !important;
+  }
+
+  img,
+  img.fade-in-image {
+    opacity: 1 !important;
+  }
+
+  .skeleton {
+    animation: none !important;
   }
 }

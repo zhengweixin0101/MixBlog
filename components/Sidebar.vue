@@ -1,17 +1,17 @@
 <template>
   <aside
     v-if="toc.length"
-    class="hidden lg:block w-60 p-4 rounded-lg bg-#fefefe dark:bg-white/10 shadow-[0_0_2px_rgba(0,0,0,0.2)] transition-colors duration-300 group"
+    class="card-base hidden lg:block w-60 p-4 bg-surface transition-colors duration-base group"
   >
     <section>
-      <div class="text-xl font-bold mb-2 dark:text-gradient">
+      <div class="text-lg font-display font-semibold mb-3 text-ink">
         目录
       </div>
       <ul class="list-none p-0 m-0 mt-1">
         <li v-for="(item, index) in toc" :key="index" class="mb-1">
           <a
             href="javascript:void(0)"
-            class="block relative text-#2f3f5b dark:text-gray-400 no-underline hover:text-#2f3f5b/60 dark:hover:text-white transition-colors duration-300 text-sm leading-tight"
+            class="block relative text-ink-subtle no-underline hover:text-ink transition-colors duration-base text-sm leading-tight"
             :class="[
               {
                 'pl-3 before:left-0': item.tag === 'H2',
@@ -20,9 +20,7 @@
                 'pl-12 before:left-6': item.tag === 'H5',
                 'pl-15 before:left-8': item.tag === 'H6',
               },
-              currentId === item.id
-                ? 'text-#2f3f5b/60 dark:text-white font-bold'
-                : 'blur-1px'
+              currentId === item.id ? 'text-accent-text font-semibold' : ''
             ]"
             @click.prevent="scrollTo(item.id)"
           >

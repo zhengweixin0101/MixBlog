@@ -8,8 +8,7 @@ usePageMeta('Links', `${siteConfig.description}`, '/links', '友链,推荐,应�
 const sections = linksConfig.sections || []
 
 /**
- * 根据板块首条拥有的字段，推断整板块的统一布局类型。
- * 要求同一板块各项参数相同，以首条为准。
+ * 按板块首条拥有的字段推断整板块的布局类型（要求同板块各项字段一致）
  */
 function detectLayout(section) {
     if (!section.items || section.items.length === 0) return 'no-avatar'
@@ -30,15 +29,8 @@ const sectionLayouts = computed(() =>
 <template>
     <main v-fade-in>
         <section class="py-12 w-full max-w-screen-xl mx-auto">
-            <h1 data-fade class="text-3xl mt-40">
-        <span
-            class="relative inline-block transition-colors duration-300 text-#2f3f5b dark:text-gradient"
-        >
-          友链
-          <span
-              class="absolute inset-0 -z-10 bg-gradient-to-r from-#00e699/50 to-#00e2d8/50 dark:hidden transition-colors duration-300"
-          ></span>
-        </span>
+            <h1 data-fade class="text-3xl mt-40 font-display font-semibold tracking-tight text-balance">
+        <span class="text-gradient">友链</span>
             </h1>
 
             <div
@@ -48,18 +40,13 @@ const sectionLayouts = computed(() =>
                 class="mt-8"
             >
                 <h2
-                    class="text-xl font-semibold text-#2f3f5b dark:text-white transition-colors duration-300"
+                    class="text-xl font-display font-semibold text-ink"
                 >
-                    <span class="relative inline-block">
-                        {{ sl.section.title }}
-                        <span
-                            class="absolute inset-0 -z-10 bg-gradient-to-r from-#00e699/30 to-#00e2d8/30 dark:hidden transition-colors duration-300"
-                        ></span>
-                    </span>
+                    {{ sl.section.title }}
                 </h2>
                 <p
                     v-if="sl.section.description"
-                    class="mt-1 text-sm text-#2f3f5b/70 dark:text-gray-400 transition-colors duration-300"
+                    class="mt-1 text-sm text-ink-muted leading-relaxed transition-colors duration-base"
                 >
                     {{ sl.section.description }}
                 </p>
@@ -73,9 +60,9 @@ const sectionLayouts = computed(() =>
                             data-fade
                             v-for="item in sl.section.items"
                             :key="item.link"
-                            class="relative w-full h-200px rounded-xl list-none outline-none bg-#fefefe dark:bg-white/10
-                    shadow-[0_0_2px_rgba(0,0,0,0.2)] hover:shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]
-                    transition-all duration-300 group overflow-hidden"
+                            class="card-base relative w-full h-200px list-none outline-none bg-surface
+                    hover:shadow-md hover:border-accent-line
+                    transition-all duration-base group overflow-hidden"
                         >
                             <a
                                 :href="item.link"
@@ -83,7 +70,7 @@ const sectionLayouts = computed(() =>
                                 rel="noopener"
                                 class="flex flex-col h-full rounded-xl no-underline focus:outline-none cursor-pointer"
                             >
-                                <div class="relative h-120px group-hover:h-80px overflow-hidden rounded-t-xl bg-#f0f0f0 dark:bg-white/5 shrink-0 transition-all duration-300 ease-in-out">
+                                <div class="relative h-120px group-hover:h-80px overflow-hidden rounded-t-xl bg-surface-2 shrink-0 transition-all duration-base ease-in-out">
                                     <img
                                         :src="item.screenshot"
                                         :alt="item.name"
@@ -91,11 +78,11 @@ const sectionLayouts = computed(() =>
                                         loading="lazy"
                                         onload="this.style.opacity=1"
                                         @error="$event.target.style.display='none'"
-                                        class="w-full h-full object-cover transition-all duration-300 ease-in-out"
+                                        class="w-full h-full object-cover transition-all duration-base ease-in-out"
                                     />
-                                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/70 transition-all duration-300 ease-in-out pointer-events-none" />
+                                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/70 transition-all duration-base ease-in-out pointer-events-none" />
                                 </div>
-                                <div class="flex-1 flex items-center gap-3 px-4 py-3 transition-all duration-300 ease-in-out">
+                                <div class="flex-1 flex items-center gap-3 px-4 py-3 transition-all duration-base ease-in-out">
                                     <img
                                         v-if="item.avatar"
                                         :src="item.avatar"
@@ -103,13 +90,13 @@ const sectionLayouts = computed(() =>
                                         referrerpolicy="no-referrer"
                                         onload="this.style.opacity=1"
                                         @error="$event.target.style.display='none'"
-                                        class="w-9 h-9 rounded-full object-cover shrink-0 border border-#e0e0e0 dark:border-white/20 transition-colors duration-300"
+                                        class="w-9 h-9 rounded-full object-cover shrink-0 border border-line transition-colors duration-base"
                                     />
                                     <div class="min-w-0 flex-1">
-                                        <h4 :class="[item.description ? 'text-sm' : 'text-base', 'text-#2f3f5b dark:text-white font-semibold transition-colors duration-300 show-multiline']">
+                                        <h4 :class="[item.description ? 'text-sm' : 'text-base', 'text-ink font-semibold transition-colors duration-base show-multiline']">
                                             {{ item.name }}
                                         </h4>
-                                        <p v-if="item.description" class="mt-1 text-#2f3f5b dark:text-gray-400 text-xs transition-colors duration-300 show-multiline">
+                                        <p v-if="item.description" class="mt-1 text-ink-muted text-xs leading-relaxed transition-colors duration-base show-multiline">
                                             {{ item.description }}
                                         </p>
                                     </div>
@@ -123,15 +110,15 @@ const sectionLayouts = computed(() =>
                             data-fade
                             v-for="item in sl.section.items"
                             :key="item.link"
-                            class="relative w-full h-90px rounded-xl list-none outline-none bg-#fefefe dark:bg-white/10
-                    shadow-[0_0_2px_rgba(0,0,0,0.2)] hover:shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]
-                    transition-all duration-300 group overflow-hidden"
+                            class="card-base relative w-full h-90px list-none outline-none bg-surface
+                    border border-line shadow-xs hover:shadow-md hover:border-accent-line
+                    transition-all duration-base group overflow-hidden"
                         >
                             <a
                                 :href="item.link"
                                 target="_blank"
                                 rel="noopener"
-                                class="flex items-center h-full rounded-xl no-underline focus:outline-none cursor-pointer px-4 gap-3 group-hover:gap-0 transition-all duration-300"
+                                class="flex items-center h-full rounded-xl no-underline focus:outline-none cursor-pointer px-4 gap-3 group-hover:gap-0 transition-all duration-base"
                             >
                                 <span class="avatar-fade shrink-0">
                                     <img
@@ -140,10 +127,10 @@ const sectionLayouts = computed(() =>
                                         referrerpolicy="no-referrer"
                                         onload="this.style.opacity=1"
                                         @error="$event.target.style.display='none'"
-                                        class="w-10 h-10 rounded-full object-cover border border-#e0e0e0 dark:border-white/20"
+                                        class="w-10 h-10 rounded-full object-cover border border-line"
                                     />
                                 </span>
-                                <h4 class="min-w-0 flex-1 text-#2f3f5b dark:text-white text-base font-semibold truncate transition-colors duration-300">
+                                <h4 class="min-w-0 flex-1 text-ink text-base font-semibold truncate transition-colors duration-base">
                                     {{ item.name }}
                                 </h4>
                             </a>
@@ -155,15 +142,15 @@ const sectionLayouts = computed(() =>
                             data-fade
                             v-for="item in sl.section.items"
                             :key="item.link"
-                            class="relative w-full h-90px rounded-xl list-none outline-none bg-#fefefe dark:bg-white/10
-                    shadow-[0_0_2px_rgba(0,0,0,0.2)] hover:shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]
-                    transition-all duration-300 group overflow-hidden"
+                            class="card-base relative w-full h-90px list-none outline-none bg-surface
+                    border border-line shadow-xs hover:shadow-md hover:border-accent-line
+                    transition-all duration-base group overflow-hidden"
                         >
                             <a
                                 :href="item.link"
                                 target="_blank"
                                 rel="noopener"
-                                class="flex items-center h-full rounded-xl no-underline focus:outline-none cursor-pointer px-4 gap-3 group-hover:gap-0 transition-all duration-300"
+                                class="flex items-center h-full rounded-xl no-underline focus:outline-none cursor-pointer px-4 gap-3 group-hover:gap-0 transition-all duration-base"
                             >
                                 <span class="avatar-fade-md shrink-0">
                                     <img
@@ -172,14 +159,14 @@ const sectionLayouts = computed(() =>
                                         referrerpolicy="no-referrer"
                                         onload="this.style.opacity=1"
                                         @error="$event.target.style.display='none'"
-                                        class="w-11 h-11 rounded-full object-cover border border-#e0e0e0 dark:border-white/20"
+                                        class="w-11 h-11 rounded-full object-cover border border-line"
                                     />
                                 </span>
                                 <div class="min-w-0 flex-1">
-                                    <h4 class="text-#2f3f5b dark:text-white text-sm font-semibold truncate transition-colors duration-300">
+                                    <h4 class="text-ink text-sm font-semibold truncate transition-colors duration-base">
                                         {{ item.name }}
                                     </h4>
-                                    <p class="mt-1 text-#2f3f5b dark:text-gray-400 text-xs truncate transition-colors duration-300">
+                                    <p class="mt-1 text-ink-muted text-xs truncate transition-colors duration-base">
                                         {{ item.description }}
                                     </p>
                                 </div>
@@ -192,15 +179,15 @@ const sectionLayouts = computed(() =>
                             data-fade
                             v-for="item in sl.section.items"
                             :key="item.name"
-                            class="relative w-full rounded-xl list-none outline-none bg-#fefefe dark:bg-white/10
-                    shadow-[0_0_2px_rgba(0,0,0,0.2)] hover:shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]
-                    transition-all duration-300 group"
+                            class="card-base relative w-full list-none outline-none bg-surface
+                    border border-line shadow-xs hover:shadow-md hover:border-accent-line
+                    transition-all duration-base group"
                         >
                             <div class="h-full box-border flex flex-col justify-center rounded-xl p-4">
-                                <h4 class="text-#2f3f5b dark:text-white text-sm font-semibold truncate transition-colors duration-300">
+                                <h4 class="text-ink text-sm font-semibold truncate transition-colors duration-base">
                                     {{ item.name }}
                                 </h4>
-                                <p class="mt-1 text-#2f3f5b dark:text-gray-400 text-xs truncate transition-colors duration-300">
+                                <p class="mt-1 text-ink-muted text-xs truncate transition-colors duration-base">
                                     {{ item.description }}
                                 </p>
                             </div>
@@ -212,9 +199,9 @@ const sectionLayouts = computed(() =>
                             data-fade
                             v-for="item in sl.section.items"
                             :key="item.link"
-                            class="relative w-full rounded-xl list-none outline-none bg-#fefefe dark:bg-white/10
-                    shadow-[0_0_2px_rgba(0,0,0,0.2)] hover:shadow-[0_0_2px_rgba(0,0,0,0.2),0_0_0_1px_#00e699]
-                    transition-all duration-300 group"
+                            class="card-base relative w-full list-none outline-none bg-surface
+                    border border-line shadow-xs hover:shadow-md hover:border-accent-line
+                    transition-all duration-base group"
                         >
                             <a
                                 :href="item.link"
@@ -223,10 +210,10 @@ const sectionLayouts = computed(() =>
                                 class="rounded-xl no-underline focus:outline-none cursor-pointer"
                             >
                                 <div class="rounded-xl p-4 no-underline">
-                                    <h4 class="text-#2f3f5b dark:text-white text-sm font-semibold truncate transition-colors duration-300">
+                                    <h4 class="text-ink text-sm font-semibold truncate transition-colors duration-base">
                                         {{ item.name }}
                                     </h4>
-                                    <p class="mt-1 text-#2f3f5b dark:text-gray-400 text-xs truncate transition-colors duration-300">
+                                    <p class="mt-1 text-ink-muted text-xs truncate transition-colors duration-base">
                                         {{ item.description }}
                                     </p>
                                 </div>
@@ -235,26 +222,29 @@ const sectionLayouts = computed(() =>
                     </template>
                 </ul>
                 </template>
-                <p v-else data-fade class="mt-4 text-sm text-#2f3f5b/50 dark:text-gray-500 transition-colors duration-300">
+                <p v-else data-fade class="mt-4 text-sm text-ink-subtle transition-colors duration-base">
                     暂无友链
                 </p>
             </div>
 
-            <div data-fade class="mt-16">
-                <h2 class="text-xl font-semibold text-#2f3f5b dark:text-white transition-colors duration-300">
-                    <span class="relative inline-block">
-                        友链申请
-                        <span class="absolute inset-0 -z-10 bg-gradient-to-r from-#00e699/30 to-#00e2d8/30 dark:hidden transition-colors duration-300"></span>
-                    </span>
+            <div data-fade class="mt-8">
+                <h2 class="text-xl font-display font-semibold text-ink">
+                    友链申请
                 </h2>
-                <div class="mt-4 text-sm text-#2f3f5b/80 dark:text-gray-300 transition-colors duration-300 space-y-1.5">
-                    <p class="text-#2f3f5b dark:text-white font-semibold">请确保您的网站：</p>
-                    <p>1. 可以在1分钟内加载完成首屏。</p>
-                    <p>2. 内容符合中国大陆法律法规。</p>
-                    <p>3. 已添加本站友链。</p>
-                    <p>4. 在评论区留下你的站点信息（名称、链接、头像、描述）。</p>
-                    <div class="!mt-4 p-4 rounded-lg bg-gray/10 dark:bg-white/5 text-xs font-mono">
-                        <p class="text-#2f3f5b dark:text-white font-semibold !mb-2">本站信息</p>
+                <p class="mt-1 text-sm text-ink-muted leading-relaxed transition-colors duration-base">
+                    请在评论区留下你的站点信息（名称、链接、头像、描述等）
+                </p>
+            </div>
+            <div data-fade class="mt-4 bg-surface border border-line p-4 md:p-5 rounded-card shadow-xs min-w-full relative transition-colors duration-base">
+                <div class="text-sm text-ink-muted space-y-1.5">
+                    <p class="text-ink font-semibold">请确保您的网站：</p>
+                    <div class="!mt-3 space-y-1.5">
+                        <p>1. 可以在1分钟内加载完成首屏</p>
+                        <p>2. 内容符合中国大陆法律法规</p>
+                        <p>3. 已添加本站友链</p>
+                    </div>
+                    <div class="!mt-4 p-4 rounded-lg bg-surface-4 text-xs font-mono leading-tight">
+                        <p class="text-ink font-semibold !mb-2">本站信息</p>
                         <p>名称：ShinX</p>
                         <p>链接：https://zhengweixin.top/</p>
                         <p>头像：https://cdn.zhengweixin.top/avatar.jpg</p>
