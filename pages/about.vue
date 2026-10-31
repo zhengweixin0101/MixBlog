@@ -233,7 +233,7 @@ const hoveredIndex = ref(null)
 
     <div data-fade class="flex flex-wrap justify-center gap-4 w-full mx-auto m-5">
       <div class="card-base flex-1 md:flex-[3_3_0%] bg-surface transition-colors duration-base
-                  p-5 min-w-full md:min-w-[300px] flex flex-col justify-center gap-2 -z-20"
+                  p-5 min-w-full md:min-w-[300px] flex flex-col justify-center gap-2 relative"
       >
         <div class="text-sm opacity-90">Hi，很高兴认识你！<span class="text-xl">👋</span></div>
         <h2 class="text-3xl font-bold">我叫
@@ -570,7 +570,7 @@ const hoveredIndex = ref(null)
   background-image: var(--hello-card-rings);
 }
 
-:global(html.dark) .hello-card-text {
+html.dark .hello-card-text {
   background-image: none;
   background-clip: border-box;
   -webkit-background-clip: border-box;
