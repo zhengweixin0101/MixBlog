@@ -165,8 +165,8 @@
   --skeleton-base: oklch(0.5 0.01 80 / 0.09);
   --skeleton-shine: oklch(0.5 0.01 80 / 0.19);
 
-  --selection-bg: oklch(0.96 0.017 83);
-  --selection-fg: var(--ink-strong);
+  /* 选中底色 */
+  --selection-bg: oklch(0.62 0.145 45 / 0.15);
 }
 
 html.dark {
@@ -232,6 +232,5 @@ html.dark {
   --skeleton-base: oklch(1 0 0 / 0.06);
   --skeleton-shine: oklch(1 0 0 / 0.14);
 
-  --selection-bg: oklch(0.426 0.019 71);
-  --selection-fg: var(--ink-strong);
+  --selection-bg: oklch(0.62 0.145 45 / 0.25);
 }

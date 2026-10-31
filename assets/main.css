@@ -72,12 +72,12 @@ body {
 /* 选中文本 */
 ::selection {
   background-color: var(--selection-bg);
-  color: var(--selection-fg);
+  color: currentColor;
 }
 
 ::-moz-selection {
   background-color: var(--selection-bg);
-  color: var(--selection-fg);
+  color: currentColor;
 }
 
 /* 焦点可见性 */
