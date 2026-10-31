@@ -401,10 +401,10 @@ const hoveredIndex = ref(null)
                     group"
         >
           <div class="text-xs absolute text-ink-subtle">性格</div>
-          <h2 class="text-2xl font-bold mt-5">{{ aboutConfig.author.personality.name }}<br/><span class="text-#e4ae3a text-4xl">{{ aboutConfig.author.personality.code }}</span></h2>
-          <div class="absolute bottom-4 text-sm text-#999999">
+          <h2 class="text-2xl font-bold mt-5">{{ aboutConfig.author.personality.name }}<br/><span class="text-amber-400 text-4xl">{{ aboutConfig.author.personality.code }}</span></h2>
+          <div class="absolute bottom-4 text-sm text-ink-subtle">
             在 
-            <a class="text-#999999 underline hover:text-ink dark:hover:text-white transition-colors duration-base" :href="aboutConfig.author.personality.learnMore" target="_blank" rel="noopener nofollow">16personalities</a>
+            <a class="text-ink-subtle underline hover:text-accent-text transition-colors duration-base" :href="aboutConfig.author.personality.learnMore" target="_blank" rel="noopener nofollow">16personalities</a>
             上了解更多
           </div>
           <div class="absolute justify-center right-0 md:top-3 transition-transform duration-800 group-hover:-rotate-8">

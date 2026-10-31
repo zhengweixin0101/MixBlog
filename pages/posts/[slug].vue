@@ -758,7 +758,7 @@ async function copyArticleLink() {
               <img
                 :src="siteConfig.author.avatar"
                 :alt="siteConfig.author.name"
-                class="w-16 h-16 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-[0_0_20px_rgba(0,0,0,0.3)] fade-in-image"
+                class="w-16 h-16 rounded-full object-cover border-0 shadow-[0_0_10px_rgba(0,0,0,0.15)] fade-in-image"
                 loading="lazy"
               />
           </a>

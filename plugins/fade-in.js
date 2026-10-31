@@ -54,11 +54,19 @@ function applyFadeIn(root) {
   io.observe(root)
 }
 
+function startFadeCleanup() {
+  document.addEventListener('animationend', (e) => {
+    if (e.animationName === 'fade-in') e.target.classList.add('fade-in-done')
+  })
+}
+
 export default defineNuxtPlugin((nuxtApp) => {
   if (import.meta.server) {
     nuxtApp.vueApp.directive('fade-in', {})
     return
   }
+
+  startFadeCleanup()
 
   const fadeIn = {
     mounted(root) {
