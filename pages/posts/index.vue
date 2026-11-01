@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
+import { usePostsMasonry } from '@/composables/usePostsMasonry'
 
 usePageMeta('文章', `${siteConfig.description}`, '/posts', '文章,列表,posts,list')
 
@@ -36,19 +37,36 @@ const filteredPosts = computed(() => {
     })
     .sort((a, b) => new Date(b.date) - new Date(a.date))
 })
+
+// 双列瀑布流
+const { listEl, columns, twoCols, isSettled, markSettled } = usePostsMasonry(filteredPosts)
+
+// 入场浮现按发布时间顺序：头部占 1-4，卡片从 6 开始按 filteredPosts 序号钉位
+// 返回链接垫底（5 + 卡片数 + 1）。fade-in 插件按 data-fade 数字排进度
+const chronoIndex = computed(() => {
+  const index = new Map()
+  filteredPosts.value.forEach((post, i) => index.set(post.slug, i))
+  return index
+})
+
+function cardFadeRank(post) {
+  return 6 + (chronoIndex.value.get(post.slug) ?? 0)
+}
+
+const tailFadeRank = computed(() => String(5 + filteredPosts.value.length + 1))
 </script>
 
 <template>
   <main v-fade-in>
-    <section class="py-12 w-full max-w-screen-xl mx-auto">
-      <h1 data-fade class="text-3xl mt-40 font-display font-semibold tracking-tight text-balance">
+    <section class="py-12 w-full max-w-[65rem] mx-auto">
+      <h1 data-fade="1" class="text-3xl mt-40 font-display font-semibold tracking-tight text-balance">
         <span class="text-gradient">文章</span>
       </h1>
-      <p data-fade class="mt-2 text-ink-muted transition-colors duration-base">
+      <p data-fade="2" class="mt-2 text-ink-muted transition-colors duration-base">
         一些奇思妙想的文章。
       </p>
 
-      <div data-fade class="relative mt-6 sm:mt-8 w-full">
+      <div data-fade="3" class="relative mt-6 sm:mt-8 w-full">
         <AppIcon name="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-ink-subtle pointer-events-none" />
         <input
           v-model="searchTerm"
@@ -63,7 +81,7 @@ const filteredPosts = computed(() => {
         />
       </div>
 
-      <div data-fade class="mt-4 flex flex-wrap items-baseline justify-start gap-2 text-sm text-ink-muted transition-colors duration-base">
+      <div data-fade="4" class="mt-4 flex flex-wrap items-baseline justify-start gap-2 text-sm text-ink-muted transition-colors duration-base">
         <span class="font-bold">Tag:</span>
         <button
           v-for="tag in allTags"
@@ -79,50 +97,40 @@ const filteredPosts = computed(() => {
         </button>
       </div>
 
-      <ul :key="selectedTag + '-' + searchTerm" class="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3">
-        <li data-fade
-          v-for="post in filteredPosts"
-          class="card-base relative w-full h-160px list-none bg-surface hover:shadow-md hover:border-accent-line
-                 transition-all duration-base"
+      <!-- 桌面端双列瀑布流 -->
+      <div v-if="twoCols" ref="listEl" class="mt-8 flex items-start gap-[18px]">
+        <div
+          v-for="(colPosts, ci) in columns"
+          :key="ci"
+          class="flex flex-1 min-w-0 flex-col gap-[18px]"
         >
-          <NuxtLink
-            :to="`/posts/${post.slug}`"
-            class="block h-full no-underline cursor-pointer"
-          >
-            <div class="h-full p-4 no-underline" >
-              <h4 class="text-ink text-base font-semibold leading-snug transition-colors duration-base">{{ post.title }}</h4>
-              <p class="mt-1.5 text-ink-muted text-sm leading-relaxed transition-colors duration-base">
-                {{ post.description || '暂无描述' }}
-              </p>
+          <PostCard
+            v-for="post in colPosts"
+            :key="post.slug"
+            :post="post"
+            :fade-rank="cardFadeRank(post)"
+            :settled="isSettled(post.slug)"
+            @fade-done="markSettled(post.slug)"
+          />
+        </div>
+      </div>
 
-              <div class="absolute left-4 bottom-4 text-sm text-ink-subtle pointer-events-none flex items-center">
-                <AppIcon name="clock" />
-                <time
-                  :datetime="post.date !== '' ? post.date : null"
-                  class="ml-0.5"
-                >
-                  {{ post.date || '未知日期' }}
-                </time>
-              </div>
-
-              <div v-if="post.tags?.length" class="absolute right-4 bottom-4 flex flex-wrap gap-1">
-                <span
-                  v-for="tag in post.tags"
-                  :key="tag"
-                  class="px-2 py-1 text-xs rounded-full bg-surface-4 text-ink-muted"
-                >
-                  {{ tag }}
-                </span>
-              </div>
-            </div>
-          </NuxtLink>
+      <!-- 移动端单列 -->
+      <ul v-else class="mt-8 grid grid-cols-1 gap-4 list-none">
+        <li v-for="post in filteredPosts" :key="post.slug">
+          <PostCard
+            :key="post.slug"
+            :post="post"
+            :fade-rank="cardFadeRank(post)"
+            :settled="isSettled(post.slug)"
+            @fade-done="markSettled(post.slug)"
+          />
         </li>
       </ul>
 
-      <div data-fade class="mt-8 flex flex-row items-center justify-end gap-4">
+      <div :data-fade="tailFadeRank" class="mt-8 flex flex-row items-center justify-end gap-4">
         <BackLink to="/" text="← 返回首页" />
       </div>
     </section>
   </main>
 </template>
-

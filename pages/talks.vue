@@ -2,95 +2,86 @@
   <main v-fade-in>
     <section class="py-12 w-full max-w-screen-xl mx-auto">
       <!-- 标题 -->
-      <h1 data-fade class="text-3xl mt-40 font-display font-semibold tracking-tight text-balance">
+      <h1 data-fade="1" class="text-3xl mt-40 font-display font-semibold tracking-tight text-balance">
         <span class="text-gradient">说说</span>
       </h1>
-      <p data-fade class="mt-2 text-ink-muted transition-colors duration-base">
+      <p data-fade="2" class="mt-2 text-ink-muted transition-colors duration-base">
         随时随地，分享生活。
       </p>
 
-      <!-- Masonry 容器 -->
-      <ul ref="masonryContainer" class="mt-8 list-none">
-        <li data-fade
-          v-for="talk in talks"
-          :key="talk.id"
-          class="card-base break-inside-avoid mb-5 px-4 pt-4 pb-2 bg-surface transition-colors duration-base"
+      <!-- 桌面端双列瀑布流 -->
+      <div v-if="twoCols" ref="listEl" class="mt-8 flex items-start gap-[18px]">
+        <div
+          v-for="(segs, ci) in columnSegments"
+          :key="ci"
+          class="flex flex-1 min-w-0 flex-col gap-[18px]"
         >
-          <div class="text-ink text-base whitespace-pre-line leading-relaxed">
-            <!-- 内容 -->
-            <span v-html="renderContent(talk)"></span>
-
-            <!-- 图片 -->
-            <div v-if="talk.imgs?.length" class="flex flex-wrap gap-4 mt-3">
-              <a
-                v-for="(img, idx) in getImgBlocks(talk)"
-                :key="idx"
-                :href="img.url"
-                :data-fancybox="`gallery-${talk.id}`"
-              >
-                <img
-                  :src="img.url"
-                  :alt="img.alt"
-                  class="w-16 h-16 object-cover rounded-lg cursor-pointer shadow-[0_0_8px_0_rgba(0,0,0,0.2)] fade-in-image"
-                  loading="lazy"
-                />
-              </a>
-            </div>
+          <!-- 每列按批次切段 -->
+          <div
+            v-for="seg in segs"
+            :key="seg.batch"
+            :class="seg.batch
+              ? ['talks-batch flex flex-col gap-[18px]', { 'is-entering': isEntering(seg.batch) }]
+              : 'talks-seg'"
+          >
+            <TalkCard
+              v-for="talk in seg.talks"
+              :key="talk.id"
+              :talk="talk"
+              :fade-rank="cardFadeRank(talk)"
+              :settled="isSettled(talk.id)"
+              @fade-done="markSettled(talk.id)"
+            />
           </div>
+        </div>
+      </div>
 
-          <!-- 分割线 -->
-          <hr class="mt-3 border-dashed border-t border-line" />
-
-          <div class="flex justify-between text-ink-subtle text-xs flex-wrap gap-y-2 mt-2">
-            <div class="flex items-center gap-1.5">
-              <!-- 时间 -->
-              <span class="flex items-center px-1.5 py-1 rounded-full bg-surface-4 text-ink-muted">
-                <AppIcon name="clock" /><span class="ml-0.5">{{ formatDate(talk.created_at) }}</span>
-              </span>
-              <!-- 位置 -->
-              <span v-if="talk.location?.length" class="flex items-center px-1.5 py-1 rounded-full bg-surface-4 text-ink-muted">
-                <AppIcon name="map-pin" /><span class="ml-0.5">{{ talk.location }}</span>
-              </span>
-              <!-- 链接 -->
-              <div v-if="talk.links?.length" class="flex items-center px-1.5 py-1 rounded-full bg-red-300/20 transition-colors duration-base">
-                <a
-                  v-for="(link, idx) in talk.links"
-                  :key="idx"
-                  :href="link.url"
-                  target="_blank"
-                  rel="noopener noreferrer nofollow"
-                  class="text-#f56c6c no-underline hover:opacity-60 [will-change:opacity] px-0.5 transition-opacity duration-base"
-                >
-                  <AppIcon name="link" class="text-12px" /><span class="ml-1">{{ link.text }}</span>
-                </a>
-              </div>
-            </div>
-            <div class="flex flex-wrap gap-1.5">
-              <span
-                v-for="(tag, idx) in talk.tags"
-                :key="idx"
-                class="flex items-center px-1.5 py-1 rounded-full bg-surface-4 text-ink-muted"
-              >
-                <span>{{ tag }}</span>
-              </span>
-            </div>
-          </div>
-          
+      <!-- 移动端单列 -->
+      <ul v-else class="mt-8 grid grid-cols-1 gap-4 list-none">
+        <li
+          v-for="seg in columnSegments[0]"
+          :key="seg.batch"
+          :class="seg.batch
+            ? ['talks-batch flex flex-col gap-4', { 'is-entering': isEntering(seg.batch) }]
+            : 'talks-seg'"
+        >
+          <TalkCard
+            :key="talk.id"
+            v-for="talk in seg.talks"
+            :talk="talk"
+            :fade-rank="cardFadeRank(talk)"
+            :settled="isSettled(talk.id)"
+            @fade-done="markSettled(talk.id)"
+          />
         </li>
       </ul>
 
       <!-- 加载更多 -->
-      <div v-if="!finished" data-fade class="mt-4 flex justify-center">
+      <div v-if="!finished" :data-fade="tailFadeRank" class="mt-4 flex justify-center">
         <button
-          class="px-4 py-2 bg-surface-2 text-ink-muted hover:text-ink hover:opacity-70 rounded-full transition-all duration-base cursor-pointer border border-line shadow-xs hover:shadow-md hover:border-accent-line border-none"
+          type="button"
+          class="talks-more btn-hover appearance-none bg-surface-2 text-ink-muted rounded-full border border-line shadow-xs"
+          :class="loading ? 'is-loading cursor-progress' : 'cursor-pointer'"
           :disabled="loading"
+          :aria-busy="loading ? 'true' : 'false'"
+          :aria-label="loading ? '加载中' : '加载更多'"
           @click="fetchTalks"
         >
-          {{ loading ? '加载中...' : '加载更多' }}
+          <span class="talks-more-label">加载更多</span>
+          <svg class="talks-spinner" viewBox="0 0 20 20" aria-hidden="true">
+            <defs>
+              <linearGradient id="talks-spin-grad" x1="2" y1="2" x2="18" y2="18" gradientUnits="userSpaceOnUse">
+                <stop offset="0" class="talks-spin-stop-a" />
+                <stop offset="1" class="talks-spin-stop-b" />
+              </linearGradient>
+            </defs>
+            <circle class="talks-spin-track" cx="10" cy="10" r="8.5" />
+            <circle class="talks-spin-arc" cx="10" cy="10" r="8.5" />
+          </svg>
         </button>
       </div>
 
-      <div data-fade>
+      <div :data-fade="commentFadeRank">
         <Comment />
       </div>
     </section>
@@ -98,48 +89,30 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from '#imports'
+import { ref, computed, onMounted } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
 import Comment from '@/components/Comment.vue'
-
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-import timezone from 'dayjs/plugin/timezone'
+import TalkCard from '@/components/TalkCard.vue'
+import { usePostsMasonry } from '@/composables/usePostsMasonry'
 
 import { Fancybox } from '@fancyapps/ui'
 import '@fancyapps/ui/dist/fancybox/fancybox.css'
 
 usePageMeta('说说', `${siteConfig.description}`, '/talks', '说说,talks')
 
-dayjs.extend(utc)
-dayjs.extend(timezone)
-const formatDate = (date) => dayjs(date).tz('Asia/Shanghai').format('YYYY-MM-DD HH:mm')
-
-const masonryContainer = ref(null)
-let macyInstance = null
-
-async function initMasonry() {
-  if (typeof window === 'undefined' || !masonryContainer.value) return
-  const Macy = (await import('macy')).default
-  if (macyInstance) {
-    macyInstance.reInit()
-  } else {
-    macyInstance = Macy({
-      container: masonryContainer.value,
-      trueOrder: false,
-      waitForImages: true,
-      margin: 14,
-      columns: 2,
-      breakAt: { 820: 1 },
-    })
-  }
-}
-
 const talks = ref([])
 const page = ref(1)
 const pageSize = 20
 const loading = ref(false)
 const finished = ref(false)
+
+/** 圆环最短旋转时长 */
+const SPIN_MIN = 500
+/** 追加批次的入场窗口 */
+const APPEAR_HOLD = 900
+/** 同一批卡片共用一个容器，只播一次动画 */
+const batchStartedAt = ref(new Map())
+let batchNo = 0
 
 const TALKS_API = `${siteConfig.apiUrl}/api/talks`
 
@@ -158,15 +131,31 @@ const { data: initialData } = await useAsyncData('talks', async () => {
 talks.value = initialData.value.data || []
 if (initialData.value.totalPages <= 1) finished.value = true
 
+/** 首屏卡片数 */
+const initialCount = talks.value.length
+
 async function fetchTalks() {
   if (loading.value || finished.value) return
   loading.value = true
+  const startedAt = performance.now()
   try {
     const res = await $fetch(`${TALKS_API}?page=${page.value + 1}&pageSize=${pageSize}`)
-    talks.value.push(...(res.data || []))
+    const fresh = res.data || []
+
+    // 让圆环转满再收
+    const rest = SPIN_MIN - (performance.now() - startedAt)
+    if (rest > 0) await new Promise(resolve => setTimeout(resolve, rest))
+
+    if (fresh.length) {
+      // 打上批次号
+      const batch = ++batchNo
+      fresh.forEach(talk => { talk.batch = batch })
+      talks.value.push(...fresh)
+      batchStartedAt.value = new Map(batchStartedAt.value).set(batch, performance.now())
+    }
+
     page.value++
     if (page.value >= res.totalPages) finished.value = true
-    nextTick().then(() => initMasonry())
   } catch (e) {
     console.error('Fetch talks failed', e)
   } finally {
@@ -174,68 +163,146 @@ async function fetchTalks() {
   }
 }
 
-// 转义 HTML 防止 XSS
-function escapeHtml(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
+// 双列瀑布流（复用文章列表引擎）
+const { listEl, columns, twoCols, isSettled, markSettled } = usePostsMasonry(talks, {
+  minWidth: 640,
+  getId: (talk) => talk.id
+})
+
+// 首屏入场按时间顺序：标题占 1-2，卡片从 3 起按 talks 序号钉位
+function cardFadeRank(talk) {
+  const i = talks.value.findIndex(t => t.id === talk.id)
+  if (i < 0 || i >= initialCount) return 0
+  return 3 + i
 }
 
-function getImgBlocks(talk) {
-  if (!talk.content) return []
-  const matches = [...talk.content.matchAll(/<talkImg>(.*?)<\/talkImg>/g)]
-  return matches.map(match => {
-    const alt = match[1]
-    const imgObj = talk.imgs.find(i => i.alt === alt)
-    return imgObj || { url: '', alt }
-  })
-}
+const tailFadeRank = 3 + initialCount
+const commentFadeRank = 4 + initialCount
 
-function renderContent(talk) {
-  let html = talk.content
+const columnSegments = computed(() => columns.value.map((col) => {
+  const segs = []
+  for (const talk of col) {
+    const batch = talk.batch || 0
+    const last = segs[segs.length - 1]
+    if (last && last.batch === batch) last.talks.push(talk)
+    else segs.push({ batch, talks: [talk] })
+  }
+  return segs
+}))
 
-  // 图片/链接占位标签由 getImgBlocks / talk.links 单独渲染，正文里要移除
-  html = html.replace(/\n*<talkImg>.*?<\/talkImg>/g, '')
-  html = html.replace(/\n*<talkLink>.*?<\/talkLink>/g, '')
-
-  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
-    lang = lang || 'text';
-    return `<pre class="my-1 bg-surface-4 border border-line rounded-lg p-3 text-sm font-mono text-ink overflow-x-auto" style="white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word;"><code>${escapeHtml(code)}</code></pre>`
-  })
-
-  // 任务列表 整块匹配连续的 `- [ ] / - [x]` 行，转成禁用的 checkbox
-  let taskIdCounter = 1;
-  html = html.replace(
-    /((?:- \[(?: |x)\] .+\n?)+)/g,
-    (match) => {
-      const items = match.trim().split('\n').map(line => {
-        const [, status, task] = /- \[( |x)\] (.+)/.exec(line)
-        const checked = status === 'x' ? 'checked' : ''
-        const id = `task-${talk.id}-${taskIdCounter++}`
-        return `<li class="flex items-center gap-1"><label for="${id}" class="leading-snug flex items-center"><input id="${id}" type="checkbox" class="custom-checkbox mr-1 mt-0.5" disabled ${checked} /><span ${checked ? 'class="line-through opacity-70"' : ''}>${task}</span></label></li>`
-      }).join('')
-      return `<ul class="list-none my-1">${items}</ul>`
-    }
-  )
-
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-  html = html.replace(/__(.+?)__/g, '<strong>$1</strong>')
-  html = html.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>')
-  html = html.replace(/(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g, '<em>$1</em>')
-
-  return html
+function isEntering(batch) {
+  if (!batch) return false
+  const at = batchStartedAt.value.get(batch)
+  return !!at && performance.now() - at < APPEAR_HOLD
 }
 
 onMounted(() => {
-  nextTick().then(() => initMasonry())
+  // Fancybox bind 是挂在 body 上的事件委托，加载更多新增的图片自动生效，无需重新绑定
   Fancybox.bind('[data-fancybox]', { Hash: false })
 })
 </script>
 
 <style>
+.talks-seg {
+  display: contents;
+}
+
+.talks-batch.is-entering {
+  animation: talks-batch-in var(--dur-fade) var(--ease-fade) both;
+}
+
+@keyframes talks-batch-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.talks-more {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 7px 16px;
+  transition: padding var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.talks-more.is-loading {
+  padding: 7px;
+}
+
+.talks-more.is-loading,
+.talks-more.is-loading:hover {
+  border-color: var(--line);
+  box-shadow: var(--shadow-xs);
+  color: var(--ink-muted);
+}
+
+.talks-more-label {
+  grid-area: 1 / 1;
+  max-width: 3.75rem;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width var(--dur-base) var(--ease-in-out),
+    opacity var(--dur-fast) var(--ease-out);
+}
+
+.talks-more.is-loading .talks-more-label {
+  max-width: 0;
+  opacity: 0;
+}
+
+.talks-spinner {
+  grid-area: 1 / 1;
+  width: 20px;
+  height: 20px;
+  opacity: 0;
+  transform-origin: center;
+  animation: talks-spin 0.85s linear infinite;
+  animation-play-state: paused;
+  transition: opacity var(--dur-base) var(--ease-out) 40ms;
+}
+
+.talks-spinner circle {
+  fill: none;
+  stroke-width: 2;
+}
+
+.talks-spin-track {
+  stroke: var(--line-strong);
+}
+
+.talks-spin-arc {
+  stroke: url(#talks-spin-grad);
+  stroke-dasharray: 24 29.4;
+  stroke-linecap: round;
+}
+
+.talks-spin-stop-a {
+  stop-color: var(--accent);
+}
+
+.talks-spin-stop-b {
+  stop-color: var(--accent-2);
+}
+
+.talks-more.is-loading .talks-spinner {
+  opacity: 1;
+  animation-play-state: running;
+}
+
+@keyframes talks-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* 隐藏浏览器默认勾 */
 .custom-checkbox {
   -webkit-appearance: none;

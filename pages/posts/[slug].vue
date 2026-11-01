@@ -88,7 +88,7 @@ function highlightCodeBlocks(html) {
         <div class="code-block-wrapper group relative ${isCollapsed ? 'collapsed' : ''}" data-lines="${lines}" aria-expanded="${isCollapsed ? 'false' : 'true'}">
           <button
             type="button"
-            class="copy-btn appearance-none absolute top-2 right-2 z-20 w-7 h-7 rounded-lg border border-line bg-code-chip text-ink-muted shadow-xs opacity-0 group-hover:opacity-100 focus-visible:opacity-100 hover:border-accent-line hover:shadow-md cursor-pointer"
+            class="copy-btn btn-hover appearance-none absolute top-2 right-2 z-20 w-7 h-7 rounded-lg border border-line bg-code-chip text-ink-muted shadow-xs opacity-0 group-hover:opacity-100 focus-visible:opacity-100 cursor-pointer"
             data-code="${encodedCode}"
             aria-label="复制代码"
             title="复制代码"
@@ -98,7 +98,7 @@ function highlightCodeBlocks(html) {
           <pre><code class="hljs language-${language}">${highlighted}</code></pre>
           ${isCollapsed ? `
           <div class="fold-overlay pointer-events-none absolute left-0 right-0 bottom-0 h-20"></div>
-          <button class="expand-btn appearance-none absolute left-1/2 -translate-x-1/2 bottom-5 px-3 py-2 text-xs rounded-lg border border-line bg-code-chip text-ink-muted shadow-sm transition-colors duration-base hover:border-accent-line hover:shadow-md hover:text-ink cursor-pointer z-10">展开剩余代码</button>
+          <button class="expand-btn btn-hover appearance-none absolute left-1/2 -translate-x-1/2 bottom-5 px-3 py-2 text-xs rounded-lg border border-line bg-code-chip text-ink-muted shadow-sm transition-colors duration-base cursor-pointer z-10">展开剩余代码</button>
           ` : ''}
         </div>
       `;
@@ -795,7 +795,7 @@ async function copyArticleLink() {
                 @mouseenter="showDonateQR = true"
                 @mouseleave="showDonateQR = false"
                 title="打赏作者"
-                class="appearance-none h-10 px-4 text-sm rounded-lg border border-line bg-surface-4 text-ink-muted hover:border-accent-line hover:shadow-md transition-colors duration-base cursor-pointer flex items-center gap-1"
+                class="appearance-none h-10 px-4 text-sm rounded-lg border border-line bg-surface-4 text-ink-muted btn-hover transition-colors duration-base cursor-pointer flex items-center gap-1"
               >
                 <AppIcon name="donate" /> 打赏作者 
               </button>
@@ -848,7 +848,7 @@ async function copyArticleLink() {
                 @mouseenter="showMobileQR = true"
                 @mouseleave="showMobileQR = false"
                 title="使用手机访问这篇文章"
-                class="appearance-none w-10 h-10 rounded-lg border border-line bg-surface-4 text-ink-muted hover:border-accent-line hover:shadow-md transition-colors duration-base flex items-center justify-center cursor-pointer"
+                class="appearance-none w-10 h-10 rounded-lg border border-line bg-surface-4 text-ink-muted btn-hover transition-colors duration-base flex items-center justify-center cursor-pointer"
               >
                 <AppIcon name="qr-code" />
               </button>
@@ -887,7 +887,7 @@ async function copyArticleLink() {
             <button
               title="分享本文到微博"
               @click="shareToWeibo"
-              class="appearance-none w-10 h-10 rounded-lg border border-line bg-surface-4 text-ink-muted hover:border-accent-line hover:shadow-md transition-colors duration-base flex items-center justify-center cursor-pointer"
+              class="appearance-none w-10 h-10 rounded-lg border border-line bg-surface-4 text-ink-muted btn-hover transition-colors duration-base flex items-center justify-center cursor-pointer"
             >
               <AppIcon name="share" />
             </button>
@@ -897,7 +897,7 @@ async function copyArticleLink() {
               title="复制本文链接"
               @click="copyArticleLink"
               :class="{ 'is-copied': copyLinkCopied }"
-              class="copy-link-btn appearance-none w-10 h-10 rounded-lg border border-line bg-surface-4 text-ink-muted hover:border-accent-line hover:shadow-md transition-colors duration-base flex items-center justify-center cursor-pointer"
+              class="copy-link-btn appearance-none w-10 h-10 rounded-lg border border-line bg-surface-4 text-ink-muted btn-hover transition-colors duration-base flex items-center justify-center cursor-pointer"
             >
               <AppIcon :name="copyLinkIconName" />
             </button>

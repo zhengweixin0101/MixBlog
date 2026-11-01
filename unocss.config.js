@@ -95,6 +95,9 @@ export default defineConfig({
     shortcuts: [
         {
             'text-gradient': 'text-gradient',
+            // 描边按钮全站统一的 hover 语言（参照文章代码块的「展开剩余代码」）：
+            // 边线转强调色 + 阴影抬起 + 文字/图标加深。底色按场景各取 surface 档位，hover 不再各写各的
+            'btn-hover': 'hover:border-accent-line hover:shadow-md hover:text-ink',
             // 右键菜单项
             'rightMenu-item-1': 'text-lg text-ink-muted cursor-pointer p-1 px-2 rounded-md hover:text-accent-text transition-colors duration-fast',
             'rightMenu-item-2': 'cursor-pointer pl-2 p-1.5 text-ink hover:bg-accent-soft hover:text-accent-text rounded-md transition-colors duration-fast',
