@@ -51,6 +51,13 @@ export const linksConfig = {
                     avatar: 'https://files.guoqi.dev/favicon.ico',
                     screenshot: 'https://image.thum.io/get/https://blog.guoqi.dev/',
                 },
+                {
+                    name: '奶油小屋博客',
+                    description: '这个博客存放我的日常、成长，还有我对自己的观察',
+                    link: 'https://abcdtfk.icu',
+                    avatar: 'https://abcdtfk.icu/IMG_1370.jpeg',
+                    screenshot: 'https://image.thum.io/get/https://abcdtfk.icu/',
+                },
             ],
         },
 
