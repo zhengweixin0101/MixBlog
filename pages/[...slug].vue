@@ -29,7 +29,5 @@
 </template>
 
 <script setup>
-import { siteConfig } from '@/siteConfig/main.js'
-
 usePageMeta('未找到', '该页面不存在或已被删除。', '', 'Not Found,404,不存在')
 </script>

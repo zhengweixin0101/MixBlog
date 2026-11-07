@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, onBeforeUnmount, useRouter, useColorMode, nextTick } from '#imports'
+import { onMounted, ref, onBeforeUnmount, useColorMode, nextTick } from '#imports'
 import gsap from 'gsap'
 
 import { aboutConfig } from '@/siteConfig/about.js'

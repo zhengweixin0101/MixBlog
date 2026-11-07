@@ -333,11 +333,11 @@ definePageMeta({
 })
 
 const {
-  list, isLoadingList, error, currentIndex, currentItem,
+  list, isLoadingList, currentIndex, currentItem,
   isPlaying, isLoadingSong, duration, currentTime,
   lyrics, groupedLyrics, currentLyricIndex, currentLyricIndices,
-  playMode, muted, shuffleList, shuffleIndex, pausedOnMusicPage,
-  loadList, ensureInfo, loadLyrics, buildGroupedLyrics,
+  playMode, muted, pausedOnMusicPage,
+  loadList,
   playIndex: sharedPlayIndex, togglePlay: sharedTogglePlay,
   prev: sharedPrev, next: sharedNext, togglePlayMode: sharedTogglePlayMode,
   toggleMute: sharedToggleMute, seek: sharedSeek, downloadMusic: sharedDownloadMusic,
