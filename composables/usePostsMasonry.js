@@ -1,10 +1,10 @@
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 
 /**
- * 文章列表双列瀑布流布局引擎
+ * 双列瀑布流布局引擎
  *
  * 核心规则：
- *   1. 文章按 filteredPosts 的原序（发布时间倒序）依次遍历，不重排数据；
+ *   1. 按原序依次遍历，不重排数据；
  *   2. 第 1 篇进左列；此后每篇放进当前累计高度较小的一列，两列同高优先左列；
  *   3. 卡片高度来自真实渲染后的实测（offsetHeight），不用固定值估算，
  *      列累计高度 = Σ卡片高 + 行间距。
@@ -19,11 +19,6 @@ export function usePostsMasonry(posts, { minWidth = 768, fallbackGap = 18, getId
 
   /** 高度缓存：getId(item) -> { w, h }。实例级，缓存随 composable 生命周期；服务端不写入 */
   const heightCache = new Map()
-  /** 已播完一次入场动画的卡片：再被归位/重建时以终态出现，不重播 fade-in */
-  const settledIds = new Set()
-  const settledVersion = ref(0)
-  /** 推迟 settled 生效到水合之后 */
-  const hydrated = ref(false)
 
   let mq = null
   let ro = null
@@ -44,18 +39,6 @@ export function usePostsMasonry(posts, { minWidth = 768, fallbackGap = 18, getId
     })
     return cols
   })
-
-  function isSettled(id) {
-    void settledVersion.value
-    return hydrated.value && settledIds.has(id)
-  }
-
-  function markSettled(id) {
-    if (!settledIds.has(id)) {
-      settledIds.add(id)
-      settledVersion.value++
-    }
-  }
 
   /** 每次放入当前较短的一列，同高优先左列；列高含卡片之间的行间距 */
   function greedyAssign(heights, gap) {
@@ -193,7 +176,6 @@ export function usePostsMasonry(posts, { minWidth = 768, fallbackGap = 18, getId
   })
 
   onMounted(() => {
-    hydrated.value = true
     if (typeof window === 'undefined') return
     mq = window.matchMedia(`(min-width: ${minWidth}px)`)
     twoCols.value = mq.matches
@@ -223,5 +205,5 @@ export function usePostsMasonry(posts, { minWidth = 768, fallbackGap = 18, getId
     }
   })
 
-  return { listEl, columns, twoCols, isSettled, markSettled }
+  return { listEl, columns, twoCols }
 }

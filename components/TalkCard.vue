@@ -3,20 +3,9 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 
-const props = defineProps({
+defineProps({
   talk: { type: Object, required: true },
-  // 已播完一次 fade-in 的卡片：重建/归位时直接终态渲染，不重播入场动画
-  settled: { type: Boolean, default: false },
-  // 入场动画序位（data-fade 数字，发布会按它排进度）；0 表示不参与全局交错浮现
-  fadeRank: { type: Number, default: 0 }
 })
-
-const emit = defineEmits(['fade-done'])
-
-function onAnimationEnd(event) {
-  if (event.target !== event.currentTarget || event.animationName !== 'fade-in') return
-  emit('fade-done')
-}
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -80,11 +69,8 @@ function renderContent(talk) {
 
 <template>
   <article
-    v-bind="fadeRank > 0 ? { 'data-fade': String(fadeRank) } : null"
     :data-post-id="talk.id"
     class="card-base bg-surface transition-colors duration-base"
-    :class="settled && 'fade-settled'"
-    @animationend="onAnimationEnd"
   >
     <div class="p-4">
       <div class="text-ink text-base whitespace-pre-line leading-relaxed">
@@ -143,12 +129,3 @@ function renderContent(talk) {
     </div>
   </article>
 </template>
-
-<style scoped>
-.fade-settled[data-fade] {
-  animation: none;
-  opacity: 1;
-  transform: none;
-  visibility: visible;
-}
-</style>

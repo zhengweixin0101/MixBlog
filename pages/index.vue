@@ -10,7 +10,7 @@ import { siteConfig } from '@/siteConfig/main.js'
         <p data-fade class="text-4xl sm:text-5xl font-display font-semibold tracking-tight text-ink">
           Hello!<span id="wave-hand">👋</span>
         </p>
-        <h1 data-fade class="mt-4 text-5xl sm:text-6xl font-display font-semibold leading-[1.08] tracking-tight text-balance text-ink">
+        <h1 data-fade="2" class="mt-4 text-5xl sm:text-6xl font-display font-semibold leading-[1.08] tracking-tight text-balance text-ink">
           I'm
           <span class="text-gradient ml-2">{{ siteConfig.author.name }}</span>
         </h1>
@@ -20,27 +20,28 @@ import { siteConfig } from '@/siteConfig/main.js'
         >
           {{ siteConfig.author.description }}
         </p>
-        <div data-fade class="flex flex-wrap gap-2.5 mt-8 justify-center md:justify-start">
-          <NuxtLink
-            to="/posts"
-            class="hero-pill inline-flex items-center justify-center
-                   px-4 py-2.5 rounded-full border border-accent-line-soft
-                   text-sm font-medium leading-none text-ink no-underline
-                   active:scale-[0.97]"
-          >
-            My Posts
-          </NuxtLink>
-          <NuxtLink
-            to="/about"
-            class="hero-pill inline-flex items-center justify-center
-                   px-4 py-2.5 rounded-full border border-accent-line-soft
-                   text-sm font-medium leading-none text-ink no-underline
-                   active:scale-[0.97]"
-          >
-            About Me
-          </NuxtLink>
-        </div>
-          <div data-fade class="mt-6 flex flex-wrap justify-center md:justify-start gap-1.5 text-sm">
+        <div data-fade>
+          <div class="flex flex-wrap gap-2.5 mt-8 justify-center md:justify-start">
+            <NuxtLink
+              to="/posts"
+              class="hero-pill inline-flex items-center justify-center
+                      px-4 py-2.5 rounded-full border border-accent-line-soft
+                      text-sm font-medium leading-none text-ink no-underline
+                      active:scale-[0.97]"
+            >
+              My Posts
+            </NuxtLink>
+            <NuxtLink
+              to="/about"
+              class="hero-pill inline-flex items-center justify-center
+                      px-4 py-2.5 rounded-full border border-accent-line-soft
+                      text-sm font-medium leading-none text-ink no-underline
+                      active:scale-[0.97]"
+            >
+              About Me
+            </NuxtLink>
+          </div>
+          <div class="mt-6 flex flex-wrap justify-center md:justify-start gap-1.5 text-sm">
             <a
               v-for="item in siteConfig.socialLinks"
               :key="item.href"
@@ -48,14 +49,15 @@ import { siteConfig } from '@/siteConfig/main.js'
               :target="item.external ? '_blank' : undefined"
               rel="noopener noreferrer nofollow"
               class="hero-social inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5
-                     text-ink-muted no-underline active:scale-95"
+                      text-ink-muted no-underline active:scale-95"
             >
               <AppIcon :name="item.icon" class="text-base" /> {{ item.text }}
             </a>
           </div>
+        </div>
       </div>
       <!-- 头像 -->
-      <div data-fade="3" class="w-40 h-40 sm:w-56 sm:h-56 md:w-70 md:h-70 rounded-full shadow-lg ring-1 ring-line-soft">
+      <div data-fade="2" class="w-40 h-40 sm:w-56 sm:h-56 md:w-70 md:h-70 rounded-full shadow-lg ring-1 ring-line-soft">
         <img
           :src="siteConfig.author.avatar"
           alt="Avatar"

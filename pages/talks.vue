@@ -9,79 +9,73 @@
         随时随地，分享生活。
       </p>
 
-      <!-- 桌面端双列瀑布流 -->
-      <div v-if="twoCols" ref="listEl" class="mt-8 flex items-start gap-[18px]">
-        <div
-          v-for="(segs, ci) in columnSegments"
-          :key="ci"
-          class="flex flex-1 min-w-0 flex-col gap-[18px]"
-        >
-          <!-- 每列按批次切段 -->
+      <div data-fade>
+        <!-- 桌面端双列瀑布流 -->
+        <div v-if="twoCols" ref="listEl" class="mt-8 flex items-start gap-[18px]">
           <div
-            v-for="seg in segs"
+            v-for="(segs, ci) in columnSegments"
+            :key="ci"
+            class="flex flex-1 min-w-0 flex-col gap-[18px]"
+          >
+            <!-- 每列按批次切段 -->
+            <div
+              v-for="seg in segs"
+              :key="seg.batch"
+              :class="seg.batch
+                ? ['talks-batch flex flex-col gap-[18px]', { 'is-entering': isEntering(seg.batch) }]
+                : 'talks-seg'"
+            >
+              <TalkCard
+                v-for="talk in seg.talks"
+                :key="talk.id"
+                :talk="talk"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- 移动端单列 -->
+        <ul v-else class="mt-8 grid grid-cols-1 gap-4 list-none">
+          <li
+            v-for="seg in columnSegments[0]"
             :key="seg.batch"
             :class="seg.batch
-              ? ['talks-batch flex flex-col gap-[18px]', { 'is-entering': isEntering(seg.batch) }]
+              ? ['talks-batch flex flex-col gap-4', { 'is-entering': isEntering(seg.batch) }]
               : 'talks-seg'"
           >
             <TalkCard
-              v-for="talk in seg.talks"
               :key="talk.id"
+              v-for="talk in seg.talks"
               :talk="talk"
-              :fade-rank="cardFadeRank(talk)"
-              :settled="isSettled(talk.id)"
-              @fade-done="markSettled(talk.id)"
             />
-          </div>
+          </li>
+        </ul>
+
+        <!-- 加载更多 -->
+        <div v-if="!finished" class="mt-4 flex justify-center">
+          <button
+            type="button"
+            class="talks-more btn-hover appearance-none bg-surface-2 text-ink-muted rounded-full border border-line shadow-xs"
+            :class="loading ? 'is-loading cursor-progress' : 'cursor-pointer'"
+            :disabled="loading"
+            :aria-busy="loading ? 'true' : 'false'"
+            :aria-label="loading ? '加载中' : '加载更多'"
+            @click="fetchTalks"
+          >
+            <span class="talks-more-label">加载更多</span>
+            <svg class="talks-spinner" viewBox="0 0 20 20" aria-hidden="true">
+              <defs>
+                <linearGradient id="talks-spin-grad" x1="2" y1="2" x2="18" y2="18" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" class="talks-spin-stop-a" />
+                  <stop offset="1" class="talks-spin-stop-b" />
+                </linearGradient>
+              </defs>
+              <circle class="talks-spin-track" cx="10" cy="10" r="8.5" />
+              <circle class="talks-spin-arc" cx="10" cy="10" r="8.5" />
+            </svg>
+          </button>
         </div>
-      </div>
 
-      <!-- 移动端单列 -->
-      <ul v-else class="mt-8 grid grid-cols-1 gap-4 list-none">
-        <li
-          v-for="seg in columnSegments[0]"
-          :key="seg.batch"
-          :class="seg.batch
-            ? ['talks-batch flex flex-col gap-4', { 'is-entering': isEntering(seg.batch) }]
-            : 'talks-seg'"
-        >
-          <TalkCard
-            :key="talk.id"
-            v-for="talk in seg.talks"
-            :talk="talk"
-            :fade-rank="cardFadeRank(talk)"
-            :settled="isSettled(talk.id)"
-            @fade-done="markSettled(talk.id)"
-          />
-        </li>
-      </ul>
-
-      <!-- 加载更多 -->
-      <div v-if="!finished" :data-fade="tailFadeRank" class="mt-4 flex justify-center">
-        <button
-          type="button"
-          class="talks-more btn-hover appearance-none bg-surface-2 text-ink-muted rounded-full border border-line shadow-xs"
-          :class="loading ? 'is-loading cursor-progress' : 'cursor-pointer'"
-          :disabled="loading"
-          :aria-busy="loading ? 'true' : 'false'"
-          :aria-label="loading ? '加载中' : '加载更多'"
-          @click="fetchTalks"
-        >
-          <span class="talks-more-label">加载更多</span>
-          <svg class="talks-spinner" viewBox="0 0 20 20" aria-hidden="true">
-            <defs>
-              <linearGradient id="talks-spin-grad" x1="2" y1="2" x2="18" y2="18" gradientUnits="userSpaceOnUse">
-                <stop offset="0" class="talks-spin-stop-a" />
-                <stop offset="1" class="talks-spin-stop-b" />
-              </linearGradient>
-            </defs>
-            <circle class="talks-spin-track" cx="10" cy="10" r="8.5" />
-            <circle class="talks-spin-arc" cx="10" cy="10" r="8.5" />
-          </svg>
-        </button>
-      </div>
-
-      <div :data-fade="commentFadeRank">
         <Comment />
       </div>
     </section>
@@ -131,9 +125,6 @@ const { data: initialData } = await useAsyncData('talks', async () => {
 talks.value = initialData.value.data || []
 if (initialData.value.totalPages <= 1) finished.value = true
 
-/** 首屏卡片数 */
-const initialCount = talks.value.length
-
 async function fetchTalks() {
   if (loading.value || finished.value) return
   loading.value = true
@@ -164,20 +155,10 @@ async function fetchTalks() {
 }
 
 // 双列瀑布流（复用文章列表引擎）
-const { listEl, columns, twoCols, isSettled, markSettled } = usePostsMasonry(talks, {
+const { listEl, columns, twoCols } = usePostsMasonry(talks, {
   minWidth: 640,
   getId: (talk) => talk.id
 })
-
-// 首屏入场按时间顺序：标题占 1-2，卡片从 3 起按 talks 序号钉位
-function cardFadeRank(talk) {
-  const i = talks.value.findIndex(t => t.id === talk.id)
-  if (i < 0 || i >= initialCount) return 0
-  return 3 + i
-}
-
-const tailFadeRank = 3 + initialCount
-const commentFadeRank = 4 + initialCount
 
 const columnSegments = computed(() => columns.value.map((col) => {
   const segs = []

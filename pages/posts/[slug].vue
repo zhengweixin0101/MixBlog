@@ -741,7 +741,7 @@ async function copyArticleLink() {
 
       <div class="flex lg:gap-8 px-2 flex-col md:flex-row max-w-full">
         <section class=" flex-1 min-w-0 max-w-full">
-          <article ref="articleRef" v-html="post.content" data-fade data-fade-children class="article-content whitespace-normal break-words"></article>
+          <article ref="articleRef" v-html="post.content" data-fade class="article-content whitespace-normal break-words"></article>
         </section>
         <div data-fade="3" class="sticky top-30 flex-shrink-0 hidden md:block self-start">
           <div>

@@ -157,7 +157,7 @@
   --dur-base: 220ms;   /* 常规状态过渡（颜色、边框、阴影） */
   --dur-slow: 380ms;   /* 大面积过渡（背景渐变交叉淡入、骨架屏、图片淡入） */
   --dur-slide: 440ms;  /* 顶栏导航指示器滑动（Header.vue .nav-indicator） */
-  --dur-fade: 280ms;   /* 全局元素浮现动画时长 */
+  --dur-fade: 240ms;   /* 全局元素浮现动画时长 */
   --ease-fade: cubic-bezier(0.22, 0.72, 0.32, 1); /* 全局元素浮现缓动 */
   --dur-reveal: 440ms; /* 主题切换的圆形扩散 */
 
