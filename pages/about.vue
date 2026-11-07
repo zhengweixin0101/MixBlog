@@ -1,6 +1,9 @@
 <script setup>
-import { onMounted, ref, onBeforeUnmount, useColorMode, nextTick } from '#imports'
-import gsap from 'gsap'
+import { onMounted, ref, onBeforeUnmount, useColorMode } from '#imports'
+
+import { TegakiRenderer } from 'tegaki/vue'
+import parisienne from 'tegaki/fonts/parisienne'
+import { globalGradientPlugin, createPlugin } from 'tegaki/core'
 
 import { aboutConfig } from '@/siteConfig/about.js'
 import { siteConfig } from '@/siteConfig/main.js'
@@ -20,116 +23,57 @@ function rightTagPosition(index) {
 
 const tips = aboutConfig.author.tips
 const current = ref(0)
+const introFadeEl = ref(null)
+const drawReady = ref(false)
 
 let tipsInterval = null
+let fadeDoneObs = null
 onMounted(() => {
   tipsInterval = setInterval(() => {
     current.value = (current.value + 1) % tips.length
   }, 1500)
+
+  // 等浮现动画播完再开始书写
+  const el = introFadeEl.value
+  if (!el) {
+    drawReady.value = true
+    return
+  }
+  if (el.hasAttribute('data-fade-done')) {
+    drawReady.value = true
+    return
+  }
+  fadeDoneObs = new MutationObserver((mutations) => {
+    if (mutations.some(m => m.type === 'attributes' && m.attributeName === 'data-fade-done')) {
+      drawReady.value = true
+      fadeDoneObs?.disconnect()
+    }
+  })
+  fadeDoneObs.observe(el, { attributes: true, attributeFilter: ['data-fade-done'] })
 })
 onBeforeUnmount(() => {
   clearInterval(tipsInterval)
+  fadeDoneObs?.disconnect()
 })
 
-const helloAboutEl = ref(null)
-const cursorEl = ref(null)
-const shapeEls = ref([])
-const helloTextEl = ref(null)
-
-const colors = aboutConfig.helloCard.colors || ['#66c6ba', '#a4e5d9', '#c8f4de']
-const shapesConfig = ref([])
-const ringPositions = ref([])
-const helloCardRings = computed(() => [
-  ...shapesConfig.value.map((shape, index) => ({ shape, index })).reverse().map(({ shape, index }) =>
-    `radial-gradient(circle ${shape.size / 2}px at var(--ring-x-${index}, 50%) var(--ring-y-${index}, 50%), ${shape.color} 99%, transparent 100%)`
-  ),
-  'var(--accent-gradient)'
-].join(', '))
-
-let mouseMoveHandler = null
-
-function updateShapes() {
-  if (!helloAboutEl.value) return
-  const container = helloAboutEl.value
-  const width = container.offsetWidth
-  const maxSize = width / 1.5
-
-  let size = maxSize
-  const decayFactor = 0.7
-  shapesConfig.value = colors.map(color => {
-    const shape = { color, size }
-    size *= decayFactor
-    return shape
-  })
-  ringPositions.value = shapesConfig.value.map(() => ({ x: 0, y: 0 }))
-
-  nextTick(() => {
-    shapeEls.value = container.querySelectorAll('.shape')
-
-    const rect = container.getBoundingClientRect()
-    const centerX = rect.width / 2 - cursorEl.value.offsetWidth / 2
-    const centerY = rect.height / 2 - cursorEl.value.offsetHeight / 2
-
-    gsap.set(cursorEl.value, { x: centerX, y: centerY })
-    gsap.set(shapeEls.value, { x: centerX, y: centerY })
-    const textRect = helloTextEl.value.getBoundingClientRect()
-    const textCenterX = textRect.width / 2
-    const textCenterY = textRect.height / 2
-    ringPositions.value.forEach((position, index) => {
-      position.x = textCenterX
-      position.y = textCenterY
-      helloTextEl.value.style.setProperty(`--ring-x-${index}`, `${textCenterX}px`)
-      helloTextEl.value.style.setProperty(`--ring-y-${index}`, `${textCenterY}px`)
-    })
-  })
-}
-
-onMounted(() => {
-  updateShapes()
-  window.addEventListener('resize', updateShapes)
-
-  const container = helloAboutEl.value
-  const cursor = cursorEl.value
-
-  mouseMoveHandler = evt => {
-    const rect = container.getBoundingClientRect()
-    const mouseX = evt.clientX - rect.left - cursor.offsetWidth / 2
-    const mouseY = evt.clientY - rect.top - cursor.offsetHeight / 2
-
-    gsap.set(cursor, { x: mouseX, y: mouseY })
-    const textRect = helloTextEl.value.getBoundingClientRect()
-    const ringX = evt.clientX - textRect.left
-    const ringY = evt.clientY - textRect.top
-    gsap.to(shapeEls.value, {
-      x: mouseX,
-      y: mouseY,
-      stagger: -0.1,
-      overwrite: 'auto',
-      ease: 'power3.out'
-    })
-    gsap.to(ringPositions.value, {
-      x: ringX,
-      y: ringY,
-      stagger: -0.1,
-      overwrite: 'auto',
-      ease: 'power3.out',
-      onUpdate: () => ringPositions.value.forEach((position, index) => {
-        helloTextEl.value.style.setProperty(`--ring-x-${index}`, `${position.x}px`)
-        helloTextEl.value.style.setProperty(`--ring-y-${index}`, `${position.y}px`)
-      })
-    })
-  }
-
-  container.addEventListener('mousemove', mouseMoveHandler)
+// 彩虹渐变沿整段文字从左到右铺
+const helloRainbow = globalGradientPlugin({
+  colors: aboutConfig.helloCard.colors,
+  angle: 20,
 })
 
-onBeforeUnmount(() => {
-  const container = helloAboutEl.value
-  if (container && mouseMoveHandler) {
-    container.removeEventListener('mousemove', mouseMoveHandler)
-  }
-  window.removeEventListener('resize', updateShapes)
-})
+// 统一加粗所有笔画
+const boldStrokePlugin = createPlugin({
+  name: 'boldStroke',
+  params: {
+    scale: { type: 'number', default: 1.45, min: 1, max: 2.5, step: 0.05 },
+  },
+  setup: ({ scale }) => ({
+    geometry(path) {
+      return path.map((p) => ({ ...p, width: p.width * scale }))
+    },
+  }),
+})({ scale: 1.55 })
 
 const skills = aboutConfig.author.skills
 const mid = Math.ceil(skills.length / 2)
@@ -231,7 +175,7 @@ const hoveredIndex = ref(null)
       <span class="text-gradient">关于我</span>
     </h1>
 
-    <div data-fade>
+    <div ref="introFadeEl" data-fade>
       <div class="flex flex-wrap justify-center gap-4 w-full mx-auto m-5">
         <div class="card-base flex-1 md:flex-[3_3_0%] bg-surface transition-colors duration-base
                     p-5 min-w-full md:min-w-[300px] flex flex-col justify-center gap-2 relative"
@@ -264,27 +208,18 @@ const hoveredIndex = ref(null)
         </div>
       </div>
       <!-- 欢迎卡片 -->
-      <div ref="helloAboutEl" class="hidden md:block card-base bg-surface relative overflow-hidden select-none auto [isolation:isolate]">
-        <!-- 小圆点 -->
-        <div ref="cursorEl" class="absolute w-5 h-5 rounded-full bg-accent pointer-events-none z-30"></div>
-        <!-- 圆形 -->
-        <div class="relative w-full h-[245px] overflow-hidden">
-          <div
-            v-for="(shape, index) in shapesConfig"
-            :key="index"
-            class="shape absolute hidden rounded-full dark:block"
-            :style="{
-              width: shape.size + 'px',
-              height: shape.size + 'px',
-              margin: (-shape.size / 2) + 'px 0 0 ' + (-shape.size / 2) + 'px',
-              background: shape.color
-            }"
-            ref="shapeEls"
-          ></div>
-        </div>
-        <!-- 内容 -->
-        <div class="absolute top-0 left-0 w-full h-[250px] flex justify-center items-center bg-transparent dark:bg-accent-soft dark:mix-blend-screen transition-colors duration-base">
-          <h2 ref="helloTextEl" :style="{ '--hello-card-rings': helloCardRings }" class="hello-card-text text-10vw 2xl:text-35 text-gradient dark:text-white relative z-10 flex items-center justify-center">{{ aboutConfig.helloCard.text }}</h2>
+      <div class="hidden md:block card-base bg-surface relative overflow-hidden select-none transition-colors duration-base [isolation:isolate]">
+        <div class="relative w-full h-[250px] flex items-center justify-center">
+          <TegakiRenderer
+            v-if="drawReady"
+            class="hello-tegaki"
+            :font="parisienne"
+            :text="aboutConfig.helloCard.text"
+            :plugins="[helloRainbow, boldStrokePlugin]"
+            :time="{ mode: 'uncontrolled', speed: 8 }"
+            reduced-motion="user"
+            style="font-size: clamp(3.25rem, 11.5vw, 11rem); line-height: 1; translate: 0 23px;"
+          />
         </div>
       </div>
 
@@ -361,38 +296,39 @@ const hoveredIndex = ref(null)
               </div>
             </div>
 
-            <!-- 来源信息 -->
-            <p class="text-sm text-white/50">
-              统计信息来自 
-              <a :href="UMAMI_SHARE_URL" target="_blank" rel="noopener nofollow"
-                class="text-sm text-white/50 underline hover:text-white transition-colors duration-base">
-                Umami
-              </a>
-            </p>
+          </div>
 
-            <!-- 底部跳转 -->
-            <div class="absolute right-0 -bottom-1 text-white rounded-full bg-white/20 hover:bg-white/30 px-2 py-1 transition-colors duration-base">
-              <NuxtLink to="/posts" class="no-underline flex items-center">
-                <AppIcon name="circle-arrow-right" class="color-white" />
-                <span class="text-white ml-1">文章列表</span>
-              </NuxtLink>
-            </div>
+          <!-- 来源信息 -->
+          <p class="absolute left-5 bottom-4 text-sm text-white/50">
+            统计信息来自 
+            <a :href="UMAMI_SHARE_URL" target="_blank" rel="noopener nofollow"
+              class="text-sm text-white/50 underline hover:text-white transition-colors duration-base">
+              Umami
+            </a>
+          </p>
+
+          <!-- 底部跳转 -->
+          <div class="absolute right-5 bottom-4 text-white rounded-full bg-white/15 backdrop-blur-sm hover:bg-white/25 px-2 py-1 transition-colors duration-base z-10">
+            <NuxtLink to="/posts" class="no-underline flex items-center">
+              <AppIcon name="circle-arrow-right" class="color-white" />
+              <span class="text-white ml-1">文章列表</span>
+            </NuxtLink>
           </div>
         </div>
     
         <div class="flex flex-col flex-1 md:flex-[3_3_0%] gap-4">
-          <div class="card-base h-1/3 flex items-center justify-between w-full text-sm bg-surface p-5 md:p-8
+          <div class="card-base h-1/3 flex items-center justify-between w-full text-sm bg-surface p-5
                       min-h-25 min-w-full md:min-w-[200px] relative transition-colors duration-base"
           >
-            <div class="flex flex-col">
+            <div class="flex flex-col gap-1.5">
               <span class="text-ink-subtle">生于</span>
               <span class="text-xl lg:text-3xl text-#ff9a00 font-bold">{{ aboutConfig.author.birthday }}</span>
             </div>
-            <div class="flex flex-col">
+            <div class="flex flex-col gap-1.5">
               <span class="text-ink-subtle">就读学校</span>
               <span class="text-xl lg:text-3xl text-#f07b3f font-bold">{{ aboutConfig.author.school }}</span>
             </div>
-            <div class="flex flex-col">
+            <div class="flex flex-col gap-1.5">
               <span class="text-ink-subtle">现在是</span>
               <span class="text-xl lg:text-3xl text-#ea5455 font-bold">{{ aboutConfig.author.work }}</span>
             </div>
@@ -568,16 +504,19 @@ const hoveredIndex = ref(null)
 .slide-enter-active,
 .slide-leave-active { transition: transform 0.2s ease, opacity 0.2s ease; }
 
-.hello-card-text {
-  background-image: var(--hello-card-rings);
+/* Hello 手写动画 */
+.hello-screen {
+  background: radial-gradient(120% 130% at 50% 42%,
+    oklch(0.998 0.004 90) 0%,
+    oklch(0.978 0.007 87) 55%,
+    oklch(0.955 0.009 84) 100%);
 }
 
-html.dark .hello-card-text {
-  background-image: none;
-  background-clip: border-box;
-  -webkit-background-clip: border-box;
-  color: white;
-  -webkit-text-fill-color: white;
+html.dark .hello-screen {
+  background: radial-gradient(120% 130% at 50% 42%,
+    oklch(0.245 0.004 85) 0%,
+    oklch(0.155 0.003 85) 55%,
+    oklch(0.09 0.002 85) 100%);
 }
 
 /* 技能卡片动画 */

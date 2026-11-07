@@ -79,7 +79,7 @@ export const aboutConfig = {
 
     helloCard: {
         text: "Hello there!",
-        colors: ['#e59271', '#f3c398', '#f9e3c7'],
+        colors: ['#5ac8fa', '#7d7aff', '#c86bff', '#ff6fa5', '#ff9f45', '#ffd45e'],
     },
     
     umami: {

@@ -17,6 +17,16 @@ export default defineNuxtConfig({
   experimental: {
     payloadExtraction: false,
   },
+  // tegaki/vue 的入口是 TS 源码（.vue SFC），必须交给 Vite 编译
+  build: {
+    transpile: ['tegaki'],
+  },
+  vite: {
+    // 字体 ttf 由 bundle.js 以 `?url` 相对路径引用，预打包会把它搬进 deps 缓存并 404
+    optimizeDeps: {
+      exclude: ['tegaki'],
+    },
+  },
   routeRules: {
     // 所有页面 60 秒缓存
     '/**': { isr: 60 },

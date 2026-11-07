@@ -15,8 +15,6 @@
     "@nuxtjs/color-mode": "^3.5.2",
     "@vueuse/core": "^13.9.0",
     "dayjs": "^1.11.13",
-    "gray-matter": "^4.0.3",
-    "gsap": "^3.13.0",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.22",
     "lucide": "^1.61.0",
@@ -24,8 +22,8 @@
     "morphicons": "^2.0.2",
     "nprogress": "^0.2.0",
     "nuxt": "^4.0.3",
-    "vue": "^3.5.18",
-    "vue-router": "^4.5.1"
+    "tegaki": "^1.1.0",
+    "vue": "^3.5.18"
   },
   "devDependencies": {
     "@unocss/nuxt": "^66.4.2"
