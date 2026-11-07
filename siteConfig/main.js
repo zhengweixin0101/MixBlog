@@ -28,9 +28,9 @@ export const siteConfig = {
     navItems: [
         { label: '主页', href: '/', icon: 'home' },
         { label: '文章', href: '/posts', icon: 'pen' },
-        { label: '音乐', href: '/music', icon: 'music' },
-        { label: '友链', href: '/links', icon: 'link' },
         { label: '说说', href: '/talks', icon: 'talks' },
+        { label: '友链', href: '/links', icon: 'link' },
+        { label: '音乐', href: '/music', icon: 'music' },
         { label: '关于', href: '/about', icon: 'about' },
     ],
 
