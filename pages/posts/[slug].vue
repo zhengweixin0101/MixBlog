@@ -743,7 +743,7 @@ async function copyArticleLink() {
         <section class=" flex-1 min-w-0 max-w-full">
           <article ref="articleRef" v-html="post.content" data-fade data-fade-children class="article-content whitespace-normal break-words"></article>
         </section>
-        <div data-fade class="sticky top-30 flex-shrink-0 hidden md:block self-start">
+        <div data-fade="3" class="sticky top-30 flex-shrink-0 hidden md:block self-start">
           <div>
             <Sidebar :toc="post.toc || []" />
           </div>
