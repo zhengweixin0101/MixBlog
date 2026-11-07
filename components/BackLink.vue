@@ -10,11 +10,6 @@
     class="custom-gradient-link inline-flex relative font-medium text-ink no-underline"
   >
     <span class="dark:text-gradient">{{ text }}</span>
-    <span
-      class="absolute inset-0 -z-10
-            bg-accent-soft
-            dark:hidden transition-colors duration-base"
-    ></span>
   </NuxtLink>
 </template>
 

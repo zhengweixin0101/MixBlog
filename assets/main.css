@@ -113,12 +113,12 @@ pre:focus-visible,
   -webkit-backdrop-filter: none !important;
 }
 
-.fade-in-start [data-fade] {
+[data-fade][data-fade-anim] {
   animation: fade-in var(--dur-fade) var(--ease-fade) forwards;
   visibility: visible;
 }
 
-[data-fade].fade-in-done {
+[data-fade][data-fade-done] {
   animation: none;
   opacity: 1;
   transform: none;

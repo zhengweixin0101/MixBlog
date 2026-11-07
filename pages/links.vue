@@ -27,7 +27,7 @@ const sectionLayouts = computed(() =>
 </script>
 
 <template>
-    <main v-fade-in>
+    <main>
         <section class="py-12 w-full max-w-screen-xl mx-auto">
             <h1 data-fade class="text-3xl mt-40 font-display font-semibold tracking-tight text-balance">
         <span class="text-gradient">友链</span>

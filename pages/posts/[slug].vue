@@ -664,7 +664,7 @@ async function copyArticleLink() {
 </script>
 
 <template>
-  <main v-fade-in>
+  <main>
     <div v-if="notFound" class="min-h-screen flex flex-col items-center justify-center text-center text-white px-6">
       <div data-fade>
         <svg
@@ -740,8 +740,8 @@ async function copyArticleLink() {
       </div>
 
       <div class="flex lg:gap-8 px-2 flex-col md:flex-row max-w-full">
-        <section data-fade class=" flex-1 min-w-0 max-w-full">
-          <article ref="articleRef" v-html="post.content" class="article-content whitespace-normal break-words"></article>
+        <section class=" flex-1 min-w-0 max-w-full">
+          <article ref="articleRef" v-html="post.content" data-fade data-fade-children class="article-content whitespace-normal break-words"></article>
         </section>
         <div data-fade class="sticky top-30 flex-shrink-0 hidden md:block self-start">
           <div>

@@ -1,5 +1,5 @@
 <template>
-  <main v-fade-in>
+  <main>
     <section class="py-12 w-full max-w-screen-xl mx-auto">
       <!-- 标题 -->
       <h1 data-fade="1" class="text-3xl mt-40 font-display font-semibold tracking-tight text-balance">

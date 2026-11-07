@@ -96,7 +96,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div>
+  <div data-fade>
     <div class="w-full h-0.3 bg-line my-8 transition-colors duration-base"></div>
     <footer class="mb-10 w-full text-sm text-ink-muted px-4">
       <div class="flex flex-col md:flex-row justify-between">

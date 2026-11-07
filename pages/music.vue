@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isFullscreen" v-fade-in class="h-screen pt-20 flex flex-col select-none">
+  <div v-if="!isFullscreen" class="h-screen pt-20 flex flex-col select-none">
     <div data-fade class="flex flex-1 min-h-0">
       <!-- 左侧列表 -->
       <aside class="musicList max-w-65 overflow-y-auto relative hidden md:block" ref="listEl">

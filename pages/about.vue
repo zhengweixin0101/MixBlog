@@ -191,7 +191,7 @@ const hoveredIndex = ref(null)
 </script>
 
 <template>
-  <main v-fade-in class="mt-17 md:mt-15">
+  <main class="mt-17 md:mt-15">
     <div class="relative flex justify-center items-center transition-colors duration-base">
       <!-- 左侧标签组 -->
       <div data-fade="2" class="hidden md:block relative w-56 h-56">

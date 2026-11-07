@@ -1,5 +1,5 @@
 <template>
-  <section v-fade-in class="min-h-screen flex flex-col items-center justify-center text-center text-white px-6">
+  <section class="min-h-screen flex flex-col items-center justify-center text-center text-white px-6">
     <div class="min-h-screen flex flex-col items-center justify-center text-center text-white px-6">
       <div data-fade>
         <svg

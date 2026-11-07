@@ -3,7 +3,7 @@ import { siteConfig } from '@/siteConfig/main.js'
 </script>
 
 <template>
-  <main v-fade-in class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center py-12 max-w-7xl">
+  <main class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center py-12 max-w-7xl">
     <div class="flex flex-col-reverse md:flex-row items-center justify-between w-full gap-10 mt--10">
       <!-- 左侧 -->
       <div class="text-center md:text-left">
