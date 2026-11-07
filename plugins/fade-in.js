@@ -77,11 +77,12 @@ function toTop() {
 }
 
 // 等布局落定再判首屏
-function whenStable(fn, maxFrames = 14) {
+function whenStable(fn, alive, maxFrames = 14) {
   let lastH = -1
   let stable = 0
   let frames = 0
   const tick = () => {
+    if (alive && !alive()) return
     const h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
     if (h > 0 && h === lastH) stable++
     else {
@@ -89,8 +90,9 @@ function whenStable(fn, maxFrames = 14) {
       stable = 0
     }
     frames++
-    if (stable >= 2 || frames >= maxFrames) fn()
-    else requestAnimationFrame(tick)
+    if (stable >= 2 || frames >= maxFrames) {
+      if (!alive || alive()) fn()
+    } else requestAnimationFrame(tick)
   }
   requestAnimationFrame(tick)
 }
@@ -130,6 +132,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         io: null,
         mo: null,
         scanFrame: 0,
+        enterGen: 0,         // 快速切页时让旧的 whenStable/入场回调失效
         routePending: false, // 路由变了但新页面的 DOM 还没进来
         routeTimer: 0,
         doneTimer: 0
@@ -410,6 +413,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   }
 
   function enter(root, s, first) {
+    const gen = ++s.enterGen
     s.ready = false
     s.measuring = true
     s.settled = false
@@ -426,6 +430,9 @@ export default defineNuxtPlugin((nuxtApp) => {
       clearTimeout(s.doneTimer)
       s.doneTimer = 0
     }
+    // 快速切页时丢弃旧观察器/回调，避免重复测量与动画堆积掉帧
+    s.io?.disconnect()
+    s.io = null
 
     const hasHash = !!window.location.hash
     const restored = !first && !!window.history.state?.scroll
@@ -438,6 +445,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
 
     whenStable(() => {
+      if (gen !== s.enterGen) return
       s.measuring = false
       if (!root.isConnected) return
       const userMoved = Math.abs(window.scrollY - startY) >= TAKEOVER_THRESHOLD
@@ -448,7 +456,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       pass(root, s)
       if (userMoved) takeover(s)
       s.doneTimer = setTimeout(() => { s.settled = true }, (s.maxDelay + FADE_DURATION) * 1000 + 200)
-    })
+    }, () => gen === s.enterGen && root.isConnected)
   }
 
   // 滚动监听只挂一次，rAF 合并，滚动再快也只在每帧算一次
@@ -486,6 +494,12 @@ export default defineNuxtPlugin((nuxtApp) => {
     const path = currentPath()
     if (path !== lastPath) {
       lastPath = path
+      // 使旧路由遗留的 whenStable/入场失效，避免快速切页堆积
+      ++s.enterGen
+      s.measuring = false
+      s.ready = false
+      s.io?.disconnect()
+      s.io = null
       s.routePending = true
       if (s.routeTimer) clearTimeout(s.routeTimer)
       s.routeTimer = setTimeout(() => {
