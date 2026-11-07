@@ -1,7 +1,61 @@
 <script setup>
-import { computed } from '#imports'
+import { computed, onMounted, onBeforeUnmount } from '#imports'
 import { linksConfig } from '@/siteConfig/links.js'
 import { siteConfig } from '@/siteConfig/main.js'
+
+const DESC_LINE_HEIGHT = 1.375
+
+// 判定描述是否超出单行，用于控制省略号与右端渐隐
+function markDescOverflow(el) {
+    const style = getComputedStyle(el)
+    const lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * DESC_LINE_HEIGHT
+    const overflow = el.scrollHeight > lineHeight + 1
+    const wrap = el.parentElement
+    wrap?.classList.toggle('has-desc-overflow', overflow)
+    if (!overflow || !wrap) return
+
+    // 量出第一行文字的结尾，让省略号跟在其后
+    const range = document.createRange()
+    range.selectNodeContents(el.firstChild || el)
+    const firstLineRight = range.getClientRects()[0]?.right
+    if (!firstLineRight) return
+    const gap = el.getBoundingClientRect().right - firstLineRight
+    wrap.style.setProperty('--ell-gap', `${Math.max(0, gap)}px`)
+}
+
+function refreshDescOverflow() {
+    document.querySelectorAll('.desc-expand').forEach(markDescOverflow)
+}
+
+let descObserver = null
+
+function expandDesc(e) {
+    const el = e.currentTarget.querySelector('.desc-expand')
+    if (!el) return
+    el.style.maxHeight = `${el.scrollHeight}px`
+}
+
+function collapseDesc(e) {
+    const el = e.currentTarget.querySelector('.desc-expand')
+    if (!el) return
+    el.style.maxHeight = `${DESC_LINE_HEIGHT}em`
+}
+
+onMounted(() => {
+    refreshDescOverflow()
+    if (typeof ResizeObserver !== 'undefined') {
+        descObserver = new ResizeObserver((entries) => {
+            entries.forEach((entry) => markDescOverflow(entry.target))
+        })
+        document.querySelectorAll('.desc-expand').forEach((el) => descObserver.observe(el))
+    }
+    document.fonts?.ready.then(refreshDescOverflow)
+})
+
+onBeforeUnmount(() => {
+    descObserver?.disconnect()
+    descObserver = null
+})
 
 usePageMeta('Links', `${siteConfig.description}`, '/links', '友链,推荐,应用,links')
 
@@ -32,6 +86,9 @@ const sectionLayouts = computed(() =>
             <h1 data-fade class="text-3xl mt-40 font-display font-semibold tracking-tight text-balance">
         <span class="text-gradient">友链</span>
             </h1>
+            <p data-fade class="mt-2 text-ink-muted transition-colors duration-base">
+                与你同行，发现更广阔的世界。
+            </p>
 
             <div
                 data-fade
@@ -60,9 +117,11 @@ const sectionLayouts = computed(() =>
                             data-fade
                             v-for="item in sl.section.items"
                             :key="item.link"
-                            class="card-base relative w-full h-200px list-none outline-none bg-surface
+                            class="card-base relative w-full h-180px list-none outline-none bg-surface
                     hover:shadow-md hover:border-accent-line
                     transition-all duration-base group overflow-hidden"
+                            @mouseenter="expandDesc"
+                            @mouseleave="collapseDesc"
                         >
                             <a
                                 :href="item.link"
@@ -70,7 +129,7 @@ const sectionLayouts = computed(() =>
                                 rel="noopener"
                                 class="flex flex-col h-full rounded-xl no-underline focus:outline-none cursor-pointer"
                             >
-                                <div class="relative h-120px group-hover:h-80px overflow-hidden rounded-t-xl bg-surface-2 shrink-0 transition-all duration-base ease-in-out">
+                                <div class="relative h-108px group-hover:h-72px overflow-hidden rounded-t-xl bg-surface-2 shrink-0 transition-all duration-base ease-in-out">
                                     <img
                                         :src="item.screenshot"
                                         :alt="item.name"
@@ -82,7 +141,7 @@ const sectionLayouts = computed(() =>
                                     />
                                     <div class="absolute inset-0 bg-black/0 group-hover:bg-black/70 transition-all duration-base ease-in-out pointer-events-none" />
                                 </div>
-                                <div class="flex-1 flex items-center gap-3 px-4 py-3 transition-all duration-base ease-in-out">
+                                <div class="flex-1 flex items-center gap-2 px-4 py-3 transition-all duration-base ease-in-out group-hover:-translate-y-[18px]">
                                     <img
                                         v-if="item.avatar"
                                         :src="item.avatar"
@@ -96,9 +155,12 @@ const sectionLayouts = computed(() =>
                                         <h4 :class="[item.description ? 'text-sm' : 'text-base', 'text-ink font-semibold transition-colors duration-base show-multiline']">
                                             {{ item.name }}
                                         </h4>
-                                        <p v-if="item.description" class="mt-1 text-ink-muted text-xs leading-relaxed transition-colors duration-base show-multiline">
-                                            {{ item.description }}
-                                        </p>
+                                        <div v-if="item.description" class="desc-wrap mt-0.5 text-ink-muted text-xs leading-snug transition-colors duration-base">
+                                            <p class="desc-expand">
+                                                {{ item.description }}
+                                                <span class="desc-ellipsis" aria-hidden="true">…</span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </a>
@@ -222,8 +284,8 @@ const sectionLayouts = computed(() =>
                     </template>
                 </ul>
                 </template>
-                <p v-else data-fade class="mt-4 text-sm text-ink-subtle transition-colors duration-base">
-                    暂无友链
+                <p v-else data-fade class="mt-4 rounded-lg border border-dashed border-line bg-surface-4 px-4 py-6 text-center text-sm text-ink-subtle transition-colors duration-base">
+                    暂无友链，欢迎在下方留言交换～
                 </p>
             </div>
 
@@ -289,5 +351,60 @@ const sectionLayouts = computed(() =>
 .group:hover .show-multiline {
     -webkit-line-clamp: 3;
     line-clamp: 3;
+}
+.desc-expand {
+    position: relative;
+    overflow: hidden;
+    max-height: 1.375em;
+    transition: max-height 320ms var(--ease-fade);
+}
+
+/* 文字与省略号共用同一条渐隐遮罩 */
+.desc-wrap.has-desc-overflow .desc-expand {
+    --desc-fade: 48px;
+    --desc-end: 0.35;
+    padding-right: 10px;
+    margin-right: -8px;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - var(--desc-fade)), rgba(0, 0, 0, var(--desc-end)) 100%);
+    mask-image: linear-gradient(to right, #000 calc(100% - var(--desc-fade)), rgba(0, 0, 0, var(--desc-end)) 100%);
+    transition: max-height 320ms var(--ease-fade),
+        --desc-fade 320ms var(--ease-fade),
+        --desc-end 320ms var(--ease-fade);
+}
+
+.group:hover .desc-wrap.has-desc-overflow .desc-expand {
+    --desc-fade: 0px;
+    --desc-end: 1;
+}
+
+.desc-wrap.has-desc-overflow .desc-ellipsis {
+    opacity: 1;
+}
+
+.group:hover .desc-wrap.has-desc-overflow .desc-ellipsis {
+    opacity: 0;
+}
+
+.desc-ellipsis {
+    position: absolute;
+    top: 0;
+    right: max(0px, calc(var(--ell-gap, 0px) - 12px));
+    pointer-events: none;
+    user-select: none;
+    line-height: inherit;
+    opacity: 0;
+    transition: opacity 320ms var(--ease-fade);
+}
+
+@property --desc-fade {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 48px;
+}
+
+@property --desc-end {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0.35;
 }
 </style>
