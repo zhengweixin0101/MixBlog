@@ -18,7 +18,7 @@ const TAKEOVER_SPEED = 3
 // 真实滚动判断阈值
 const TAKEOVER_THRESHOLD = 60
 // 与 --dur-fade 一致，只用于 settled 计时
-const FADE_DURATION = 0.4
+const FADE_DURATION = 0.28
 
 // 状态一律挂在属性上，不用 class。
 // Vue 的 :class 绑定（PostCard/TalkCard 的 `settled && 'fade-settled'`）在值变化时
