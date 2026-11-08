@@ -214,7 +214,7 @@ const copyAddress = async () => {
 // 从被点的这一项原地扩散 / 收回，菜单先收起，提示等过渡结束再弹
 async function toggleTheme(e) {
   hideMenu()
-  const next = await revealToggleTheme({ origin: e?.currentTarget })
+  const next = await revealToggleTheme({ origin: e })
   notification.show(`已为您切换为${next === 'dark' ? '深色' : '浅色'}模式`)
 }
 

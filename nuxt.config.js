@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   ssr: true,
   modules: ['@nuxtjs/color-mode', '@unocss/nuxt'],
   colorMode: {
-    preference: 'light',
+    preference: 'system',
     fallback: 'light',
     classSuffix: '',
   },

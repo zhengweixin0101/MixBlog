@@ -18,23 +18,45 @@ function prefersReducedMotion() {
 }
 
 function supportsReveal() {
-  return typeof document.startViewTransition === 'function' && !prefersReducedMotion()
+  return typeof document.startViewTransition === 'function'
+    && !prefersReducedMotion()
 }
 
+/** 触发源：优先取点击点的 clientX/clientY
+ *  键盘（detail===0）/非坐标源退回元素的视口中心
+ *  拿不到元素时用右上角兜底 */
 function resolveOrigin(trigger) {
-  const rect = trigger?.getBoundingClientRect?.()
+  if (
+    trigger
+    && typeof trigger.clientX === 'number'
+    && typeof trigger.clientY === 'number'
+    && !(trigger.clientX === 0 && trigger.clientY === 0 && trigger.detail === 0)
+  ) {
+    return { x: trigger.clientX, y: trigger.clientY }
+  }
+  const el = trigger?.nodeType === 1 ? trigger : trigger?.currentTarget
+  const rect = el?.getBoundingClientRect?.()
   if (!rect || !rect.width || !rect.height) {
     return { x: window.innerWidth - 40, y: 40 }
   }
   return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
 }
 
-function resolveRadius(x, y) {
+function resolveRadiusPercent(x, y, vw, vh) {
   const corner = Math.hypot(
-    Math.max(x, window.innerWidth - x),
-    Math.max(y, window.innerHeight - y),
+    Math.max(x, vw - x),
+    Math.max(y, vh - y),
   )
-  return Math.ceil(corner * 1.12)
+  const base = Math.hypot(vw, vh) / Math.SQRT2
+  return Math.ceil((corner / base) * 100 * 1.15)
+}
+
+/** 圆心换算成盒子尺寸的百分比，避免绝对像素在快照坐标系错位 */
+function resolveOriginPercent(x, y, vw, vh) {
+  return {
+    xPct: (x / vw) * 100,
+    yPct: (y / vh) * 100,
+  }
 }
 
 export function useThemeReveal() {
@@ -50,7 +72,7 @@ export function useThemeReveal() {
   /**
    * @param {'light'|'dark'} next 目标主题
    * @param {object} [options]
-   * @param {Element} [options.origin] 圆形扩散的起点元素
+   * @param {Element|MouseEvent} [options.origin] 圆形扩散起点，传点击事件取点击点，传元素取其中心
    * @param {Function} [options.onSwap] 与主题同时发生的收尾
    */
   async function revealTheme(next, options = {}) {
@@ -63,13 +85,16 @@ export function useThemeReveal() {
 
     animating = true
     const root = document.documentElement
+    const vw = Math.max(window.innerWidth, document.documentElement.clientWidth || 0)
+    const vh = Math.max(window.innerHeight, document.documentElement.clientHeight || 0)
     const { x, y } = resolveOrigin(origin)
+    const { xPct, yPct } = resolveOriginPercent(x, y, vw, vh)
     const mode = expanding ? CLS_FORTH : CLS_BACK
     expanding = !expanding
 
-    root.style.setProperty('--reveal-x', `${x}px`)
-    root.style.setProperty('--reveal-y', `${y}px`)
-    root.style.setProperty('--reveal-r', `${resolveRadius(x, y)}px`)
+    root.style.setProperty('--reveal-x', `${xPct}%`)
+    root.style.setProperty('--reveal-y', `${yPct}%`)
+    root.style.setProperty('--reveal-r', `${resolveRadiusPercent(x, y, vw, vh)}%`)
     root.classList.add(CLS_SWAP, mode)
 
     let transition

@@ -21,7 +21,6 @@ html {
   overflow-y: auto;
   scrollbar-gutter: stable;
   scroll-behavior: auto;
-  color-scheme: light dark;
   forced-color-adjust: none;
 
   /* 这层只是 overscroll 兜底，防止滚过头露出白边，真正的渐变底在 Background.vue。 */
@@ -37,12 +36,7 @@ html {
 }
 
 html.dark {
-  color-scheme: dark;
   scrollbar-color: oklch(0.7 0.01 80 / 0.35) transparent;
-}
-
-html.light {
-  color-scheme: light;
 }
 
 body {
@@ -230,7 +224,7 @@ html.theme-reveal-back::view-transition-new(root) {
 
 @keyframes theme-reveal-forth {
   from {
-    clip-path: circle(0 at var(--reveal-x) var(--reveal-y));
+    clip-path: circle(0% at var(--reveal-x) var(--reveal-y));
   }
   to {
     clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
@@ -242,7 +236,7 @@ html.theme-reveal-back::view-transition-new(root) {
     clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
   }
   to {
-    clip-path: circle(0 at var(--reveal-x) var(--reveal-y));
+    clip-path: circle(0% at var(--reveal-x) var(--reveal-y));
   }
 }
 

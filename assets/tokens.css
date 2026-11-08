@@ -1,7 +1,7 @@
 /** 设计令牌层 —— 全站唯一的取值来源 */
 
 :root {
-  color-scheme: light;
+  color-scheme: only light;
 
   /* 字体 */
   --font-display: 'Fraunces', 'Songti SC', 'Noto Serif CJK SC', 'Source Han Serif SC',
@@ -170,7 +170,7 @@
 }
 
 html.dark {
-  color-scheme: dark;
+  color-scheme: only dark;
 
   /* 深色 */
   --bg: oklch(0.185 0.008 70);

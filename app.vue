@@ -19,7 +19,7 @@ useHead({
     { name: 'author', content: siteConfig.author.name },
     { name: 'keywords', content: siteConfig.keywords },
 
-    { name: 'color-scheme', content: 'only light' },
+    { name: 'color-scheme', content: 'light dark' },
     { name: 'theme-color', content: '#f7f5f0', media: '(prefers-color-scheme: light)' },
     { name: 'theme-color', content: '#1c1b19', media: '(prefers-color-scheme: dark)' },
     { name: 'apple-mobile-web-app-title', content: 'ShinX' },
