@@ -4,7 +4,17 @@ import { siteConfig } from '@/siteConfig/main.js'
 
 <template>
   <main class="max-w-screen-xl mx-auto min-h-screen flex flex-col justify-center py-12 max-w-7xl">
-    <div class="flex flex-col-reverse md:flex-row items-center justify-between w-full gap-10 mt--10">
+    <div class="flex flex-col md:flex-row items-center justify-between w-full gap-10 mt--10">
+      <!-- 头像（移动端，分开以适配不同浮现顺序） -->
+      <div data-fade class="md:hidden w-40 h-40 sm:w-56 sm:h-56 rounded-full shadow-lg ring-1 ring-line-soft">
+        <img
+          :src="siteConfig.author.avatar"
+          alt="Avatar"
+          class="rounded-full w-full h-full object-cover transition-transform duration-base fade-in-image"
+          draggable="false"
+          loading="lazy"
+        />
+      </div>
       <!-- 左侧 -->
       <div class="text-center md:text-left">
         <p data-fade class="text-4xl sm:text-5xl font-display font-semibold tracking-tight text-ink">
@@ -56,8 +66,8 @@ import { siteConfig } from '@/siteConfig/main.js'
           </div>
         </div>
       </div>
-      <!-- 头像 -->
-      <div data-fade="2" class="w-40 h-40 sm:w-56 sm:h-56 md:w-70 md:h-70 rounded-full shadow-lg ring-1 ring-line-soft">
+      <!-- 头像（桌面端） -->
+      <div data-fade="2" class="hidden md:block w-70 h-70 rounded-full shadow-lg ring-1 ring-line-soft">
         <img
           :src="siteConfig.author.avatar"
           alt="Avatar"

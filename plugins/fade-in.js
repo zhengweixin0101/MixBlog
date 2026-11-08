@@ -131,6 +131,11 @@ export default defineNuxtPlugin((nuxtApp) => {
       const awaiting = el.hasAttribute(ATTR_AWAIT)
       if (!awaiting && (el.hasAttribute(ATTR_ANIM) || el.hasAttribute(ATTR_DONE))) continue
       const rect = el.getBoundingClientRect()
+      if (rect.width === 0 && rect.height === 0) {
+        if (awaiting) io.unobserve(el)
+        settle(el)
+        continue
+      }
       if (rect.bottom <= 0 || rect.top < vh) {
         // 已在视口内或视口上方：直接播（含一次性跳过的等待元素）
         if (awaiting) io.unobserve(el)
