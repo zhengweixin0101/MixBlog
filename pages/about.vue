@@ -225,31 +225,54 @@ const hoveredIndex = ref(null)
 
       <div class="flex flex-col md:flex-row gap-4 w-full mx-auto m-5">
         <!-- 技能 -->
-        <div class="card-base flex-1 md:flex-[11_11_0%] overflow-hidden bg-surface min-w-full md:min-w-[200px] relative transition-colors duration-base">
+        <div class="card-base skill-card flex-1 md:flex-[11_11_0%] overflow-hidden bg-surface min-w-full md:min-w-[200px] relative transition-colors duration-base">
           <div class="text-xs absolute text-ink-subtle p-5">技能</div>
           <h2 class="text-3xl font-bold mt-5 p-5">开启创造力</h2>
 
-          <!-- 第一行 -->
-          <div class="skill-row-wrapper mt-2">
-            <div class="skill-row">
-              <div v-for="(skill, i) in firstHalf" :key="'row1-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
-                <img :src="skill.icon" class="w-12 h-12 object-contain fade-in-image" draggable="false" loading="lazy" />
+          <div class="skill-stage">
+            <!-- 双行跑马灯 -->
+            <div class="skill-marquee" aria-hidden="true">
+              <!-- 第一行 -->
+              <div class="skill-row-wrapper mt-2">
+                <div class="skill-row">
+                  <div class="skill-group">
+                    <div v-for="(skill, i) in firstHalf" :key="'row1-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
+                      <img :src="skill.icon" class="w-12 h-12 object-contain fade-in-image" draggable="false" loading="lazy" alt="" />
+                    </div>
+                  </div>
+                  <div class="skill-group" aria-hidden="true">
+                    <div v-for="(skill, i) in firstHalf" :key="'row1-copy-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
+                      <img :src="skill.icon" class="w-12 h-12 object-contain fade-in-image" draggable="false" loading="lazy" alt="" />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div v-for="(skill, i) in firstHalf" :key="'row1-copy-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
-                <img :src="skill.icon" class="w-12 h-12 object-contain fade-in-image" draggable="false" loading="lazy" />
+
+              <!-- 第二行反向滚动 -->
+              <div class="skill-row-wrapper mt-4 mb-4">
+                <div class="skill-row skill-row-reverse">
+                  <div class="skill-group">
+                    <div v-for="(skill, i) in secondHalf" :key="'row2-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
+                      <img :src="skill.icon" class="w-12 h-12 object-contain fade-in-image" draggable="false" loading="lazy" alt="" />
+                    </div>
+                  </div>
+                  <div class="skill-group" aria-hidden="true">
+                    <div v-for="(skill, i) in secondHalf" :key="'row2-copy-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
+                      <img :src="skill.icon" class="w-12 h-12 object-contain fade-in-image" draggable="false" loading="lazy" alt="" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- 第二行反向滚动 -->
-          <div class="skill-row-wrapper mt-4 mb-6">
-            <div class="skill-row skill-row-reverse">
-              <div v-for="(skill, i) in secondHalf" :key="'row2-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
-                <img :src="skill.icon" class="w-12 h-12 object-contain fade-in-image" draggable="false" loading="lazy" />
-              </div>
-              <div v-for="(skill, i) in secondHalf" :key="'row2-copy-' + i" class="skill-item" :style="{ backgroundColor: skill.color }">
-                <img :src="skill.icon" class="w-12 h-12 object-contain fade-in-image" draggable="false" loading="lazy" />
-              </div>
+            <!-- 静态胶囊列表 -->
+            <div class="skill-panel">
+              <span v-for="skill in skills" :key="skill.name" class="skill-pill">
+                <span class="skill-pill-icon" :style="{ backgroundColor: skill.color }">
+                  <img :src="skill.icon" class="w-5 h-5 object-contain fade-in-image" draggable="false" loading="lazy" alt="" />
+                </span>
+                <span class="skill-pill-name">{{ skill.name }}</span>
+              </span>
             </div>
           </div>
         </div>
@@ -539,18 +562,91 @@ html.dark .hello-screen {
 }
 
 /* 技能卡片动画 */
+.skill-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.skill-stage {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+}
+
+/* 技能胶囊面板 */
+.skill-panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  gap: 10px;
+  padding: 9px 20px;
+  background: linear-gradient(var(--surface), var(--surface)), var(--bg);
+  transform: translateY(100%);
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 460ms var(--ease-out),
+              visibility 460ms var(--ease-out);
+}
+
+.skill-card:hover .skill-panel {
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.skill-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px 4px 4px;
+  border-radius: 999px;
+  background: var(--surface-4);
+  border: 1px solid var(--line);
+}
+
+.skill-pill-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+}
+
+.skill-pill-name {
+  font-size: 0.8125rem;
+  line-height: 1;
+  color: var(--ink);
+}
+
+@media (hover: none) {
+  .skill-marquee {
+    display: none;
+  }
+
+  .skill-panel {
+    transform: none;
+    visibility: visible;
+  }
+}
+
 .skill-row-wrapper {
   overflow: hidden;
   width: 100%;
 }
 
 .skill-row {
-  padding: 1px;
   display: flex;
-  gap: 12px;
   width: max-content;
   animation: scroll-left 30s linear infinite;
   will-change: transform;
+}
+
+.skill-group {
+  display: flex;
+  gap: 12px;
+  padding-right: 12px;
 }
 
 .skill-row-reverse {
