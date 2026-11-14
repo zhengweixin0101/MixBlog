@@ -190,19 +190,19 @@ const hoveredIndex = ref(null)
                     min-w-full md:min-w-[200px] relative transition-colors duration-base"
         >
           <div class="text-xs absolute text-ink-subtle">追求</div>
-          <h2 class="text-3xl font-bold mt-5">
+          <h2 class="text-3xl font-bold mt-5 leading-[38px]">
             源于<br>
             热爱而去 感受<br>
-            <div class="mask relative inline-block overflow-hidden mt-2 mb--4" style="height:3rem">
-              <transition name="slide" mode="out-in">
+            <div class="mask relative inline-block overflow-hidden align-bottom h-[38px]">
+              <Transition name="tip-pan">
                 <div
                   :key="current"
                   :style="{ color: tips[current].color }"
-                  class="text-3xl font-bold"
+                  class="tip-pan-item text-3xl font-bold whitespace-nowrap"
                 >
                   {{ tips[current].text }}
                 </div>
-              </transition>
+              </Transition>
             </div>
           </h2>
         </div>
@@ -496,13 +496,32 @@ const hoveredIndex = ref(null)
   50% { transform: translateY(-4px); }
 }
 
-/* tips动画 */
-.slide-enter-from { transform: translateY(100%); opacity:0; }
-.slide-enter-to   { transform: translateY(0%);   opacity:1; }
-.slide-leave-from { transform: translateY(0%);   opacity:1; }
-.slide-leave-to   { transform: translateY(-100%); opacity:0; }
-.slide-enter-active,
-.slide-leave-active { transition: transform 0.2s ease, opacity 0.2s ease; }
+/* tips 文字切换 */
+.tip-pan-item {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.tip-pan-enter-active,
+.tip-pan-leave-active {
+  transition: transform var(--dur-slow) var(--ease-in-out);
+}
+
+.tip-pan-enter-from {
+  transform: translateY(100%);
+}
+
+.tip-pan-leave-to {
+  transform: translateY(-100%);
+}
+
+.tip-pan-leave-active {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 
 /* Hello 手写动画 */
 .hello-screen {
