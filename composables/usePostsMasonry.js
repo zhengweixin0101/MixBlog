@@ -17,6 +17,17 @@ export function usePostsMasonry(posts, { minWidth = 768, fallbackGap = 18, getId
   const assignment = ref([])    // 每篇文章落在 0=左列 / 1=右列
   const columnWidth = ref(0)    // 最近一次实测列宽，高度缓存按宽度失效
 
+  /**
+   * 列表容器的绑定入口（模板用 :ref="setListEl"）
+   *
+   * 只接收真实节点：筛选换页动画会整体重建面板，旧节点是延迟卸载的，
+   * 它的 ref 回调会把容器引用置成 null，导致后续测量与 ResizeObserver 全部失效。
+   * 这里忽略 null，引用始终指向当前这一版列表容器。
+   */
+  function setListEl(el) {
+    if (el) listEl.value = el
+  }
+
   /** 高度缓存：getId(item) -> { w, h }。实例级，缓存随 composable 生命周期；服务端不写入 */
   const heightCache = new Map()
 
@@ -175,6 +186,15 @@ export function usePostsMasonry(posts, { minWidth = 768, fallbackGap = 18, getId
     }
   })
 
+  watch(listEl, (el) => {
+    // 列表 DOM 被整体替换时（筛选换页动画会重建整个面板），
+    // 旧的观察目标已经脱离文档，必须重新挂到新容器上，否则窗口缩放不再重排分列
+    if (import.meta.server || disposed || !el) return
+    lastListWidth = -1
+    observeTargets()
+    applyAssignment()
+  }, { flush: 'post' })
+
   onMounted(() => {
     if (typeof window === 'undefined') return
     mq = window.matchMedia(`(min-width: ${minWidth}px)`)
@@ -205,5 +225,5 @@ export function usePostsMasonry(posts, { minWidth = 768, fallbackGap = 18, getId
     }
   })
 
-  return { listEl, columns, twoCols }
+  return { listEl, setListEl, columns, twoCols }
 }

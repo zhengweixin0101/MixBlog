@@ -23,8 +23,47 @@ const allTags = computed(() => {
   return Array.from(tags).sort()
 })
 
+// 筛选切换的整体换页容器
+// 纯平移，方向由 --dir 控制：
+// dir=1 新面板从右进、旧面板往左出；dir=-1 反之。
+const panelWrap = ref(null)
+let oldHeight = 0
+
+// 滑动方向由点击位置决定，用标签在列表里的序号比较
+// 未筛选锚在最左侧，各标签依次向右排。
+// 目标位置在参照位置右边 → 新内容从右进、旧内容往左出；反之从左进。
 function toggleTag(tag) {
-  selectedTag.value = selectedTag.value === tag ? '' : tag
+  const next = selectedTag.value === tag ? '' : tag
+  const refIndex = selectedTag.value ? allTags.value.indexOf(selectedTag.value) : -1
+  const targetIndex = next === '' ? -1 : allTags.value.indexOf(tag)
+  const dir = targetIndex > refIndex ? 1 : -1
+
+  panelWrap.value?.style.setProperty('--dir', dir)
+  selectedTag.value = next
+}
+
+// 出场前记下旧面板高度，切换期间把容器高度撑住，
+// 避免列表塌陷时页脚乱跳；同时给容器加上 is-sliding，栏边缘走渐隐过渡
+function onBeforeLeave(el) {
+  oldHeight = el.offsetHeight
+  panelWrap.value?.classList.add('is-sliding')
+}
+
+function onBeforeEnter(el) {
+  const wrap = panelWrap.value
+  if (!wrap) return
+  wrap.style.height = `${oldHeight}px`
+  requestAnimationFrame(() => {
+    const h = Math.max(oldHeight, el.offsetHeight)
+    if (Math.abs(wrap.offsetHeight - h) > 1) wrap.style.height = `${h}px`
+  })
+}
+
+function onAfterEnter() {
+  const wrap = panelWrap.value
+  if (!wrap) return
+  wrap.style.height = ''
+  wrap.classList.remove('is-sliding')
 }
 
 const filteredPosts = computed(() => {
@@ -39,7 +78,7 @@ const filteredPosts = computed(() => {
 })
 
 // 双列瀑布流
-const { listEl, columns, twoCols } = usePostsMasonry(filteredPosts)
+const { setListEl, columns, twoCols } = usePostsMasonry(filteredPosts)
 </script>
 
 <template>
@@ -75,10 +114,10 @@ const { listEl, columns, twoCols } = usePostsMasonry(filteredPosts)
             :key="tag"
             @click="toggleTag(tag)"
             :class="{
-              'bg-accent-soft text-ink border-accent-line': selectedTag === tag,
+              'is-active text-ink': selectedTag === tag,
               'bg-surface-2 text-ink-muted hover:text-ink': selectedTag !== tag
             }"
-            class="inline-block px-2 py-1 text-xs rounded-full transition duration-base ease-spring cursor-pointer shadow-none border-none active:scale-95"
+            class="tag-btn appearance-none inline-block px-2 py-1 text-xs rounded-full transition duration-base ease-spring cursor-pointer shadow-none border-none active:scale-95"
           >
             {{ tag }}
           </button>
@@ -86,32 +125,109 @@ const { listEl, columns, twoCols } = usePostsMasonry(filteredPosts)
       </div>
 
       <div data-fade>
-        <!-- 桌面端双列瀑布流 -->
-        <div v-if="twoCols" ref="listEl" class="mt-8 flex items-start gap-[18px]">
-          <div
-            v-for="(colPosts, ci) in columns"
-            :key="ci"
-            class="flex flex-1 min-w-0 flex-col gap-[18px]"
+        <!-- 整体换页容器 -->
+        <div ref="panelWrap" class="panel-wrap">
+          <Transition
+            name="panel"
+            @before-leave="onBeforeLeave"
+            @before-enter="onBeforeEnter"
+            @after-enter="onAfterEnter"
+            @after-leave="onAfterEnter"
           >
-            <PostCard
-              v-for="post in colPosts"
-              :key="post.slug"
-              :post="post"
-            />
-          </div>
-        </div>
+            <div :key="selectedTag" class="panel">
+              <!-- 桌面端双列瀑布流 -->
+              <div v-if="twoCols" :ref="setListEl" class="flex items-start gap-[18px]">
+                <div
+                  v-for="(colPosts, ci) in columns"
+                  :key="ci"
+                  class="flex flex-1 min-w-0 flex-col gap-[18px]"
+                >
+                  <PostCard
+                    v-for="post in colPosts"
+                    :key="post.slug"
+                    :post="post"
+                  />
+                </div>
+              </div>
 
-        <!-- 移动端单列 -->
-        <ul v-else class="mt-8 grid grid-cols-1 gap-4 list-none">
-          <li v-for="post in filteredPosts" :key="post.slug">
-            <PostCard :post="post" />
-          </li>
-        </ul>
+              <!-- 移动端单列 -->
+              <ul v-else class="grid grid-cols-1 gap-4 list-none">
+                <li v-for="post in filteredPosts" :key="post.slug">
+                  <PostCard :post="post" />
+                </li>
+              </ul>
 
-        <div class="mt-8 flex flex-row items-center justify-end gap-4">
-          <BackLink to="/" text="← 返回首页" />
+              <div class="mt-8 flex flex-row items-center justify-end gap-4">
+                <BackLink to="/" text="← 返回首页" />
+              </div>
+            </div>
+          </Transition>
         </div>
       </div>
     </section>
   </main>
 </template>
+
+<style scoped>
+/* 筛选切换：旧面板向左平移出、新面板从右侧同时平移入
+   裁剪只做左右，边界是列表栏本身的左右缘而不是窗口边缘；
+   时长走 --dur-slow（380ms），缓动 --ease-in-out；
+   方向由 --dir 控制（1=右进左出，-1 反向） */
+.panel-wrap {
+  position: relative;
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+/* 滑动过程中给栏边缘加一段渐隐过渡 */
+.panel-wrap.is-sliding {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+}
+
+/* 新旧两块之间留一道缝 */
+.panel-wrap {
+  --panel-gap: 24px;
+}
+
+.panel {
+  padding-top: 2rem;
+}
+
+.tag-btn {
+  position: relative;
+}
+
+.tag-btn.is-active {
+  background-color: var(--accent-soft);
+}
+
+.tag-btn::before {
+  content: '';
+  position: absolute;
+  inset: -3px -2px;
+  border-radius: inherit;
+}
+
+.panel-enter-active {
+  transition: transform var(--dur-slow) var(--ease-in-out);
+  z-index: 1;
+}
+
+.panel-leave-active {
+  transition: transform var(--dur-slow) var(--ease-in-out);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 0;
+}
+
+.panel-enter-from {
+  transform: translateX(calc(var(--dir, 1) * (100% + var(--panel-gap))));
+}
+
+.panel-leave-to {
+  transform: translateX(calc(var(--dir, 1) * -1 * (100% + var(--panel-gap))));
+}
+</style>
