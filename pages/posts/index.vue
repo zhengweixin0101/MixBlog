@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from '#imports'
+import { ref, computed, watch, nextTick } from '#imports'
 import { siteConfig } from '@/siteConfig/main.js'
 import { usePostsMasonry } from '@/composables/usePostsMasonry'
 
@@ -27,6 +27,9 @@ const allTags = computed(() => {
 // 纯平移，方向由 --dir 控制：
 // dir=1 新面板从右进、旧面板往左出；dir=-1 反之。
 const panelWrap = ref(null)
+// 面板实例 key 独立于 selectedTag：只有手动点标签才 ++
+// 搜索词打字自动清空标签时不 ++，面板不重建，列表直接在原子树上变更，走浮现动画
+const panelKey = ref(0)
 let oldHeight = 0
 
 // 滑动方向由点击位置决定，用标签在列表里的序号比较
@@ -38,6 +41,7 @@ function toggleTag(tag) {
   const targetIndex = next === '' ? -1 : allTags.value.indexOf(tag)
   const dir = targetIndex > refIndex ? 1 : -1
 
+  panelKey.value++ // 仅手动点标签才重建面板平移换页；搜索自动清空不走这条路
   panelWrap.value?.style.setProperty('--dir', dir)
   selectedTag.value = next
 }
@@ -79,6 +83,38 @@ const filteredPosts = computed(() => {
 
 // 双列瀑布流
 const { setListEl, columns, twoCols } = usePostsMasonry(filteredPosts)
+let searchRevealClearTimer = null
+
+watch(searchTerm, async () => {
+  // 搜索输入时自动清空标签筛选
+  if (searchTerm.value.trim() && selectedTag.value) {
+    selectedTag.value = ''
+  }
+  const el = panelWrap.value
+  if (!el) return
+  const oldH = el.offsetHeight
+  await nextTick()
+  const newH = el.offsetHeight
+  if (Math.abs(newH - oldH) > 1) {
+    el.style.height = `${oldH}px`
+    el.style.transition = 'height var(--dur-slow) var(--ease-fade)'
+    requestAnimationFrame(() => {
+      el.style.height = `${newH}px`
+    })
+    // 过渡结束后清掉内联样式，还原 auto
+    clearTimeout(searchRevealClearTimer)
+    const clear = () => {
+      el.style.height = ''
+      el.style.transition = ''
+      el.removeEventListener('transitionend', clear)
+    }
+    el.addEventListener('transitionend', clear)
+    searchRevealClearTimer = setTimeout(clear, 600)
+  }
+  el.classList.remove('search-reveal')
+  void el.offsetWidth
+  el.classList.add('search-reveal')
+})
 </script>
 
 <template>
@@ -134,7 +170,7 @@ const { setListEl, columns, twoCols } = usePostsMasonry(filteredPosts)
             @after-enter="onAfterEnter"
             @after-leave="onAfterEnter"
           >
-            <div :key="selectedTag" class="panel">
+            <div :key="panelKey" class="panel">
               <!-- 桌面端双列瀑布流 -->
               <div v-if="twoCols" :ref="setListEl" class="flex items-start gap-[18px]">
                 <div
@@ -169,6 +205,22 @@ const { setListEl, columns, twoCols } = usePostsMasonry(filteredPosts)
 </template>
 
 <style scoped>
+/* 搜索时列表整体浮现，与全站 data-fade 同款*/
+.search-reveal {
+  animation: search-reveal 580ms var(--ease-fade);
+}
+
+@keyframes search-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* 筛选切换：旧面板向左平移出、新面板从右侧同时平移入
    裁剪只做左右，边界是列表栏本身的左右缘而不是窗口边缘；
    时长走 --dur-slow（380ms），缓动 --ease-in-out；
