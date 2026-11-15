@@ -95,6 +95,7 @@
 
 <script setup>
 import { ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
+import { useScrollLock } from '~/composables/useScrollLock'
 
 const {
   currentItem, isPlaying, isLoadingSong, lyrics, currentLyricIndices, currentLyricIndex,
@@ -102,6 +103,7 @@ const {
 } = useMusicPlayer()
 
 const visible = useState('showMusicFullscreen', () => false)
+useScrollLock(visible)
 const containerEl = ref(null)
 const lyricsEl = ref(null)
 
@@ -147,16 +149,12 @@ watch(currentLyricIndex, () => {
 
 watch(visible, (val) => {
   if (val) {
-    document.documentElement.style.overflow = 'hidden'
-    document.documentElement.style.scrollbarWidth = 'none'
     nextTick(() => {
       containerEl.value?.focus()
       if (lyrics.value?.length && currentLyricIndex.value >= 0) scrollLyrics()
     })
     document.documentElement.requestFullscreen().catch(() => {})
   } else {
-    document.documentElement.style.overflow = ''
-    document.documentElement.style.scrollbarWidth = ''
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {})
     }
