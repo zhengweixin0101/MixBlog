@@ -60,7 +60,7 @@ export const siteConfig = {
         umami: {
             url: 'https://statistics.zhengweixin.top',
             script: 'https://statistics.zhengweixin.top/script.js',
-            apiKey: 'umami_zeXBBHMXsKeL1GIZOhHqyaPKTiyOTcgR',    // 只读 API Key（Umami 设置 → API keys 创建）
+            apiKey: 'umami_zeXBBHMXsKeL1GIZOhHqyaPKTiyOTcgR',
             siteId: '7441ce23-3587-41b6-8919-e42932fc65d7',
             createTime: '2025-08-15T16:00:00.000Z',
         }
