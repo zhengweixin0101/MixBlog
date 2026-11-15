@@ -4,6 +4,7 @@ import { onClickOutside, useEventListener } from '@vueuse/core'
 import { siteConfig } from '@/siteConfig/main.js'
 import { useNotification } from '~/composables/useNotification'
 import { useThemeReveal } from '~/composables/useThemeReveal'
+import { useHeaderVisibility } from '~/composables/useHeaderVisibility'
 
 const notification = useNotification()
 const { revealTheme } = useThemeReveal()
@@ -13,7 +14,8 @@ const menuRef = ref(null)
 const isMenuOpen = ref(false)
 const menuButton = ref(null)
 const mounted = ref(false)
-const isHidden = ref(false)
+// 顶栏显隐状态共享给页面内的吸顶元素同步位移
+const { hidden: isHidden } = useHeaderVisibility()
 
 /* 导航当前项的滑动指示器 */
 const navListRef = ref(null)

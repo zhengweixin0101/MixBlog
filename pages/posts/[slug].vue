@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, useHead, us
 import { useNotification } from '~/composables/useNotification'
 import { useShareDialog } from '~/composables/useShareDialog'
 import { useUmami } from '~/composables/useUmami'
+import { useHeaderVisibility } from '~/composables/useHeaderVisibility'
 import { marked } from 'marked'
 import dayjs from 'dayjs'
 
@@ -21,6 +22,8 @@ const route = useRoute()
 const notification = useNotification()
 const shareDialog = useShareDialog()
 const { getStats } = useUmami()
+// 顶栏显隐时目录吸顶位置跟着同步让位/占位
+const { hidden: headerHidden } = useHeaderVisibility()
 
 // 按需加载 KaTeX
 let katex = null
@@ -743,7 +746,7 @@ async function copyArticleLink() {
         <section class=" flex-1 min-w-0 max-w-full">
           <article ref="articleRef" v-html="post.content" data-fade class="article-content whitespace-normal break-words"></article>
         </section>
-        <div data-fade="3" class="sticky top-30 flex-shrink-0 hidden md:block self-start">
+        <div data-fade="3" class="toc-sticky sticky flex-shrink-0 hidden md:block self-start" :class="headerHidden ? 'top-8' : 'top-24'">
           <div>
             <Sidebar :toc="post.toc || []" />
           </div>
@@ -978,5 +981,18 @@ async function copyArticleLink() {
 .copy-link-btn.is-copied {
   color: var(--accent-text);
   border-color: var(--accent-line);
+}
+</style>
+
+<style scoped>
+/* 目录吸顶位置跟随顶栏显隐同步位移 */
+.toc-sticky {
+  transition: top var(--dur-slow) var(--ease-in-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toc-sticky {
+    transition: none;
+  }
 }
 </style>
