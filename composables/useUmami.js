@@ -12,7 +12,7 @@ import { siteConfig } from '@/siteConfig/main.js'
  * 请求失败时降级回落到过期缓存，避免数字变空。
  */
 
-const { url: UMAMI_URL, siteId: UMAMI_SITE_ID, token: UMAMI_TOKEN, createTime: UMAMI_CREATE_TIME } = siteConfig.thirdParty.umami
+const { url: UMAMI_URL, siteId: UMAMI_SITE_ID, apiKey: UMAMI_API_KEY, createTime: UMAMI_CREATE_TIME } = siteConfig.thirdParty.umami
 
 const CACHE_KEY = 'umami_cache'
 const CACHE_MAX_AGE = 7 * 24 * 60 * 60 * 1000
@@ -102,7 +102,7 @@ function writeEntry(key, data) {
 
 async function requestStats({ startAt, endAt, path }) {
     return await $fetch(`${UMAMI_URL}/api/websites/${UMAMI_SITE_ID}/stats`, {
-        headers: { Authorization: `Bearer ${UMAMI_TOKEN}` },
+        headers: { Authorization: `Bearer ${UMAMI_API_KEY}` },
         query: {
             startAt,
             endAt,
