@@ -84,11 +84,6 @@ export const linksConfig = {
                     link: 'https://status.zhengweixin.top',
                 },
                 {
-                    name: 'Music',
-                    description: '第三方网易云音乐播放器',
-                    link: 'https://music.zhengweixin.top',
-                },
-                {
                     name: '123Pan',
                     description: '123网盘浏览器无限制下载',
                     link: 'https://123pan.zhengweixin.top',
