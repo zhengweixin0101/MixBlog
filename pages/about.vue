@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, onBeforeUnmount, useColorMode } from '#imports'
+import { onMounted, ref, onBeforeUnmount, nextTick, useColorMode } from '#imports'
 
 import { TegakiRenderer } from 'tegaki/vue'
 import parisienne from 'tegaki/fonts/parisienne'
@@ -50,10 +50,15 @@ onMounted(() => {
     }
   })
   fadeDoneObs.observe(el, { attributes: true, attributeFilter: ['data-fade-done'] })
+
+  updateMaxShown()
+  window.addEventListener('resize', updateMaxShown)
 })
 onBeforeUnmount(() => {
   clearInterval(tipsInterval)
   fadeDoneObs?.disconnect()
+  window.removeEventListener('resize', updateMaxShown)
+  clearTimeout(enterTimer)
 })
 
 // 彩虹渐变沿整段文字从左到右铺
@@ -79,6 +84,60 @@ const skills = aboutConfig.author.skills
 const mid = Math.ceil(skills.length / 2)
 const firstHalf = skills.slice(0, mid)
 const secondHalf = skills.slice(mid)
+
+// 胶囊面板
+const panelEl = ref(null)
+const shownSkills = ref(skills.slice(0, 4 * 5))
+const narrowCard = ref(false)
+const panelActive = ref(false)
+const MIN_CARD_WIDTH_FOR_PANEL = 460
+let maxShown = 4 * 5
+let enterTimer = null
+
+// 鼠标停留一小会儿才显示
+function onSkillEnter() {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
+  clearTimeout(enterTimer)
+  enterTimer = setTimeout(() => {
+    shuffleSkills()
+    panelActive.value = true
+  }, 220)
+}
+
+function onSkillLeave() {
+  clearTimeout(enterTimer)
+  panelActive.value = false
+}
+
+function shuffleSkills() {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
+  const arr = skills.slice()
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+  shownSkills.value = arr.slice(0, maxShown)
+}
+
+async function updateMaxShown() {
+  const panel = panelEl.value
+  if (!panel || window.matchMedia('(hover: none)').matches) return
+  const cardWidth = panel.closest('.skill-card')?.getBoundingClientRect().width || 0
+  // 卡片宽度统一阈值
+  const narrow = cardWidth < MIN_CARD_WIDTH_FOR_PANEL
+  if (narrow !== narrowCard.value) {
+    narrowCard.value = narrow
+    await nextTick()
+  }
+  if (narrowCard.value) return
+  const pills = [...panel.querySelectorAll('.skill-pill:not(.skill-ellipsis)')]
+  if (!pills.length) return
+  const gap = 10
+  const avgWidth = pills.reduce((sum, p) => sum + p.getBoundingClientRect().width + gap, 0) / pills.length
+  const room = panel.clientWidth - 40 - 46
+  maxShown = Math.min(skills.length - 1, Math.max(1, Math.floor(room * 4 / avgWidth) - 2))
+  shuffleSkills()
+}
 
 const UMAMI_SHARE_URL = aboutConfig.umami.shareUrl
 
@@ -225,7 +284,7 @@ const hoveredIndex = ref(null)
 
       <div class="flex flex-col md:flex-row gap-4 w-full mx-auto m-5">
         <!-- 技能 -->
-        <div class="card-base skill-card flex-1 md:flex-[11_11_0%] overflow-hidden bg-surface min-w-full md:min-w-[200px] relative transition-colors duration-base">
+        <div class="card-base skill-card flex-1 md:flex-[11_11_0%] overflow-hidden bg-surface min-w-full md:min-w-[200px] relative transition-colors duration-base" :class="{ 'skill-no-panel': narrowCard, 'skill-panel-active': panelActive }" @mouseenter="onSkillEnter" @mouseleave="onSkillLeave">
           <div class="text-xs absolute text-ink-subtle p-5">技能</div>
           <h2 class="text-3xl font-bold mt-5 p-5">开启创造力</h2>
 
@@ -266,13 +325,14 @@ const hoveredIndex = ref(null)
             </div>
 
             <!-- 静态胶囊列表 -->
-            <div class="skill-panel">
-              <span v-for="skill in skills" :key="skill.name" class="skill-pill">
+            <div class="skill-panel" ref="panelEl">
+              <span v-for="skill in shownSkills" :key="skill.name" class="skill-pill">
                 <span class="skill-pill-icon" :style="{ backgroundColor: skill.color }">
                   <img :src="skill.icon" class="w-5 h-5 object-contain fade-in-image" draggable="false" loading="lazy" alt="" />
                 </span>
                 <span class="skill-pill-name">{{ skill.name }}</span>
               </span>
+              <span class="skill-pill skill-ellipsis" aria-hidden="true">···</span>
             </div>
           </div>
         </div>
@@ -590,10 +650,19 @@ html.dark .hello-screen {
               visibility 460ms var(--ease-out);
 }
 
-.skill-card:hover .skill-panel {
-  transform: translateY(0);
-  visibility: visible;
-  pointer-events: auto;
+/* 仅鼠标 hover 才滑出；触屏点击不触发 */
+@media (hover: hover) and (pointer: fine) {
+  .skill-card.skill-panel-active .skill-panel {
+    transform: translateY(0);
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
+@media (hover: none) {
+  .skill-panel {
+    display: none !important;
+  }
 }
 
 .skill-pill {
@@ -620,15 +689,17 @@ html.dark .hello-screen {
   color: var(--ink);
 }
 
-@media (hover: none) {
-  .skill-marquee {
-    display: none;
-  }
+.skill-ellipsis {
+  justify-content: center;
+  padding-left: 14px;
+  padding-right: 14px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--ink-muted);
+}
 
-  .skill-panel {
-    transform: none;
-    visibility: visible;
-  }
+.skill-no-panel .skill-panel {
+  display: none !important;
 }
 
 .skill-row-wrapper {
