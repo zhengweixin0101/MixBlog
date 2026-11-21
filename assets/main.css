@@ -63,6 +63,16 @@ body {
   }
 }
 
+/*  去除 Fancybox 自带的补偿量 */
+html.with-fancybox {
+  --f-scrollbar-compensate: 0px !important;
+}
+
+/* 图片灯箱添加和正文图片同一个圆角 */
+.fancybox__container .f-panzoom__content {
+  border-radius: var(--radius-lg);
+}
+
 /* 选中文本 */
 ::selection {
   background-color: var(--selection-bg);
