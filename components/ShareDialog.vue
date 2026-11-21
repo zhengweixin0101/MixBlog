@@ -27,10 +27,10 @@
             <div
               v-for="index in skeletonRows"
               :key="index"
-              class="flex items-center gap-2 p-3 rounded-lg bg-surface-2"
+              class="flex items-center gap-2 p-3 rounded-lg bg-surface-2 border border-transparent"
             >
-              <div class="w-4 h-4 rounded shrink-0 skeleton"></div>
-              <div class="flex-1 min-w-0 h-4 rounded skeleton"></div>
+              <div class="w-3.5 h-3.5 rounded shrink-0 skeleton"></div>
+              <div class="flex-1 min-w-0 h-3.5 rounded skeleton"></div>
             </div>
           </div>
 

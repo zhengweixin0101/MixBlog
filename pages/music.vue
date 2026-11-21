@@ -5,11 +5,11 @@
       <aside class="musicList max-w-65 overflow-y-auto relative hidden md:block" ref="listEl">
         <!-- 加载中骨架屏 -->
         <ul v-if="isLoadingList" class="space-y-2 p-1">
-          <li v-for="n in 6" :key="n" class="flex items-center p-2 py-3 rounded-lg bg-surface shadow-xs">
+          <li v-for="n in skeletonRows" :key="n" class="flex items-center p-2 py-3 rounded-lg bg-surface border border-line shadow-xs">
             <div class="w-6 h-6 flex items-center justify-center mr-2">
               <div class="w-4 h-4 rounded skeleton"></div>
             </div>
-            <div class="min-w-0 flex-1 flex justify-between items-center">
+            <div class="min-w-0 flex-1 flex justify-between items-center h-6.6">
               <div class="w-24 h-4 rounded skeleton"></div>
               <div class="w-16 h-3 rounded skeleton ml-2"></div>
             </div>
@@ -275,11 +275,11 @@
         >
           <!-- 加载中骨架屏 -->
           <ul v-if="isLoadingList" class="space-y-2 p-3">
-            <li v-for="n in 6" :key="n" class="flex items-center p-2 py-3 rounded-lg bg-surface shadow-xs">
+            <li v-for="n in skeletonRows" :key="n" class="flex items-center p-2 py-3 rounded-lg bg-surface border border-line shadow-xs">
               <div class="w-6 h-6 flex items-center justify-center mr-2">
                 <div class="w-4 h-4 rounded skeleton"></div>
               </div>
-              <div class="min-w-0 flex-1 flex justify-between items-center">
+              <div class="min-w-0 flex-1 flex justify-between items-center h-6.6">
                 <div class="w-24 h-4 rounded skeleton"></div>
                 <div class="w-16 h-3 rounded skeleton ml-2"></div>
               </div>
@@ -352,6 +352,16 @@ const listEl = ref(null)
 const isFullscreen = useState('showMusicFullscreen', () => false)
 const mobileListOpen = ref(false)
 const mobileListEl = ref(null)
+
+// 骨架行数按列表容器可见高度铺满
+const SKELETON_ROW_HEIGHT = 60
+const skeletonRows = ref(6)
+
+function updateSkeletonRows() {
+  const desktopH = listEl.value?.clientHeight || 0
+  const h = desktopH > 0 ? desktopH : window.innerHeight * 0.7
+  skeletonRows.value = Math.max(6, Math.ceil(h / SKELETON_ROW_HEIGHT))
+}
 
 const progressPercent = computed(() => {
   const total = Number(duration.value)
@@ -560,6 +570,8 @@ onBeforeRouteLeave(() => {
 })
 
 onMounted(async () => {
+  updateSkeletonRows()
+  window.addEventListener('resize', updateSkeletonRows)
   attachPermanentListeners()
   setOnLyricChange(scrollLyrics)
 
@@ -597,6 +609,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateSkeletonRows)
   abandonAutoPlay()
   if (autoPlayAborted) closeCapsule()
   cancelPendingPlay()

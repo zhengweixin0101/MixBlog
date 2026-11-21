@@ -158,7 +158,7 @@ img.onload-fade.hero-icon {
     var(--skeleton-base) 75%
   );
   background-size: 200% 100%;
-  animation: skeleton-shimmer 1.6s var(--ease-in-out) infinite;
+  animation: skeleton-shimmer 1.8s linear infinite;
 }
 
 /* 深色底上的骨架，比 html.dark 的取值再提亮一档；

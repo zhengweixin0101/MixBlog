@@ -716,13 +716,13 @@ async function copyArticleLink() {
             <span class="flex items-center">
               <AppIcon name="comment" />
               评论数:
-              <span v-if="commentCount === null" class="ml-1 w-5 h-3.5 rounded skeleton"></span>
+              <span v-if="commentCount === null" class="ml-0.8 w-5 h-3.5 rounded skeleton"></span>
               <span v-else class="ml-0.8">{{ commentCount }}</span>
             </span>
             <span class="flex items-center">
               <AppIcon name="flame" />
               访问量:
-              <span v-if="postPageviews === null" class="ml-1 w-5 h-3.5 rounded skeleton"></span>
+              <span v-if="postPageviews === null" class="ml-0.8 w-5 h-3.5 rounded skeleton"></span>
               <span v-else class="ml-0.8">{{ postPageviews }}</span>
             </span>
           </div>

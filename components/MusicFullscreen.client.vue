@@ -40,8 +40,8 @@
       <!-- 歌曲信息 -->
       <div class="text-center">
         <template v-if="isLoadingSong">
-          <div class="w-48 h-8 rounded skeleton skeleton-on-dark mx-auto"></div>
-          <div class="w-32 h-6 rounded skeleton skeleton-on-dark mx-auto mt-2"></div>
+          <div class="w-48 h-8.5 rounded skeleton skeleton-on-dark mx-auto"></div>
+          <div class="w-32 h-4 rounded skeleton skeleton-on-dark mx-auto mt-1"></div>
         </template>
         <template v-else>
           <div class="text-3xl 2xl:text-4xl font-bold truncate">{{ currentItem?.title }}</div>
@@ -66,7 +66,7 @@
     <!-- 歌词 -->
     <div class="lyrics flex-1 overflow-y-auto py-78 text-center" ref="lyricsEl" tabindex="-1">
       <div v-if="isLoadingSong && !lyrics?.length" class="mt-20 space-y-3 flex flex-col items-center">
-        <div v-for="n in 8" :key="n" class="w-64 h-5 rounded skeleton skeleton-on-dark"
+        <div v-for="n in 8" :key="n" class="w-64 h-10 rounded skeleton skeleton-on-dark"
           :class="n === 1 ? 'w-48' : n === 4 ? 'w-56' : 'w-64'"></div>
       </div>
       <div v-else-if="!lyrics?.length" class="mt-20">暂无歌词</div>
