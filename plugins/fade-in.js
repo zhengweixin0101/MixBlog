@@ -50,6 +50,18 @@ export default defineNuxtPlugin((nuxtApp) => {
   const states = new WeakMap()
   const live = new Set()
 
+  // 首屏全屏遮罩淡出之前不播放浮现动画，等 PageLoader 发令后统一启动
+  let loaderDone = false
+  function activate() {
+    if (loaderDone) return
+    loaderDone = true
+    for (const s of live) {
+      if (s.root.isConnected) requestAnimationFrame(() => pass(s.root, s))
+    }
+  }
+  window.addEventListener('page-loader-done', activate)
+  setTimeout(activate, 3000)
+
   function stateOf(root) {
     let s = states.get(root)
     if (!s) {
@@ -152,7 +164,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     if (s.scanFrame) return
     s.scanFrame = requestAnimationFrame(() => {
       s.scanFrame = 0
-      pass(root, s)
+      if (loaderDone) pass(root, s)
     })
   }
 
@@ -175,7 +187,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   // rAF 合并的滚动兜底：一次性跳转时把翻过去的等待元素直接播出
   let scrollFrame = 0
   window.addEventListener('scroll', () => {
-    if (scrollFrame) return
+    if (scrollFrame || !loaderDone) return
     scrollFrame = requestAnimationFrame(() => {
       scrollFrame = 0
       for (const s of live) {
@@ -189,7 +201,9 @@ export default defineNuxtPlugin((nuxtApp) => {
     const s = stateOf(root)
     watchMutations(root, s)
     // 等一帧让首屏 DOM/布局落定
-    requestAnimationFrame(() => pass(root, s))
+    requestAnimationFrame(() => {
+      if (loaderDone) pass(root, s)
+    })
   }
 
   function updated(root) {
