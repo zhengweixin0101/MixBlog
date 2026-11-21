@@ -3,7 +3,7 @@ import { onMounted, ref, onBeforeUnmount, nextTick, useColorMode } from '#import
 
 import { TegakiRenderer } from 'tegaki/vue'
 import parisienne from 'tegaki/fonts/parisienne'
-import { globalGradientPlugin, createPlugin } from 'tegaki/core'
+import { globalGradientPlugin, createPlugin, TegakiEngine } from 'tegaki/core'
 
 import { aboutConfig } from '@/siteConfig/about.js'
 import { siteConfig } from '@/siteConfig/main.js'
@@ -28,35 +28,58 @@ const drawReady = ref(false)
 
 let tipsInterval = null
 let fadeDoneObs = null
+let introFadeElObserved = null
+let drawStarted = false
+
+function startDraw() {
+  if (drawStarted) return
+  drawStarted = true
+  drawReady.value = true
+  fadeDoneObs?.disconnect()
+  introFadeElObserved?.removeEventListener('animationstart', onIntroFadeStart)
+}
+
+function onIntroFadeStart(e) {
+  if (e.target === introFadeElObserved && e.animationName === 'fade-in') startDraw()
+}
+
 onMounted(() => {
   tipsInterval = setInterval(() => {
     current.value = (current.value + 1) % tips.length
   }, 1500)
 
-  // 等浮现动画播完再开始书写
-  const el = introFadeEl.value
-  if (!el) {
-    drawReady.value = true
-    return
-  }
-  if (el.hasAttribute('data-fade-done')) {
-    drawReady.value = true
-    return
-  }
-  fadeDoneObs = new MutationObserver((mutations) => {
-    if (mutations.some(m => m.type === 'attributes' && m.attributeName === 'data-fade-done')) {
-      drawReady.value = true
-      fadeDoneObs?.disconnect()
-    }
-  })
-  fadeDoneObs.observe(el, { attributes: true, attributeFilter: ['data-fade-done'] })
+  // 字体与形变器提前并行加载
+  TegakiEngine.preload(parisienne)
 
   updateMaxShown()
   window.addEventListener('resize', updateMaxShown)
+
+  const el = introFadeEl.value
+  introFadeElObserved = el
+  if (!el) {
+    startDraw()
+    return
+  }
+  // 已在浮现中或已落定则立即开写
+  if (el.hasAttribute('data-fade-anim') || el.hasAttribute('data-fade-done')) {
+    startDraw()
+    return
+  }
+  // animationstart 在 animation-delay 之后触发，即卡片刚开始浮现时开写，
+  // 不再等整段淡入播完，避免用户对着空卡片干等
+  el.addEventListener('animationstart', onIntroFadeStart)
+  // reduced-motion / 零尺寸时 fade 插件直接 settle（无 animationstart），兜底
+  fadeDoneObs = new MutationObserver((mutations) => {
+    if (mutations.some(m => m.type === 'attributes' && m.attributeName === 'data-fade-done')) {
+      startDraw()
+    }
+  })
+  fadeDoneObs.observe(el, { attributes: true, attributeFilter: ['data-fade-done'] })
 })
 onBeforeUnmount(() => {
   clearInterval(tipsInterval)
   fadeDoneObs?.disconnect()
+  introFadeElObserved?.removeEventListener('animationstart', onIntroFadeStart)
   window.removeEventListener('resize', updateMaxShown)
   clearTimeout(enterTimer)
 })
